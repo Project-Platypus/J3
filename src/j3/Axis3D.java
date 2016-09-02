@@ -5,8 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javafx.animation.Transition;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.DoublePropertyBase;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -17,20 +23,93 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.util.Duration;
 
-public class AxisBox extends Region {
+public class Axis3D extends Region {
 
 	private List<Axis> axes;
 
 	private List<Side> sides;
+	
+	private DoubleProperty sideGap = new DoublePropertyBase(0.0) {
 
-	private double sideGap = 0.2;
+		@Override
+		protected void invalidated() {
+			Transition t = new Transition() {
+				
+				private double[] oldZ = new double[6];
+				private double[] newZ = new double[6];
+
+				{
+					setCycleDuration(Duration.seconds(1));
+					
+					oldZ[0] = ((Translate)sides.get(0).getTransforms().get(1)).getZ();
+					oldZ[1] = ((Translate)sides.get(1).getTransforms().get(1)).getZ();
+					oldZ[2] = ((Translate)sides.get(2).getTransforms().get(1)).getZ();
+					oldZ[3] = ((Translate)sides.get(3).getTransforms().get(1)).getZ();
+					oldZ[4] = ((Translate)sides.get(4).getTransforms().get(1)).getZ();
+					oldZ[5] = ((Translate)sides.get(5).getTransforms().get(1)).getZ();
+					
+					newZ[0] = sides.get(0).getSize()*(0.5+getSideGap());
+					newZ[1] = sides.get(1).getSize()*(-0.5-getSideGap());
+					newZ[2] = sides.get(2).getSize()*(-0.5-getSideGap());
+					newZ[3] = sides.get(3).getSize()*(0.5+getSideGap());
+					newZ[4] = sides.get(4).getSize()*(0.5+getSideGap());
+					newZ[5] = sides.get(5).getSize()*(-0.5-getSideGap());
+				}
+
+				@Override
+				protected void interpolate(double frac) {
+					for (int i = 0; i < 6; i++) {
+						((Translate)sides.get(i).getTransforms().get(1)).setZ(oldZ[i] + frac*(newZ[i]-oldZ[i]));
+					}
+					
+					updateAxes();
+				}
+				
+			};
+			
+			t.setOnFinished(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					updateAxes();
+				}
+				
+			});
+			
+			t.play();
+		}
+
+		@Override
+		public Object getBean() {
+			return Axis3D.this;
+		}
+
+		@Override
+		public String getName() {
+			return "sideGap";
+		}
+		
+	};
+	
+	public double getSideGap() {
+		return sideGap.get();
+	}
+	
+	public void setSideGap(double value) {
+		sideGap.set(value);
+	}
+	
+	public DoubleProperty sideGapProperty() {
+		return sideGap;
+	}
 
 	private Group textGroup;
 	
 	private Node plotContents;
 
-	public AxisBox(int size, Group textGroup) {
+	public Axis3D(int size, Group textGroup) {
 		super();
 		this.textGroup = textGroup;
 		
@@ -50,7 +129,7 @@ public class AxisBox extends Region {
 			case 0:
 				fx = -0.5;
 				fy = -0.5;
-				fz = 0.5 + sideGap;
+				fz = 0.5 + getSideGap();
 				r = 0.0;
 				axis = Rotate.X_AXIS;
 				side1 = 0;
@@ -59,7 +138,7 @@ public class AxisBox extends Region {
 			case 1:
 				fx = -0.5;
 				fy = -0.5;
-				fz = -0.5 - sideGap;
+				fz = -0.5 - getSideGap();
 				r = 90;
 				axis = Rotate.X_AXIS;
 				side1 = 0;
@@ -68,7 +147,7 @@ public class AxisBox extends Region {
 			case 2:
 				fx = -0.5;
 				fy = -0.5;
-				fz = -0.5 - sideGap;
+				fz = -0.5 - getSideGap();
 				r = 90;
 				axis = Rotate.Y_AXIS;
 				side1 = 2;
@@ -77,7 +156,7 @@ public class AxisBox extends Region {
 			case 3:
 				fx = -0.5;
 				fy = -0.5;
-				fz = 0.5 + sideGap;
+				fz = 0.5 + getSideGap();
 				r = 90;
 				axis = Rotate.Y_AXIS;
 				side1 = 2;
@@ -86,7 +165,7 @@ public class AxisBox extends Region {
 			case 4:
 				fx = -0.5;
 				fy = -0.5;
-				fz = 0.5 + sideGap;
+				fz = 0.5 + getSideGap();
 				r = 90;
 				axis = Rotate.X_AXIS;
 				side1 = 0;
@@ -95,7 +174,7 @@ public class AxisBox extends Region {
 			case 5:
 				fx = -0.5;
 				fy = -0.5;
-				fz = -0.5 - sideGap;
+				fz = -0.5 - getSideGap();
 				r = 0;
 				axis = Rotate.X_AXIS;
 				side1 = 0;
@@ -126,6 +205,9 @@ public class AxisBox extends Region {
 				c.getAddedSubList().forEach(a -> a.setOnTransformChanged(e -> updateAxes()));
 			}
 		});
+		
+		setManaged(false);
+		setPickOnBounds(false);
 	}
 	
 	protected Axis getAxis(int index) {
@@ -174,8 +256,10 @@ public class AxisBox extends Region {
 		for (int i = 0; i < sides.size(); i++) {
 			if (sortedSides.indexOf(sides.get(i)) < 3) {
 				sides.get(i).setVisible(false);
+				//sides.get(i).setPickOnBounds(false);
 			} else {
 				sides.get(i).setVisible(true);
+				//sides.get(i).setPickOnBounds(true);
 				visibleSides.add(sides.get(i));
 			}
 		}
@@ -190,7 +274,7 @@ public class AxisBox extends Region {
 				double centerY = (bounds.getMaxY()+bounds.getMinY())/2;
 	
 				// add some stability when selecting the bottom axis
-				if (centerY - maximumY > 10) {
+				if ((bottom == null) || (centerY - maximumY > 10)) {
 					bottom = side;
 					maximumY = centerY;
 				}

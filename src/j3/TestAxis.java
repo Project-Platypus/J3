@@ -77,7 +77,7 @@ public class TestAxis extends Application {
 
 		
 
-		AxisBox axis = new AxisBox(400, textGroup);
+		Axis3D axis = new Axis3D(400, textGroup);
 		root.getChildren().addAll(axis, textGroup);
 		axis.getTransforms().addAll(translate, rotateX, rotateY, scale);
 

@@ -24,3 +24,10 @@
   -fx-stroke-dash-array: 4 4;
   -fx-stroke-line-cap: butt;
 }
+
+.j3-colorbar {
+  -fx-border-width: 2;
+  -fx-border-color: black;
+  -fx-border-insets: -2 2 2 -2;
+  visibililty: hidden;
+}

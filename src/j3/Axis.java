@@ -22,6 +22,10 @@ public abstract class Axis<T> {
 		return label;
 	}
 	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
 	public abstract String[] getTickLabels();
 	
 	public abstract double[] getTickPositions();
