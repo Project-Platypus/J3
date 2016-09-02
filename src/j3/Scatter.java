@@ -37,8 +37,7 @@ public class Scatter extends Region {
     	
     	for (int i = 0; i < 256; i++) {
     		PhongMaterial material = new PhongMaterial();
-    		material.setDiffuseColor(Color.hsb(360*i/(double)256, 1.0, 0.8, 0.5));
-    		material.setDiffuseColor(Color.hsb(360*i/(double)256, 1.0, 1.0, 0.5));
+    		material.setDiffuseColor(Color.hsb(360*i/(double)256, 1.0, 0.8));
     		materials.add(material);
     	}
     	
@@ -66,7 +65,7 @@ public class Scatter extends Region {
         axisBox.setPlotContents(pointGroup);
 	}
 	
-	public void update() {
+	public void initializePlot() {
 		
 	}
 	

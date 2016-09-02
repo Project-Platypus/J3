@@ -4,13 +4,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.StringPropertyBase;
-import javafx.scene.chart.Chart;
 
 public class RealAxis extends Axis<Number> {
 	
@@ -46,8 +41,8 @@ public class RealAxis extends Axis<Number> {
     public final ObjectProperty<RealDomain> domainProperty() { return domain; }
 
 
-	public RealAxis(int index, String label) {
-		super(index, label);
+	public RealAxis(Dimension dimension, String label) {
+		super(dimension, label);
 		setDomain(new RealDomain(0.0, 1.0));
 		
 		computeTicks();

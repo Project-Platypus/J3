@@ -5,8 +5,10 @@ import java.util.List;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -194,6 +196,11 @@ public class Side extends Region {
 		} else {
 			return (bounds.getMinY() + bounds.getMaxY()) / 2.0;
 		}
+	}
+
+	@Override
+	public ObservableList<Node> getChildren() {
+		return super.getChildren();
 	}
 
 }

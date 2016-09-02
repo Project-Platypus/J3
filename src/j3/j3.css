@@ -1,5 +1,5 @@
 .j3-axis-side {
-  -fx-fill: white;
+  -fx-fill: transparent;
   -fx-stroke: black;
   -fx-stroke-width: 3;
 }
@@ -15,4 +15,12 @@
 
 .j3-internal-axis-label-line {
   visibility: hidden;
+}
+
+.j3-selection-rect {
+  -fx-fill: transparent;
+  -fx-stroke: black;
+  -fx-stroke-width: 1;
+  -fx-stroke-dash-array: 4 4;
+  -fx-stroke-line-cap: butt;
 }

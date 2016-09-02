@@ -1,35 +1,19 @@
 package j3;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.chart.Chart;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
@@ -40,7 +24,7 @@ public class AxisBox extends Region {
 
 	private List<Side> sides;
 
-	private double sideGap;
+	private double sideGap = 0.2;
 
 	private Group textGroup;
 	
@@ -50,14 +34,12 @@ public class AxisBox extends Region {
 		super();
 		this.textGroup = textGroup;
 		
-		Chart chart;
-
 		axes = new ArrayList<Axis>();
 		sides = new ArrayList<Side>();
 
-		axes.add(new RealAxis(0, "X"));
-		axes.add(new RealAxis(1, "Y"));
-		axes.add(new RealAxis(2, "Z"));
+		axes.add(new RealAxis(Dimension.X, "X"));
+		axes.add(new RealAxis(Dimension.Y, "Y"));
+		axes.add(new RealAxis(Dimension.Z, "Z"));
 
 		for (int i = 0; i < 6; i++) {
 			double fx, fy, fz, r;
@@ -154,6 +136,11 @@ public class AxisBox extends Region {
 		return sides.get(index);
 	}
 
+	@Override
+	public ObservableList<Node> getChildren() {
+		return super.getChildren();
+	}
+
 	public void setPlotContents(Node node) {
 		if (plotContents != null) {
 			getChildren().remove(plotContents);
@@ -161,6 +148,10 @@ public class AxisBox extends Region {
 		
 		plotContents = node;
 		getChildren().add(plotContents);
+	}
+
+	public Node getPlotContents() {
+		return plotContents;
 	}
 
 	public void updateAxes() {
@@ -207,7 +198,7 @@ public class AxisBox extends Region {
 			
 			// create mapping between the label lines and the axis
 			Map<Line, Side> lineToSideMapping = new HashMap<Line, Side>();
-			Map<Line, Axis> lineToAxisMapping = new HashMap<Line, Axis>();
+			Map<Line, Axis<?>> lineToAxisMapping = new HashMap<Line, Axis<?>>();
 			Map<Line, Line> labelToTickMapping = new HashMap<Line, Line>();
 			
 			for (Side side : visibleSides) {
@@ -240,13 +231,13 @@ public class AxisBox extends Region {
 			visibleSides.remove(bottom);
 			
 			// exclude any lines for axes we have already selected
-			Axis selectedAxis1 = lineToAxisMapping.get(selectedLines.get(0));
-			Axis selectedAxis2 = lineToAxisMapping.get(selectedLines.get(1));
+			Axis<?> selectedAxis1 = lineToAxisMapping.get(selectedLines.get(0));
+			Axis<?> selectedAxis2 = lineToAxisMapping.get(selectedLines.get(1));
 			List<Line> otherLines = new ArrayList<Line>();
 			
 			for (Side side : visibleSides) {
 				for (Line line : side.getInternalAxisLabelLines()) {
-					Axis lineAxis = lineToAxisMapping.get(line);
+					Axis<?> lineAxis = lineToAxisMapping.get(line);
 					
 					if (lineAxis != selectedAxis1 && lineAxis != selectedAxis2) {
 						otherLines.add(line);
@@ -276,7 +267,7 @@ public class AxisBox extends Region {
 			
 			for (Line labelLine : selectedLines) {
 				Side side = lineToSideMapping.get(labelLine);
-				Axis axis = lineToAxisMapping.get(labelLine);
+				Axis<?> axis = lineToAxisMapping.get(labelLine);
 				Line tickLine = labelToTickMapping.get(labelLine);
 
 				double[] tickPositions = axis.getTickPositions();
@@ -288,8 +279,7 @@ public class AxisBox extends Region {
 					double offsetY = 0.0;
 					
 					// flip y axis
-					if (axis.getIndex() == 1) {
-						System.out.println("here");
+					if (axis.getDimension() == Dimension.Y) {
 						offset = side.getSize() - offset;
 					}
 

@@ -2,22 +2,20 @@ package j3;
 
 import java.util.List;
 
-import javafx.event.EventTarget;
-
 public abstract class Axis<T> {
 	
-	private int index;
+	private Dimension dimension;
 	
 	private String label;
 
-	public Axis(int index, String label) {
+	public Axis(Dimension dimension, String label) {
 		super();
-		this.index = index;
+		this.dimension = dimension;
 		this.label = label;
 	}
 	
-	public int getIndex() {
-		return index;
+	public Dimension getDimension() {
+		return dimension;
 	}
 	
 	public String getLabel() {
