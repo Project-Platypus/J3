@@ -1,0 +1,18 @@
+.j3-axis-side {
+  -fx-fill: white;
+  -fx-stroke: black;
+  -fx-stroke-width: 3;
+}
+
+.j3-tick-line {
+  -fx-stroke: gray;
+  -fx-stroke-width: 1;
+}
+
+.j3-internal-tick-label-line {
+  visibility: hidden;
+}
+
+.j3-internal-axis-label-line {
+  visibility: hidden;
+}
