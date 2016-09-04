@@ -9,6 +9,9 @@ import java.util.Random;
 import com.github.lwhite1.tablesaw.api.ColumnType;
 import com.github.lwhite1.tablesaw.api.Table;
 
+import j3.colormap.Colormap;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.Group;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
@@ -16,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
+import javafx.util.Duration;
 
 public class Scatter extends Region {
 
@@ -23,24 +27,63 @@ public class Scatter extends Region {
 	
 	private Table table;
 	
+	private ObjectProperty<Colormap> colormap = new ObjectPropertyBase<Colormap>() {
+
+		@Override
+		protected void invalidated() {
+			for (int i = 0; i < materials.size(); i++) {
+				Color newColor = colormap.get().map(i / (double)(materials.size()-1));
+				DiffuseColorTransition transition = new DiffuseColorTransition(new Duration(1000), materials.get(i), newColor);
+				transition.play();
+			}
+		}
+
+		@Override
+		public Object getBean() {
+			return Scatter.this;
+		}
+
+		@Override
+		public String getName() {
+			return "colormap";
+		}
+		
+	};
+	
+	public void setColormap(Colormap colormap) {
+		this.colormap.set(colormap);
+	}
+	
+	public Colormap getColormap() {
+		return colormap.get();
+	}
+	
+	public ObjectProperty<Colormap> colormapProperty() {
+		return colormap;
+	}
+	
 	private Group pointGroup;
 	
 	private List<Shape3D> points;
 	
-	public Scatter(Axis3D axisBox, Table table) {
+	private List<PhongMaterial> materials;
+	
+	public Scatter(Axis3D axisBox, Table table, Colormap colormap) {
 		super();
 		this.axisBox = axisBox;
 		this.table = table;
 		
 		points = new ArrayList<Shape3D>();
 		
-    	List<PhongMaterial> materials = new ArrayList<PhongMaterial>();
+    	materials = new ArrayList<PhongMaterial>();
     	
     	for (int i = 0; i < 256; i++) {
     		PhongMaterial material = new PhongMaterial();
-    		material.setDiffuseColor(Color.hsb(360*i/(double)256, 1.0, 0.8));
+    		//material.setDiffuseColor(Color.hsb(360*i/(double)256, 1.0, 0.8));
     		materials.add(material);
     	}
+    	
+		setColormap(colormap);
     	
     	pointGroup = new Group();
     	pointGroup.getStyleClass().addAll("j3-points");

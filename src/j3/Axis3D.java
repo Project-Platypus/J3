@@ -256,10 +256,8 @@ public class Axis3D extends Region {
 		for (int i = 0; i < sides.size(); i++) {
 			if (sortedSides.indexOf(sides.get(i)) < 3) {
 				sides.get(i).setVisible(false);
-				//sides.get(i).setPickOnBounds(false);
 			} else {
 				sides.get(i).setVisible(true);
-				//sides.get(i).setPickOnBounds(true);
 				visibleSides.add(sides.get(i));
 			}
 		}
@@ -382,6 +380,7 @@ public class Axis3D extends Region {
 					text.setTranslateX(point.getX()-width/2);
 					text.setTranslateY(point.getY());
 					text.setTranslateZ(point.getZ());
+					text.getStyleClass().add("j3-tick-label");
 
 					textGroup.getChildren().add(text);
 				}
@@ -407,7 +406,7 @@ public class Axis3D extends Region {
 					text.setTranslateX(point.getX()-width/2);
 					text.setTranslateY(point.getY());
 					text.setTranslateZ(point.getZ());
-					text.setStyle("-fx-font-weight: bold;");
+					text.getStyleClass().add("j3-axis-label");
 
 					textGroup.getChildren().add(text);
 				}

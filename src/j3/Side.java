@@ -59,7 +59,6 @@ public class Side extends Region {
 
 		{
 			double[] tickPositions = axis1.getTickPositions();
-			String[] tickLabels = axis1.getTickLabels();
 
 			for (int i = 0; i < tickPositions.length; i++) {
 				Line line = new Line(0, 0, size, 0);
@@ -73,7 +72,6 @@ public class Side extends Region {
 
 		{
 			double[] tickPositions = axis2.getTickPositions();
-			String[] tickLabels = axis2.getTickLabels();
 
 			for (int i = 0; i < tickPositions.length; i++) {
 				Line line = new Line(0, 0, 0, size);

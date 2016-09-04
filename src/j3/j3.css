@@ -9,6 +9,15 @@
   -fx-stroke-width: 1;
 }
 
+.j3-axis-label {
+  -fx-font-weight: bold;
+  -fx-font-size: 16;
+}
+
+.j3-tick-label {
+
+}
+
 .j3-internal-tick-label-line {
   visibility: hidden;
 }
@@ -28,6 +37,6 @@
 .j3-colorbar {
   -fx-border-width: 2;
   -fx-border-color: black;
-  -fx-border-insets: -2 2 2 -2;
+  -fx-border-insets: -2 -2 -2 -2;
   visibililty: hidden;
 }

@@ -1,5 +1,6 @@
-package j3.colormap;
+package j3.colormap.impl;
 
+import j3.colormap.Colormap;
 import javafx.scene.paint.Color;
 
 public class HSVColormap implements Colormap {

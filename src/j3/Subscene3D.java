@@ -1,27 +1,13 @@
 package j3;
 
-import java.io.InputStream;
-
-
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-
-
-
-import com.github.lwhite1.tablesaw.api.ColumnType;
-import com.github.lwhite1.tablesaw.api.Table;
 
 public class Subscene3D extends SubScene {
 
@@ -89,11 +75,17 @@ public class Subscene3D extends SubScene {
 
 		// bind width and height to the
 		widthProperty().addListener((observable, oldValue, newValue) -> {
-			translate.setX(getWidth()/2.0);
+			double fracX = (translate.getX() + axis3D.getWidth()/2.0) / oldValue.doubleValue();
+			double newX = (fracX * newValue.doubleValue()) - axis3D.getWidth()/2.0;
+
+			translate.setX(newX);
 		});
 
 		heightProperty().addListener((observable, oldValue, newValue) -> {
-			translate.setY(getHeight()/2.0);
+			double fracY = (translate.getY() + axis3D.getHeight()/2.0) / oldValue.doubleValue();
+			double newY = (fracY * newValue.doubleValue()) - axis3D.getHeight()/2.0;
+			
+			translate.setY(newY);
 		});
 		
 		setManaged(false);
