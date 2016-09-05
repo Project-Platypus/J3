@@ -118,6 +118,7 @@ public class GUI extends Application {
 		Image legendImage = new Image(GUI.class.getResourceAsStream("/j3/icons/legend_1x.png"));
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image colorImage = new Image(GUI.class.getResourceAsStream("/j3/icons/color_1x.png"));
+		Image plotOptionsImage = new Image(GUI.class.getResourceAsStream("/j3/icons/settings_1x.png"));
 
 		ToggleButton rotate = new ToggleButton();
 		rotate.setGraphic(new ImageView(rotateImage));
@@ -171,9 +172,13 @@ public class GUI extends Application {
 		Button changeColor = new Button();
 		changeColor.setGraphic(new ImageView(colorImage));
 		changeColor.setTooltip(new Tooltip("Change the colormap"));
+		
+		Button plotOptions = new Button();
+		plotOptions.setGraphic(new ImageView(plotOptionsImage));
+		plotOptions.setTooltip(new Tooltip("Change plot options"));
 
 
-		toolbar = new ToolBar(mouseControls, axisControls, animationControls, camera, editMode, changeColor);
+		toolbar = new ToolBar(mouseControls, axisControls, animationControls, camera, editMode, changeColor, plotOptions);
 
 		rotate.setOnAction(event -> {
 			plot.setMouseMode(rotate.isSelected() ? MouseMode.ROTATE : MouseMode.NONE);
@@ -502,6 +507,20 @@ public class GUI extends Application {
 			popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
 		});
 		
+		plotOptions.setOnAction(event -> {
+			PopOver popover = new PopOver();
+			popover.setTitle("Plot options");
+			popover.setAutoHide(true);
+			popover.setAutoFix(true);
+			popover.setArrowLocation(ArrowLocation.TOP_CENTER);
+			
+			PlottingOptions plottingOptions = new PlottingOptions(table);
+			popover.setContentNode(plottingOptions);
+
+			Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());
+			popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+		});
+		
 		StackPane pane = new StackPane();
 		pane.getChildren().add(content);
 		((Group)content.getRoot()).getChildren().add(plot);
@@ -516,6 +535,7 @@ public class GUI extends Application {
 		Scene scene = new Scene(root);
 
 		primaryStage.setScene(scene);
+		primaryStage.setTitle("J3 - Java High Dimensional Visualization");
 		primaryStage.show();
 		
 		content.widthProperty().addListener((observer, oldValue, newValue) -> {

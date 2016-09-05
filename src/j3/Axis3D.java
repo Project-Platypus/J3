@@ -89,6 +89,7 @@ public class Axis3D extends Region {
 		@Override
 		public String getName() {
 			return "sideGap";
+			
 		}
 		
 	};

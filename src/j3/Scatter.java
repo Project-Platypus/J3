@@ -10,6 +10,8 @@ import com.github.lwhite1.tablesaw.api.ColumnType;
 import com.github.lwhite1.tablesaw.api.Table;
 
 import j3.colormap.Colormap;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.Group;
@@ -50,17 +52,20 @@ public class Scatter extends Region {
 		
 	};
 	
-	public void setColormap(Colormap colormap) {
-		this.colormap.set(colormap);
-	}
-	
-	public Colormap getColormap() {
-		return colormap.get();
-	}
-	
-	public ObjectProperty<Colormap> colormapProperty() {
-		return colormap;
-	}
+	private IntegerProperty x = new IntegerPropertyBase() {
+
+		@Override
+		public Object getBean() {
+			return Scatter.this;
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	};
 	
 	private Group pointGroup;
 	
@@ -135,6 +140,18 @@ public class Scatter extends Region {
 
 	public void initializePlot() {
 		
+	}
+	
+	public void setColormap(Colormap colormap) {
+		this.colormap.set(colormap);
+	}
+	
+	public Colormap getColormap() {
+		return colormap.get();
+	}
+	
+	public ObjectProperty<Colormap> colormapProperty() {
+		return colormap;
 	}
 	
 }
