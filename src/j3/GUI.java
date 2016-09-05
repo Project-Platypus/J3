@@ -34,8 +34,10 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
@@ -102,8 +104,18 @@ public class GUI extends Application {
 		Table table = Table.createFromStream(
 				new ColumnType[] { ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT },
 				true, ',', is, "CDICE");
+		
+		List<Axis> axes = new ArrayList<Axis>();
+		
+		for (int i = 0; i < table.columnCount(); i++) {
+			if (table.column(i).type() == ColumnType.FLOAT) {
+				RealAxis axis = new RealAxis(i, table.column(i).name());
+				axis.scale(Arrays.asList(table.floatColumn(i).min(), table.floatColumn(i).max()));
+				axes.add(axis);
+			}
+		}
 
-		Scatter scatter = new Scatter(plot.getAxis3D(), table, colormap);
+		Scatter scatter = new Scatter(plot.getAxis3D(), table, axes.get(0), axes.get(1), axes.get(2), axes.get(3), null, colormap);
 
 		content = new SubScene(new Group(), plot.getWidth(), plot.getHeight());
 		content.setManaged(false);
@@ -196,7 +208,7 @@ public class GUI extends Application {
 			plot.getAxis3D().setSideGap(split.isSelected() ? 0.2 : 0.0);
 		});
 		
-		Axis colorAxis = new RealAxis(Dimension.Color, table.column(3).name());
+		Axis colorAxis = new RealAxis(3, table.column(3).name());
 		colorAxis.scale(Arrays.asList(table.floatColumn(3).min(), table.floatColumn(3).max()));
 		
 		Colorbar colorbar = new Colorbar(colormap, 500, 40, Orientation.HORIZONTAL, colorAxis);
@@ -514,7 +526,7 @@ public class GUI extends Application {
 			popover.setAutoFix(true);
 			popover.setArrowLocation(ArrowLocation.TOP_CENTER);
 			
-			PlottingOptions plottingOptions = new PlottingOptions(table);
+			PlottingOptions plottingOptions = new PlottingOptions(scatter, axes);
 			popover.setContentNode(plottingOptions);
 
 			Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());

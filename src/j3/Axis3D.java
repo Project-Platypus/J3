@@ -1,6 +1,7 @@
 package j3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Map;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,8 +29,102 @@ import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
 public class Axis3D extends Region {
+	
+	private ObjectProperty<Axis> xAxis = new ObjectPropertyBase<Axis>() {
+		
+		{
+			addListener((observable, oldValue, newValue) -> {
+				updateAxes();
+			});
+		}
 
-	private List<Axis> axes;
+		@Override
+		public Object getBean() {
+			return Axis3D.class;
+		}
+
+		@Override
+		public String getName() {
+			return "xAxis";
+		}
+		
+	};
+	
+	public void setXAxis(Axis axis) {
+		xAxis.set(axis);
+	}
+	
+	public Axis getXAxis() {
+		return xAxis.get();
+	}
+	
+	public ObjectProperty<Axis> xAxisProperty() {
+		return xAxis;
+	}
+	
+	private ObjectProperty<Axis> yAxis = new ObjectPropertyBase<Axis>() {
+
+		{
+			addListener((observable, oldValue, newValue) -> {
+				updateAxes();
+			});
+		}
+		
+		@Override
+		public Object getBean() {
+			return Axis3D.class;
+		}
+
+		@Override
+		public String getName() {
+			return "yAxis";
+		}
+		
+	};
+	
+	public void setYAxis(Axis axis) {
+		yAxis.set(axis);
+	}
+	
+	public Axis getYAxis() {
+		return yAxis.get();
+	}
+	
+	public ObjectProperty<Axis> yAxisProperty() {
+		return yAxis;
+	}
+	
+	private ObjectProperty<Axis> zAxis = new ObjectPropertyBase<Axis>() {
+
+		{
+			addListener((observable, oldValue, newValue) -> {
+				updateAxes();
+			});
+		}
+		
+		@Override
+		public Object getBean() {
+			return Axis3D.class;
+		}
+
+		@Override
+		public String getName() {
+			return "zAxis";
+		}
+		
+	};
+	
+	public void setZAxis(Axis axis) {
+		zAxis.set(axis);
+	}
+	
+	public Axis getZAxis() {
+		return zAxis.get();
+	}
+	
+	public ObjectProperty<Axis> zAxisProperty() {
+		return zAxis;
+	}
 
 	private List<Side> sides;
 	
@@ -113,13 +210,12 @@ public class Axis3D extends Region {
 	public Axis3D(int size, Group textGroup) {
 		super();
 		this.textGroup = textGroup;
-		
-		axes = new ArrayList<Axis>();
-		sides = new ArrayList<Side>();
 
-		axes.add(new RealAxis(Dimension.X, "X"));
-		axes.add(new RealAxis(Dimension.Y, "Y"));
-		axes.add(new RealAxis(Dimension.Z, "Z"));
+		sides = new ArrayList<Side>();
+		
+		setXAxis(new RealAxis(0, "X"));
+		setYAxis(new RealAxis(1, "Y"));
+		setZAxis(new RealAxis(2, "Z"));
 
 		for (int i = 0; i < 6; i++) {
 			double fx, fy, fz, r;
@@ -192,7 +288,7 @@ public class Axis3D extends Region {
 				break;
 			}
 
-			Side side = new Side(size, axes.get(side1), axes.get(side2));
+			Side side = new Side(size, getDimension(side1), getAxisProperty(side1), getDimension(side2), getAxisProperty(side2));
 			side.getTransforms().addAll(new Rotate(r, axis), new Translate(fx*size, fy*size, fz*size));
 
 			sides.add(side);
@@ -212,7 +308,15 @@ public class Axis3D extends Region {
 	}
 	
 	protected Axis getAxis(int index) {
-		return axes.get(index);
+		return new Axis[] { getXAxis(), getYAxis(), getZAxis() }[index];
+	}
+	
+	protected ObjectProperty<Axis> getAxisProperty(int index) {
+		return Arrays.asList(xAxisProperty(), yAxisProperty(), zAxisProperty()).get(index);
+	}
+	
+	protected Dimension getDimension(int index) {
+		return new Dimension[] { Dimension.X, Dimension.Y, Dimension.Z }[index];
 	}
 	
 	protected Side getSide(int index) {
@@ -281,15 +385,22 @@ public class Axis3D extends Region {
 			
 			// create mapping between the label lines and the axis
 			Map<Line, Side> lineToSideMapping = new HashMap<Line, Side>();
+			Map<Line, Dimension> lineToDimensionMapping = new HashMap<Line, Dimension>();
 			Map<Line, Axis<?>> lineToAxisMapping = new HashMap<Line, Axis<?>>();
 			Map<Line, Line> labelToTickMapping = new HashMap<Line, Line>();
 			
 			for (Side side : visibleSides) {
 				for (int i = 0; i < 4; i++) {
 					lineToSideMapping.put(side.getInternalAxisLabelLine(i), side);
+					lineToDimensionMapping.put(side.getInternalAxisLabelLine(i), side.getInternalDimension(i));
 					lineToAxisMapping.put(side.getInternalAxisLabelLine(i), side.getInternalAxis(i));
 					labelToTickMapping.put(side.getInternalAxisLabelLine(i), side.getInteralTickLabelLine(i));
 				}
+			}
+			
+			// if no bottom identified, we likely aren't displayed yet
+			if (bottom == null) {
+				return;
 			}
 			
 			// determine the two sides of the axis to draw labels (note: this is a
@@ -314,13 +425,13 @@ public class Axis3D extends Region {
 			visibleSides.remove(bottom);
 			
 			// exclude any lines for axes we have already selected
-			Axis<?> selectedAxis1 = lineToAxisMapping.get(selectedLines.get(0));
-			Axis<?> selectedAxis2 = lineToAxisMapping.get(selectedLines.get(1));
+			Dimension selectedAxis1 = lineToDimensionMapping.get(selectedLines.get(0));
+			Dimension selectedAxis2 = lineToDimensionMapping.get(selectedLines.get(1));
 			List<Line> otherLines = new ArrayList<Line>();
 			
 			for (Side side : visibleSides) {
 				for (Line line : side.getInternalAxisLabelLines()) {
-					Axis<?> lineAxis = lineToAxisMapping.get(line);
+					Dimension lineAxis = lineToDimensionMapping.get(line);
 					
 					if (lineAxis != selectedAxis1 && lineAxis != selectedAxis2) {
 						otherLines.add(line);
@@ -343,6 +454,10 @@ public class Axis3D extends Region {
 				return Double.compare(z1, z2);
 			});
 			
+			if (otherLines.isEmpty()) {
+				return;
+			}
+			
 			selectedLines.add(otherLines.get(0));
 
 			// now update the text labels
@@ -352,6 +467,10 @@ public class Axis3D extends Region {
 				Side side = lineToSideMapping.get(labelLine);
 				Axis<?> axis = lineToAxisMapping.get(labelLine);
 				Line tickLine = labelToTickMapping.get(labelLine);
+				
+				if (axis == null) {
+					continue;
+				}
 
 				double[] tickPositions = axis.getTickPositions();
 				String[] tickLabels = axis.getTickLabels();
@@ -362,7 +481,7 @@ public class Axis3D extends Region {
 					double offsetY = 0.0;
 					
 					// flip y axis
-					if (axis.getDimension() == Dimension.Y) {
+					if (axis == getAxis(1)) {
 						offset = side.getSize() - offset;
 					}
 

@@ -20,30 +20,9 @@ public class RealAxis extends Axis<Number> {
 	private double[] tickPositions;
 	
 	private NumberFormat format = new DecimalFormat("0.0");
-	
-    private ObjectProperty<RealDomain> domain = new ObjectPropertyBase<RealDomain>() {
-        @Override protected void invalidated() {
-            
-        }
 
-        @Override
-        public Object getBean() {
-            return RealAxis.this;
-        }
-
-        @Override
-        public String getName() {
-            return "domain";
-        }
-    };
-    public final RealDomain getDomain() { return domain.get(); }
-    public final void setDomain(RealDomain value) { domain.set(value); }
-    public final ObjectProperty<RealDomain> domainProperty() { return domain; }
-
-
-	public RealAxis(Dimension dimension, String label) {
-		super(dimension, label);
-		setDomain(new RealDomain(0.0, 1.0));
+	public RealAxis(int column, String label) {
+		super(column, label);
 		
 		computeTicks();
 	}

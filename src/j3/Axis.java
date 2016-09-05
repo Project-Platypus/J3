@@ -4,20 +4,24 @@ import java.util.List;
 
 public abstract class Axis<T> {
 	
-	private Dimension dimension;
+	private int column;
 	
 	private String label;
 
-	public Axis(Dimension dimension, String label) {
+	public Axis(int column, String label) {
 		super();
-		this.dimension = dimension;
+		this.column = column;
 		this.label = label;
 	}
 	
-	public Dimension getDimension() {
-		return dimension;
+	public int getColumn() {
+		return column;
 	}
-	
+
+	public void setColumn(int column) {
+		this.column = column;
+	}
+
 	public String getLabel() {
 		return label;
 	}
@@ -31,9 +35,7 @@ public abstract class Axis<T> {
 	public abstract double[] getTickPositions();
 	
 	public abstract void scale(List<? extends T> values);
-	
-	public abstract Domain getDomain();
-	
+
 	/**
 	 * Maps from a value to a number between 0 and 1.  This number will subsequently be scaled by the plotting routines
 	 * to fit the plot.
@@ -42,5 +44,9 @@ public abstract class Axis<T> {
 	 * @return
 	 */
 	public abstract double map(T value);
+	
+	public String toString() {
+		return getLabel();
+	}
 
 }
