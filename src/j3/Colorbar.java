@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import j3.colormap.Colormap;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.geometry.Orientation;
@@ -54,38 +52,79 @@ public class Colorbar extends Region {
 	
 	private Orientation orientation;
 	
-	private Axis axis;
+	private ObjectProperty<Axis> colorAxis = new ObjectPropertyBase<Axis>() {
+		
+		{
+			addListener((observable, oldValue, newValue) -> {
+				updateLabels();
+			});
+		}
+
+		@Override
+		public Object getBean() {
+			return Axis3D.class;
+		}
+
+		@Override
+		public String getName() {
+			return "Color";
+		}
+
+	};
+
+	public void setColorAxis(Axis axis) {
+		colorAxis.set(axis);
+	}
+
+	public Axis getColorAxis() {
+		return colorAxis.get();
+	}
+
+	public ObjectProperty<Axis> colorAxisProperty() {
+		return colorAxis;
+	}
 	
 	private ImageView imageView;
 	
-	private List<Line> lines;
+	private List<Line> lines = new ArrayList<Line>();
 	
-	private List<Text> labels;
+	private List<Text> labels = new ArrayList<Text>();;
 	
-	private Text axisLabel;
+	private Text axisLabel = new Text();
 	
-	public Colorbar(Colormap colormap, int width, int height, Orientation orientation, Axis<?> axis) {
+	public Colorbar(Colormap colormap, int width, int height, Orientation orientation, Axis axis) {
 		super();
 		setColormap(colormap);
 		this.orientation = orientation;
-		this.axis = axis;
+		setColorAxis(axis);
 		
 		setPrefWidth(width);
 		setPrefHeight(height);
 		
 		imageView = new ImageView();
 		
-		// generate the label for the colorbar
-		axisLabel = new Text(axis.getLabel());
 		axisLabel.getStyleClass().add("j3-axis-label");
 		axisLabel.layoutBoundsProperty().addListener(event -> updateLabels());
 		
-		// generate the tick lines and labels
-		lines = new ArrayList<Line>();
-		labels = new ArrayList<Text>();
+		getChildren().addAll(imageView, axisLabel);
+		getStyleClass().add("j3-colorbar");
 		
-		double[] tickPositions = axis.getTickPositions();
-		String[] tickLabels = axis.getTickLabels();
+		update();
+		updateLabels();
+	}
+	
+	public void updateLabels() {
+		int width = (int)getPrefWidth();
+		int height = (int)getPrefHeight();
+		
+		getChildren().removeAll(lines);
+		getChildren().removeAll(labels);
+		lines.clear();
+		labels.clear();
+
+		// generate the tick lines and labels
+		double[] tickPositions = getColorAxis().getTickPositions();
+		String[] tickLabels = getColorAxis().getTickLabels();
 		
 		for (int i = 0; i < tickPositions.length; i++) {
 			Line line = new Line(0, 0, 0, TICK_LENGTH);
@@ -98,21 +137,20 @@ public class Colorbar extends Region {
 			
 			Text label = new Text(tickLabels[i]);
 			label.getStyleClass().add("j3-tick-label");
-			label.layoutBoundsProperty().addListener(event -> updateLabels());
+			label.layoutBoundsProperty().addListener(event -> layoutLabels());
 			labels.add(label);
 		}
 		
-		getChildren().addAll(imageView, axisLabel);
 		getChildren().addAll(lines);
 		getChildren().addAll(labels);
-		getStyleClass().add("j3-colorbar");
 		
-		update();
-		updateLabels();
+		axisLabel.setText(getColorAxis().getLabel());
+		
+		layoutLabels();
 	}
 	
-	public void updateLabels() {
-		double[] tickPositions = axis.getTickPositions();
+	public void layoutLabels() {
+		double[] tickPositions = getColorAxis().getTickPositions();
 		double maxLabelHeight = 0.0;
 		
 		for (int i = 0; i < labels.size(); i++) {

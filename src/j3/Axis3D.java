@@ -386,7 +386,7 @@ public class Axis3D extends Region {
 			// create mapping between the label lines and the axis
 			Map<Line, Side> lineToSideMapping = new HashMap<Line, Side>();
 			Map<Line, Dimension> lineToDimensionMapping = new HashMap<Line, Dimension>();
-			Map<Line, Axis<?>> lineToAxisMapping = new HashMap<Line, Axis<?>>();
+			Map<Line, Axis> lineToAxisMapping = new HashMap<Line, Axis>();
 			Map<Line, Line> labelToTickMapping = new HashMap<Line, Line>();
 			
 			for (Side side : visibleSides) {
@@ -465,7 +465,7 @@ public class Axis3D extends Region {
 			
 			for (Line labelLine : selectedLines) {
 				Side side = lineToSideMapping.get(labelLine);
-				Axis<?> axis = lineToAxisMapping.get(labelLine);
+				Axis axis = lineToAxisMapping.get(labelLine);
 				Line tickLine = labelToTickMapping.get(labelLine);
 				
 				if (axis == null) {

@@ -1,27 +1,17 @@
 package j3;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-
-import com.github.lwhite1.tablesaw.api.ColumnType;
 import com.github.lwhite1.tablesaw.api.Table;
 
 import j3.colormap.Colormap;
-import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
-import javafx.animation.TranslateTransition;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.Group;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
@@ -284,7 +274,7 @@ public class Scatter extends Region implements Plot3D {
 			box.setMaterial(materials.get((int)(255*((table.floatColumn(colorAxis.getColumn()).get(i) - table.floatColumn(colorAxis.getColumn()).min())/table.floatColumn(colorAxis.getColumn()).range()))));
 
 			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : xAxis.map(table.floatColumn(xAxis.getColumn()).get(i))) - 0.5));
-			box.setTranslateY(axisBox.getSide(1).getSize() * ((yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i))) - 0.5));
+			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i)))));
 			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : zAxis.map(table.floatColumn(zAxis.getColumn()).get(i))) - 0.5));
 
 			double scale = (sizeAxis == null ? 0.9 : sizeAxis.map(table.floatColumn(sizeAxis.getColumn()).get(i))) + 0.1;
@@ -336,7 +326,7 @@ public class Scatter extends Region implements Plot3D {
 				Shape3D box = points.get(i);
 
 				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : xAxis.map(table.floatColumn(xAxis.getColumn()).get(i))) - 0.5);
-				double endY = axisBox.getSide(1).getSize() * ((yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i))) - 0.5);
+				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i))));
 				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : zAxis.map(table.floatColumn(zAxis.getColumn()).get(i))) - 0.5);
 				
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);

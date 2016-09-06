@@ -2,9 +2,9 @@ package j3;
 
 import j3.Subscene3D.MouseMode;
 import j3.colormap.Colormap;
-import j3.colormap.impl.HSVColormap;
-import j3.colormap.impl.PerceptuallyUniformSequentialColormaps;
 import j3.colormap.impl.RainbowColormap;
+import j3.io.TableReader;
+import j3.io.TableReaderFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +12,10 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -34,48 +31,33 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape3D;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.ParallelCamera;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 public class GUI extends Application {
 
@@ -86,6 +68,14 @@ public class GUI extends Application {
 	private ToolBar toolbar;
 
 	private SubScene content;
+	
+	private Table table;
+	
+	private Scatter scatter;
+	
+	private List<Axis> axes;
+	
+	private Colorbar colorbar;
 	
 	private double mousePosX, mousePosY;
 	private double mouseOldX, mouseOldY;
@@ -99,23 +89,13 @@ public class GUI extends Application {
 
 		Subscene3D plot = new Subscene3D(400);
 
-		InputStream is = GUI.class.getResourceAsStream("cdice.txt");
+//		InputStream is = GUI.class.getResourceAsStream("cdice.txt");
 
-		Table table = Table.createFromStream(
-				new ColumnType[] { ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT },
-				true, ',', is, "CDICE");
+//		Table table = Table.createFromStream(
+//				new ColumnType[] { ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT },
+//				true, ',', is, "CDICE");
 		
-		List<Axis> axes = new ArrayList<Axis>();
-		
-		for (int i = 0; i < table.columnCount(); i++) {
-			if (table.column(i).type() == ColumnType.FLOAT) {
-				RealAxis axis = new RealAxis(i, table.column(i).name());
-				axis.scale(Arrays.asList(table.floatColumn(i).min(), table.floatColumn(i).max()));
-				axes.add(axis);
-			}
-		}
-
-		Scatter scatter = new Scatter(plot.getAxis3D(), table, axes.get(0), axes.get(1), axes.get(2), axes.get(3), null, colormap);
+		axes = new ArrayList<Axis>();
 
 		content = new SubScene(new Group(), plot.getWidth(), plot.getHeight());
 		content.setManaged(false);
@@ -131,7 +111,13 @@ public class GUI extends Application {
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image colorImage = new Image(GUI.class.getResourceAsStream("/j3/icons/color_1x.png"));
 		Image plotOptionsImage = new Image(GUI.class.getResourceAsStream("/j3/icons/settings_1x.png"));
+		Image commentImage = new Image(GUI.class.getResourceAsStream("/j3/icons/comment_1x.png"));
+		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));
 
+		Button fileOpen = new Button();
+		fileOpen.setGraphic(new ImageView(fileImage));
+		fileOpen.setTooltip(new Tooltip("Open a file"));
+		
 		ToggleButton rotate = new ToggleButton();
 		rotate.setGraphic(new ImageView(rotateImage));
 		rotate.setSelected(true);
@@ -188,10 +174,49 @@ public class GUI extends Application {
 		Button plotOptions = new Button();
 		plotOptions.setGraphic(new ImageView(plotOptionsImage));
 		plotOptions.setTooltip(new Tooltip("Change plot options"));
+		
+		ToggleButton commentOption = new ToggleButton();
+		commentOption.setGraphic(new ImageView(commentImage));
+		commentOption.setTooltip(new Tooltip("Click on a data point to create an annotation"));
 
 
-		toolbar = new ToolBar(mouseControls, axisControls, animationControls, camera, editMode, changeColor, plotOptions);
+		toolbar = new ToolBar(fileOpen, mouseControls, axisControls, animationControls, camera, changeColor, plotOptions);
 
+		fileOpen.setOnAction(event -> {
+			FileChooser fileChooser = new FileChooser();
+			
+			for (TableReader reader : TableReaderFactory.getInstance().getProviders()) {
+				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
+						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
+				fileChooser.getExtensionFilters().add(filter);
+			}
+
+			File selectedFile = fileChooser.showOpenDialog(primaryStage);
+			
+			if (selectedFile != null) {
+				try {
+					table = TableReaderFactory.getInstance().load(selectedFile);
+					
+					axes.clear();
+					
+					for (int i = 0; i < table.columnCount(); i++) {
+						if (table.column(i).type() == ColumnType.FLOAT) {
+							RealAxis axis = new RealAxis(i, table.column(i).name());
+							axis.scale(Arrays.asList(table.floatColumn(i).min(), table.floatColumn(i).max()));
+							axes.add(axis);
+						}
+					}
+					
+					scatter = new Scatter(plot.getAxis3D(), table, axes.get(0), axes.get(1), axes.get(2), axes.get(3), null, colormap);
+					
+					colorbar.colormapProperty().bind(scatter.colormapProperty());
+					colorbar.colorAxisProperty().bind(scatter.colorAxisProperty());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
 		rotate.setOnAction(event -> {
 			plot.setMouseMode(rotate.isSelected() ? MouseMode.ROTATE : MouseMode.NONE);
 		});
@@ -207,11 +232,8 @@ public class GUI extends Application {
 		split.setOnAction(event -> {
 			plot.getAxis3D().setSideGap(split.isSelected() ? 0.2 : 0.0);
 		});
-		
-		Axis colorAxis = new RealAxis(3, table.column(3).name());
-		colorAxis.scale(Arrays.asList(table.floatColumn(3).min(), table.floatColumn(3).max()));
-		
-		Colorbar colorbar = new Colorbar(colormap, 500, 40, Orientation.HORIZONTAL, colorAxis);
+
+		colorbar = new Colorbar(colormap, 500, 40, Orientation.HORIZONTAL, new EmptyAxis());
 		Translate colorbarTranslate = new Translate();
 		colorbar.getTransforms().addAll(colorbarTranslate);
 
@@ -442,7 +464,6 @@ public class GUI extends Application {
 				
 				root.setOnMouseClicked(me -> {
 					Node node = me.getPickResult().getIntersectedNode();
-					System.out.println(node);
 					PropertySheet sheet = new PropertySheet(BeanPropertyUtils.getProperties(node));
 					
 					ScrollPane scrollPane = new ScrollPane();
@@ -458,47 +479,51 @@ public class GUI extends Application {
 			}
 		});
 
-		for (int i = 0; i < table.rowCount(); i++) {
-			int index = i;
-			Shape3D shape = scatter.getPoints().get(index);
-
-			shape.setOnMouseClicked(event -> {
-				PopOver popover = new PopOver();
-				popover.setTitle("Details for row " + index);
-				popover.setAutoHide(true);
-				popover.setHeaderAlwaysVisible(true);
-				
-				TableView tableView = new TableView();
-				tableView.setFixedCellSize(25);
-				tableView.setPrefHeight(25*(table.columnCount()+1) + 5);
-				tableView.setEditable(false);
-				tableView.setFocusTraversable(false);
-
-				TableColumn nameColumn = new TableColumn("Name");
-				nameColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("key"));
-
-				TableColumn valueColumn = new TableColumn("Value");
-				valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("value"));
-
-				tableView.getColumns().addAll(nameColumn, valueColumn);
-
-				for (int j = 0; j < table.columnCount(); j++) {
-					tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
-				}
-
-				ScrollPane scrollPane = new ScrollPane();
-				scrollPane.setPrefHeight(Math.min(300, 1.01*tableView.getPrefHeight()));
-				scrollPane.setContent(tableView);
-				scrollPane.setFocusTraversable(false);
-
-				popover.setContentNode(scrollPane);
-
-				Bounds bounds = shape.localToScreen(shape.getBoundsInLocal());
-				popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2);
-			});
-		}
-		
-		colorbar.colormapProperty().bind(scatter.colormapProperty());
+//		for (int i = 0; i < table.rowCount(); i++) {
+//			int index = i;
+//			Shape3D shape = scatter.getPoints().get(index);
+//
+//			shape.setOnMouseClicked(event -> {
+//				/*
+//				PopOver popover = new PopOver();
+//				popover.setTitle("Details for row " + index);
+//				popover.setAutoHide(true);
+//				popover.setHeaderAlwaysVisible(true);
+//				
+//				TableView tableView = new TableView();
+//				tableView.setFixedCellSize(25);
+//				tableView.setPrefHeight(25*(table.columnCount()+1) + 5);
+//				tableView.setEditable(false);
+//				tableView.setFocusTraversable(false);
+//
+//				TableColumn nameColumn = new TableColumn("Name");
+//				nameColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("key"));
+//
+//				TableColumn valueColumn = new TableColumn("Value");
+//				valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("value"));
+//
+//				tableView.getColumns().addAll(nameColumn, valueColumn);
+//
+//				for (int j = 0; j < table.columnCount(); j++) {
+//					tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
+//				}
+//
+//				ScrollPane scrollPane = new ScrollPane();
+//				scrollPane.setPrefHeight(Math.min(300, 1.01*tableView.getPrefHeight()));
+//				scrollPane.setContent(tableView);
+//				scrollPane.setFocusTraversable(false);
+//
+//				popover.setContentNode(scrollPane);
+//
+//				Bounds bounds = shape.localToScreen(shape.getBoundsInLocal());
+//				popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2);
+//				*/
+//				
+//				if (commentOption.isSelected()) {
+//					
+//				}
+//			});
+//		}
 		
 		changeColor.setOnAction(event -> {
 			PopOver popover = new PopOver();

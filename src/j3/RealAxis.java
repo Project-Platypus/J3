@@ -4,10 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
-
-public class RealAxis extends Axis<Number> {
+public class RealAxis extends Axis {
 	
 	private int nticks = 5;
 	
@@ -38,18 +35,26 @@ public class RealAxis extends Axis<Number> {
 	}
 
 	@Override
-	public double map(Number value) {
-		return (value.doubleValue() - minValue) / (maxValue - minValue);
+	public double map(Object value) {
+		if (value instanceof Number) {
+		return (((Number)value).doubleValue() - minValue) / (maxValue - minValue);
+		} else {
+			throw new IllegalArgumentException("RealAxis can only map numbers");
+		}
 	}
 	
 	@Override
-	public void scale(List<? extends Number> values) {
+	public void scale(List<?> values) {
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
 		
-		for (Number value : values) {
-			min = Math.min(min, value.doubleValue());
-			max = Math.max(max, value.doubleValue());
+		for (Object value : values) {
+			if (value instanceof Number) {
+				min = Math.min(min, ((Number)value).doubleValue());
+				max = Math.max(max, ((Number)value).doubleValue());
+			} else {
+				throw new IllegalArgumentException("RealAxis can only scale with numbers");
+			}
 		}
 		
 		if ((minValue != min) || (maxValue != max)) {

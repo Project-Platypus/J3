@@ -2,7 +2,7 @@ package j3;
 
 import java.util.List;
 
-public abstract class Axis<T> {
+public abstract class Axis {
 	
 	private int column;
 	
@@ -34,7 +34,7 @@ public abstract class Axis<T> {
 	
 	public abstract double[] getTickPositions();
 	
-	public abstract void scale(List<? extends T> values);
+	public abstract void scale(List<?> values);
 
 	/**
 	 * Maps from a value to a number between 0 and 1.  This number will subsequently be scaled by the plotting routines
@@ -43,7 +43,7 @@ public abstract class Axis<T> {
 	 * @param value
 	 * @return
 	 */
-	public abstract double map(T value);
+	public abstract double map(Object value);
 	
 	public String toString() {
 		return getLabel();

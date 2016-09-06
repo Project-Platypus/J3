@@ -1,7 +1,5 @@
 package j3.colormap;
 
-import java.util.Arrays;
-
 public class LinearSequentialColormap extends AbstractListColormap {
 	
 	private double[][] red;

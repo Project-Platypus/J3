@@ -19,7 +19,7 @@ public class EmptyAxis extends Axis {
 	}
 
 	@Override
-	public void scale(List values) {
+	public void scale(List<?> values) {
 		// do nothing
 	}
 

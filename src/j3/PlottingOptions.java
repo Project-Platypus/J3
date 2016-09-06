@@ -1,27 +1,19 @@
 package j3;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.github.lwhite1.tablesaw.api.Table;
-
-import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
 
 public class PlottingOptions extends Pane {
 	
