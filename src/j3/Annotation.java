@@ -104,7 +104,7 @@ public class Annotation extends Region {
 			
 			double diffX = 0.0, diffY = 0.0, diffWidth = 0.0, diffHeight = 0.0;
 			
-			if (pane.getCursor() == Cursor.MOVE || pane.getCursor() == Cursor.DEFAULT) {
+			if (pane.getCursor() == null || pane.getCursor() == Cursor.MOVE || pane.getCursor() == Cursor.DEFAULT) {
 				diffX = mousePosX - mouseStartX;
 				diffY = mousePosY - mouseStartY;
 				
@@ -173,7 +173,7 @@ public class Annotation extends Region {
 			} else if (resizeBottom) {
 				pane.setCursor(Cursor.S_RESIZE);
 			} else {
-				pane.setCursor(Cursor.DEFAULT);
+				pane.setCursor(null);
 			}
 		});
 		
@@ -195,7 +195,7 @@ public class Annotation extends Region {
 		setManaged(false);
 	}
 	
-	public void target(Subscene3D plot, Node node) {
+	public void target(Node node) {
 		if (arrow != null) {
 			getChildren().remove(arrow);
 			target.localToSceneTransformProperty().removeListener(changeListener);

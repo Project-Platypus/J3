@@ -36,8 +36,10 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -54,6 +56,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -86,7 +89,34 @@ public class GUI extends Application {
 	private Colorbar colorbar;
 	
 	private double mousePosX, mousePosY;
+	
 	private double mouseOldX, mouseOldY;
+	
+	private EventHandler<MouseEvent> singleClickHandler;
+	
+	public void setSingleClickHandler(EventHandler<MouseEvent> singleClickHandler) {
+		this.singleClickHandler = singleClickHandler;
+		
+		if (this.singleClickHandler != null) {
+			getContentRoot().setCursor(Cursor.CROSSHAIR);
+		}
+	}
+	
+	public void invokeSingleClickHandler(MouseEvent event) {
+		if (singleClickHandler != null) {
+			singleClickHandler.handle(event);
+			singleClickHandler = null;
+			getContentRoot().setCursor(null);
+		}
+	}
+	
+	public Group getContentRoot() {
+		return (Group)content.getRoot();
+	}
+	
+	public Table getTable() {
+		return table;
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -218,37 +248,39 @@ public class GUI extends Application {
 			colorbar.colormapProperty().bind(scatter.colormapProperty());
 			colorbar.colorAxisProperty().bind(scatter.colorAxisProperty());
 			
-			for (int i = 0; i < table.rowCount(); i++) {
-				int index = i;
-				Shape3D shape = scatter.getPoints().get(index);
-
-				shape.setOnMouseClicked(e -> {
-					TableView tableView = new TableView();
-					tableView.setEditable(false);
-					tableView.setFocusTraversable(false);
-					tableView.setPrefHeight(100);
-					tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-					
-					TableColumn keyColumn = new TableColumn("Key");
-					TableColumn valueColumn = new TableColumn("Value");
-					
-					tableView.getColumns().addAll(keyColumn, valueColumn);
-
-					for (int j = 0; j < table.columnCount(); j++) {
-						tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
-					}
-					
-					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
-					valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
-					
-					Annotation annotation = new Annotation(tableView);
-					annotation.setTitle("Details for point " + index);
-					annotation.target(plot, shape);
-					annotation.getTransforms().add(new Translate(0, 0));
-					Group group = (Group)content.getRoot();
-					group.getChildren().add(annotation);
-				});
-			}
+//			for (int i = 0; i < table.rowCount(); i++) {
+//				int index = i;
+//				Shape3D shape = scatter.getPoints().get(index);
+//
+//				shape.setOnMouseClicked(e -> {
+//					System.out.println("shape clicked");
+//					
+//					TableView tableView = new TableView();
+//					tableView.setEditable(false);
+//					tableView.setFocusTraversable(false);
+//					tableView.setPrefHeight(100);
+//					tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//					
+//					TableColumn keyColumn = new TableColumn("Key");
+//					TableColumn valueColumn = new TableColumn("Value");
+//					
+//					tableView.getColumns().addAll(keyColumn, valueColumn);
+//
+//					for (int j = 0; j < table.columnCount(); j++) {
+//						tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
+//					}
+//					
+//					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
+//					valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
+//					
+//					Annotation annotation = new Annotation(tableView);
+//					annotation.setTitle("Details for point " + index);
+//					annotation.target(plot, shape);
+//					annotation.getTransforms().add(new Translate(0, 0));
+//					Group group = (Group)content.getRoot();
+//					group.getChildren().add(annotation);
+//				});
+//			}
 		});
 		
 		fileOpen.setOnAction(event -> {
@@ -616,24 +648,33 @@ public class GUI extends Application {
 		});
 		
 		plotOptions.setOnAction(event -> {
+			if (scatter != null) {
+				PopOver popover = new PopOver();
+				popover.setTitle("Plot options");
+				popover.setAutoHide(true);
+				popover.setAutoFix(true);
+				popover.setArrowLocation(ArrowLocation.TOP_CENTER);
+				
+				PlottingOptions plottingOptions = new PlottingOptions(scatter, axes);
+				popover.setContentNode(plottingOptions);
+	
+				Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());
+				popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+			}
+		});
+		
+		widgets.setOnAction(event -> {
 			PopOver popover = new PopOver();
-			popover.setTitle("Plot options");
+			popover.setTitle("Widget options");
 			popover.setAutoHide(true);
 			popover.setAutoFix(true);
 			popover.setArrowLocation(ArrowLocation.TOP_CENTER);
 			
-			PlottingOptions plottingOptions = new PlottingOptions(scatter, axes);
-			popover.setContentNode(plottingOptions);
+			WidgetOptions widgetOptions = new WidgetOptions(this, popover);
+			popover.setContentNode(widgetOptions);
 
-			Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());
+			Bounds bounds = widgets.localToScreen(widgets.getBoundsInLocal());
 			popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
-		});
-		
-		widgets.setOnAction(event -> {
-			TextWidget widget = new TextWidget();
-			widget.setLayoutX(50);
-			widget.setLayoutY(50);
-			((Group)content.getRoot()).getChildren().add(widget);
 		});
 		
 		StackPane pane = new StackPane();
@@ -644,7 +685,10 @@ public class GUI extends Application {
 		root.setCenter(pane);
 
 
-
+		content.setOnMouseClicked(event -> {
+			System.out.println("content Clicked");
+			invokeSingleClickHandler(event);
+		});
 
 		
 		Scene scene = new Scene(root);
