@@ -121,32 +121,35 @@ public class Colorbar extends Region {
 		getChildren().removeAll(labels);
 		lines.clear();
 		labels.clear();
+		axisLabel.setText("");
 
 		// generate the tick lines and labels
-		double[] tickPositions = getColorAxis().getTickPositions();
-		String[] tickLabels = getColorAxis().getTickLabels();
-		
-		for (int i = 0; i < tickPositions.length; i++) {
-			Line line = new Line(0, 0, 0, TICK_LENGTH);
-			line.getStyleClass().add("j3-tick-line");
-			line.setStroke(Color.BLACK);
-			line.setFill(Color.BLACK);
-			line.setTranslateX(width*tickPositions[i]);
-			line.setTranslateY(height);
-			lines.add(line);
+		if (getColorAxis() != null) {
+			double[] tickPositions = getColorAxis().getTickPositions();
+			String[] tickLabels = getColorAxis().getTickLabels();
 			
-			Text label = new Text(tickLabels[i]);
-			label.getStyleClass().add("j3-tick-label");
-			label.layoutBoundsProperty().addListener(event -> layoutLabels());
-			labels.add(label);
+			for (int i = 0; i < tickPositions.length; i++) {
+				Line line = new Line(0, 0, 0, TICK_LENGTH);
+				line.getStyleClass().add("j3-tick-line");
+				line.setStroke(Color.BLACK);
+				line.setFill(Color.BLACK);
+				line.setTranslateX(width*tickPositions[i]);
+				line.setTranslateY(height);
+				lines.add(line);
+				
+				Text label = new Text(tickLabels[i]);
+				label.getStyleClass().add("j3-tick-label");
+				label.layoutBoundsProperty().addListener(event -> layoutLabels());
+				labels.add(label);
+			}
+			
+			getChildren().addAll(lines);
+			getChildren().addAll(labels);
+			
+			axisLabel.setText(getColorAxis().getLabel());
+			
+			layoutLabels();
 		}
-		
-		getChildren().addAll(lines);
-		getChildren().addAll(labels);
-		
-		axisLabel.setText(getColorAxis().getLabel());
-		
-		layoutLabels();
 	}
 	
 	public void layoutLabels() {
