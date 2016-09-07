@@ -15,6 +15,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
@@ -26,7 +27,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 
-public class TextWidget extends Region {
+public class TextWidget extends Pane {
 	
 	private Text text;
 	
@@ -49,7 +50,7 @@ public class TextWidget extends Region {
 	
 	public TextWidget() {
 		super();
-		
+
 		text = new Text("Text Widget");
 
 		text.setOnMouseClicked(event -> {
@@ -124,19 +125,17 @@ public class TextWidget extends Region {
 				
 				pane.setTop(toolbar);
 				pane.setCenter(content);
-				pane.setLayoutX(text.getLayoutX() + text.getTranslateX());
-				pane.setLayoutY(text.getLayoutY() + text.getTranslateY() - textHeight);
 				
 				pane.layoutBoundsProperty().addListener(l -> {
 					if (getScene() != null) {
 						Bounds bounds = pane.localToScene(pane.getBoundsInLocal());
 						
 						if (bounds.getMaxX() > getScene().getWidth()) {
-							pane.setLayoutX(getScene().getWidth() - bounds.getWidth());
+							pane.setLayoutX(pane.getLayoutX() - (bounds.getMaxX() - getScene().getWidth()));
 						}
 						
 						if (bounds.getMaxY() > getScene().getHeight()) {
-							pane.setLayoutY(getScene().getHeight() - bounds.getHeight());
+							pane.setLayoutY(pane.getLayoutY() - (bounds.getMaxY() - getScene().getHeight()));
 						}
 					}
 				});
@@ -164,19 +163,20 @@ public class TextWidget extends Region {
 		});
 		
 		text.setOnMousePressed(me -> {
-			mouseOldX = me.getSceneX();
-			mouseOldY = me.getSceneY();
+			mouseOldX = me.getScreenX();
+			mouseOldY = me.getScreenY();
 		});
 
 		text.setOnMouseDragged(me -> {
-			mousePosX = me.getSceneX();
-			mousePosY = me.getSceneY();
-			text.setTranslateX(text.getTranslateX() + (mousePosX - mouseOldX));
-			text.setTranslateY(text.getTranslateY() + (mousePosY - mouseOldY));
+			mousePosX = me.getScreenX();
+			mousePosY = me.getScreenY();
+			setLayoutX(getLayoutX() + (mousePosX - mouseOldX));
+			setLayoutY(getLayoutY() + (mousePosY - mouseOldY));
 			mouseOldX = mousePosX;
 			mouseOldY = mousePosY;
 		});
 		
+		text.setLayoutY(text.prefHeight(30));
 		getChildren().add(text);
 	}
 	
