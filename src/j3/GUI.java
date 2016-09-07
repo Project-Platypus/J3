@@ -5,6 +5,7 @@ import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
 import j3.io.TableReader;
 import j3.io.TableReaderFactory;
+import j3.widgets.TextWidget;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,6 +114,7 @@ public class GUI extends Application {
 		Image plotOptionsImage = new Image(GUI.class.getResourceAsStream("/j3/icons/settings_1x.png"));
 		Image commentImage = new Image(GUI.class.getResourceAsStream("/j3/icons/comment_1x.png"));
 		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));
+		Image widgetImage = new Image(GUI.class.getResourceAsStream("/j3/icons/widgets_1x.png"));
 
 		Button fileOpen = new Button();
 		fileOpen.setGraphic(new ImageView(fileImage));
@@ -175,12 +177,16 @@ public class GUI extends Application {
 		plotOptions.setGraphic(new ImageView(plotOptionsImage));
 		plotOptions.setTooltip(new Tooltip("Change plot options"));
 		
+		Button widgets = new Button();
+		widgets.setGraphic(new ImageView(widgetImage));
+		widgets.setTooltip(new Tooltip("Add widgets to the plot"));
+
 		ToggleButton commentOption = new ToggleButton();
 		commentOption.setGraphic(new ImageView(commentImage));
 		commentOption.setTooltip(new Tooltip("Click on a data point to create an annotation"));
 
 
-		toolbar = new ToolBar(fileOpen, mouseControls, axisControls, animationControls, camera, changeColor, plotOptions);
+		toolbar = new ToolBar(fileOpen, mouseControls, axisControls, animationControls, camera, changeColor, plotOptions, widgets);
 
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
@@ -556,6 +562,13 @@ public class GUI extends Application {
 
 			Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());
 			popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+		});
+		
+		widgets.setOnAction(event -> {
+			TextWidget widget = new TextWidget();
+			widget.setLayoutX(50);
+			widget.setLayoutY(50);
+			((Group)content.getRoot()).getChildren().add(widget);
 		});
 		
 		StackPane pane = new StackPane();
