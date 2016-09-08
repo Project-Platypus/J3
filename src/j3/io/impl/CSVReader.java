@@ -4,10 +4,7 @@ import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.dataframe.MagicTyping;
 import j3.dataframe.StringAttribute;
-import j3.io.DataFrameReader;
-
-import java.io.File;
-import java.io.FileInputStream;
+import j3.io.AbstractDataFrameReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,7 +14,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
-public class CSVReader implements DataFrameReader {
+public class CSVReader extends AbstractDataFrameReader {
 
 	@Override
 	public List<String> getFileExtensions() {
@@ -27,13 +24,6 @@ public class CSVReader implements DataFrameReader {
 	@Override
 	public String getDescription() {
 		return "CSV File with Header";
-	}
-
-	@Override
-	public DataFrame load(File file) throws IOException {
-		try (InputStream is = new FileInputStream(file)) {
-			return load(is);
-		}
 	}
 
 	@Override

@@ -3,10 +3,12 @@ package j3;
 import j3.Subscene3D.MouseMode;
 import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
+import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.io.DataFrameReader;
 import j3.io.DataFrameReaderFactory;
 import j3.io.impl.CSVReader;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -241,8 +243,9 @@ public class GUI extends Application {
 		
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
+			List<DataFrameReader> readers = DataFrameReaderFactory.getInstance().getProviders();
 			
-			for (DataFrameReader reader : DataFrameReaderFactory.getInstance().getProviders()) {
+			for (DataFrameReader reader : readers) {
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
 						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
 				fileChooser.getExtensionFilters().add(filter);
@@ -252,25 +255,31 @@ public class GUI extends Application {
 			
 			if (selectedFile != null) {
 				try {
-					CSVReader reader = new CSVReader();
-					table = reader.load(selectedFile);
+					DataFrameReader selectedReader = readers.get(fileChooser.getExtensionFilters().indexOf(
+							fileChooser.getSelectedExtensionFilter()));
+
+					table = selectedReader.load(selectedFile);
 					
 					axes.clear();
 					
 					for (int i = 0; i < table.attributeCount(); i++) {
-						if (!table.getAttribute(i).getName().isEmpty()) {
-							if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
-								RealAxis axis = new RealAxis(table.getAttribute(i));
+						Attribute<?> attribute = table.getAttribute(i);
+						
+						System.out.println(attribute.getName() + " " + attribute.getType());
+						
+						if (!attribute.getName().isEmpty()) {
+							if (Double.class.isAssignableFrom(attribute.getType())) {
+								RealAxis axis = new RealAxis(attribute);
 								axis.scale(table.getValues(i));
 								axes.add(axis);
-							} else if (String.class.isAssignableFrom(table.getAttribute(i).getType())) {
-								CategoryAxis axis = new CategoryAxis(table.getAttribute(i));
+							} else if (String.class.isAssignableFrom(attribute.getType())) {
+								CategoryAxis axis = new CategoryAxis(attribute);
 								axis.scale(table.getValues(i));
 								axes.add(axis);
 							}
 						}
 					}
-					
+	
 					scatter = new Scatter(plot.getAxis3D(), table, axes.get(0), axes.get(1), axes.get(2), axes.get(3), null, colormap);
 					
 					colorbar.colormapProperty().bind(scatter.colormapProperty());

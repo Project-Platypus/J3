@@ -8,20 +8,23 @@ import java.util.stream.Collectors;
 
 /**
  * A data frame is a collection of instances and their attributes.  This is
- * similar in nature of R's data.frame or a matrix.  {@code Instance}s
- * are analogous to rows while {@code Attribute}s are columns.
+ * similar in nature of R's data.frame or a matrix, except types are enforced.
+ * {@code Instance}s are analogous to rows while {@code Attribute}s are columns.
  * 
- * A data frame differs, however, in that it offers weak (dynamic) typing.
- * Each attribute is associated with a type that is checked at runtime.
+ * A data frame differs from other containers in that it offers weak (dynamic)
+ * typing.  Each attribute is associated with a type that is checked at runtime.
  * A {@link ClassConversionException} is thrown when attempting to insert an
  * invalid type.  Attributes are able to convert compatible types, such as
- * widening numeric values parsing strings.  Refer to the documentation for each
- * attribute to learn more.
+ * widening numeric values or parsing strings.  Refer to the documentation for
+ * each attribute to learn more.
  * 
  * Also, unlike other data frame implementations, here attributes, instances,
- * and the data frame are loosely coupled.  An instance can exist outside of a
- * data frame.  Changes to the data frame, such as adding or removing instances,
- * will not affect that instance where referenced.
+ * and the data frame are loosely coupled.  An instance binds one or more
+ * attributes to their values.  A data frame is a collection of instances and
+ * their defined attributes.  There is, however, no requirement that an
+ * instance reside in a data frame.  Adding a new attribute to an instance does
+ * not automatically add the attribute to the data frame; instead it must be
+ * added to both.
  */
 public class DataFrame {
 	
