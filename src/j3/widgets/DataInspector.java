@@ -2,6 +2,7 @@ package j3.widgets;
 
 import j3.GUI;
 import j3.dataframe.Attribute;
+import j3.dataframe.Instance;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
@@ -19,15 +20,15 @@ public class DataInspector extends Pane {
 	public DataInspector(GUI gui) {
 		super();
 		
-		TableView<Integer> table = new TableView<>();
+		TableView<Instance> table = new TableView<>();
 		
 		for (int i = 0; i < gui.getTable().attributeCount(); i++) {
 			Attribute<?> attribute = gui.getTable().getAttribute(i);
-			TableColumn<Integer, Object> column = new TableColumn<>(attribute.getName());
+			TableColumn<Instance, Object> column = new TableColumn<>(attribute.getName());
 			
-			column.setCellValueFactory(new Callback<CellDataFeatures<Integer, Object>, ObservableValue<Object>>() {
-				public ObservableValue<Object> call(CellDataFeatures<Integer, Object> p) {
-					return new ReadOnlyObjectWrapper<Object>(gui.getTable().getInstance(p.getValue()).get(attribute));
+			column.setCellValueFactory(new Callback<CellDataFeatures<Instance, Object>, ObservableValue<Object>>() {
+				public ObservableValue<Object> call(CellDataFeatures<Instance, Object> p) {
+					return new ReadOnlyObjectWrapper<Object>(p.getValue().get(attribute));
 				}
 			});
 
@@ -39,24 +40,24 @@ public class DataInspector extends Pane {
 		
 		gui.getContentRoot().addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
 			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-				(event.getPickResult().getIntersectedNode().getUserData() != null)) {
+				(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
 				if (currentIndex >= 0) {
 					table.getItems().remove(currentIndex);
 				}
 				
-				table.getItems().add((Integer)event.getPickResult().getIntersectedNode().getUserData());
+				table.getItems().add((Instance)event.getPickResult().getIntersectedNode().getUserData());
 				currentIndex = table.getItems().size()-1;
 			}
 		});
 		
 		gui.getContentRoot().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-					(event.getPickResult().getIntersectedNode().getUserData() != null)) {
+					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
 					if (currentIndex >= 0) {
 						table.getItems().remove(currentIndex);
 					}
 					
-					table.getItems().add((Integer)event.getPickResult().getIntersectedNode().getUserData());
+					table.getItems().add((Instance)event.getPickResult().getIntersectedNode().getUserData());
 					
 					currentIndex = -1;
 				}

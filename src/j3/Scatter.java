@@ -284,7 +284,8 @@ public class Scatter extends Region implements Plot3D {
 			box.setScaleZ(scale);
 			
 			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : map(colorAxis, table.getAttribute(colorAxis.getColumn()), i)))));
-			box.setUserData(i);
+			
+			box.setUserData(table.getInstance(i));
 			
 			points.add(box);
 		}

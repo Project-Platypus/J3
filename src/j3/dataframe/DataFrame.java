@@ -108,5 +108,13 @@ public class DataFrame {
 	public <T> List<T> getValues(Attribute<? extends T> attribute) {
 		return instances.stream().map(instance -> instance.get(attribute)).collect(Collectors.toList());
 	}
+	
+	public boolean hasMissingValues() {
+		return attributes.stream().anyMatch(attribute -> {
+			return instances.stream().anyMatch(instance -> {
+				return instance.get(attribute) == null;
+			});
+		});
+	}
 
 }

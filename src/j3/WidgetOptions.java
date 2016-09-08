@@ -4,6 +4,7 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.NotificationPane;
 
 import j3.dataframe.DataFrame;
+import j3.dataframe.Instance;
 import j3.widgets.DataInspector;
 import j3.widgets.TextWidget;
 import javafx.geometry.Point2D;
@@ -82,8 +83,8 @@ public class WidgetOptions extends Pane {
 				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
 				
 				if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-						(event.getPickResult().getIntersectedNode().getUserData() != null)) {
-					int index = (Integer)event.getPickResult().getIntersectedNode().getUserData();
+						(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
+					Instance instance = (Instance)event.getPickResult().getIntersectedNode().getUserData();
 					DataFrame table = gui.getTable();
 					
 					TableView tableView = new TableView();
@@ -98,14 +99,14 @@ public class WidgetOptions extends Pane {
 					tableView.getColumns().addAll(keyColumn, valueColumn);
 
 					for (int j = 0; j < table.attributeCount(); j++) {
-						tableView.getItems().add(new Pair<String, Object>(table.getAttribute(j).getName(), table.getInstance(index).get(table.getAttribute(j))));
+						tableView.getItems().add(new Pair<String, Object>(table.getAttribute(j).getName(), instance.get(table.getAttribute(j))));
 					}
 					
 					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
 					valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
 					
 					Annotation annotation = new Annotation(tableView);
-					annotation.setTitle("Details for point " + index);
+					annotation.setTitle("Instance Details");
 					annotation.target(event.getPickResult().getIntersectedNode());
 					annotation.getTransforms().add(new Translate(0, 0));
 					
