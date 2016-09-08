@@ -5,6 +5,7 @@ import org.controlsfx.control.NotificationPane;
 
 import com.github.lwhite1.tablesaw.api.Table;
 
+import j3.widgets.DataInspector;
 import j3.widgets.TextWidget;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -48,7 +49,12 @@ public class WidgetOptions extends Pane {
 		annotationWidget.setOnAction(event -> handleWidget("annotation"));
 		annotationWidget.setTooltip(new Tooltip("Display details about a selected data point"));
 		
-		tiles.getChildren().addAll(textWidget, annotationWidget);
+		Button inspectorWidget = new Button();
+		inspectorWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/inspect_1x.png"))));
+		inspectorWidget.setOnAction(event -> handleWidget("inspector"));
+		inspectorWidget.setTooltip(new Tooltip("Inspects points hovered by the mouse"));
+		
+		tiles.getChildren().addAll(textWidget, annotationWidget, inspectorWidget);
 		
 		TitledPane pane = new TitledPane();
 		pane.setText("Standard Widgets");
@@ -107,6 +113,19 @@ public class WidgetOptions extends Pane {
 					gui.getContentRoot().getChildren().add(annotation);
 				}
 				
+				event.consume();
+			});
+			break;
+		case "inspector":
+			gui.setSingleClickHandler(event -> {
+				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
+				
+				point = gui.getContentRoot().screenToLocal(point);
+				
+				DataInspector inspector = new DataInspector(gui);
+				inspector.setLayoutX(point.getX());
+				inspector.setLayoutY(point.getY());
+				gui.getContentRoot().getChildren().add(inspector);
 				event.consume();
 			});
 			break;

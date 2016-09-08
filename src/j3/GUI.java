@@ -247,40 +247,6 @@ public class GUI extends Application {
 			
 			colorbar.colormapProperty().bind(scatter.colormapProperty());
 			colorbar.colorAxisProperty().bind(scatter.colorAxisProperty());
-			
-//			for (int i = 0; i < table.rowCount(); i++) {
-//				int index = i;
-//				Shape3D shape = scatter.getPoints().get(index);
-//
-//				shape.setOnMouseClicked(e -> {
-//					System.out.println("shape clicked");
-//					
-//					TableView tableView = new TableView();
-//					tableView.setEditable(false);
-//					tableView.setFocusTraversable(false);
-//					tableView.setPrefHeight(100);
-//					tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//					
-//					TableColumn keyColumn = new TableColumn("Key");
-//					TableColumn valueColumn = new TableColumn("Value");
-//					
-//					tableView.getColumns().addAll(keyColumn, valueColumn);
-//
-//					for (int j = 0; j < table.columnCount(); j++) {
-//						tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
-//					}
-//					
-//					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
-//					valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
-//					
-//					Annotation annotation = new Annotation(tableView);
-//					annotation.setTitle("Details for point " + index);
-//					annotation.target(plot, shape);
-//					annotation.getTransforms().add(new Translate(0, 0));
-//					Group group = (Group)content.getRoot();
-//					group.getChildren().add(annotation);
-//				});
-//			}
 		});
 		
 		fileOpen.setOnAction(event -> {
@@ -312,54 +278,6 @@ public class GUI extends Application {
 					
 					colorbar.colormapProperty().bind(scatter.colormapProperty());
 					colorbar.colorAxisProperty().bind(scatter.colorAxisProperty());
-					
-					for (int i = 0; i < table.rowCount(); i++) {
-						int index = i;
-						Shape3D shape = scatter.getPoints().get(index);
-
-						shape.setOnMouseClicked(e -> {
-							
-//							Annotation annotation = new Annotation();
-//							annotation.target(plot, shape);
-//							annotation.getTransforms().add(new Translate(50, 50));
-//							((Group)plot.getRoot()).getChildren().add(annotation);
-							
-							/*
-							PopOver popover = new PopOver();
-							popover.setTitle("Details for row " + index);
-							popover.setAutoHide(true);
-							popover.setHeaderAlwaysVisible(true);
-							
-							TableView tableView = new TableView();
-							tableView.setFixedCellSize(25);
-							tableView.setPrefHeight(25*(table.columnCount()+1) + 5);
-							tableView.setEditable(false);
-							tableView.setFocusTraversable(false);
-
-							TableColumn nameColumn = new TableColumn("Name");
-							nameColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("key"));
-
-							TableColumn valueColumn = new TableColumn("Value");
-							valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Object>, Object>("value"));
-
-							tableView.getColumns().addAll(nameColumn, valueColumn);
-
-							for (int j = 0; j < table.columnCount(); j++) {
-								tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
-							}
-
-							ScrollPane scrollPane = new ScrollPane();
-							scrollPane.setPrefHeight(Math.min(300, 1.01*tableView.getPrefHeight()));
-							scrollPane.setContent(tableView);
-							scrollPane.setFocusTraversable(false);
-
-							popover.setContentNode(scrollPane);
-
-							Bounds bounds = shape.localToScreen(shape.getBoundsInLocal());
-							popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight()/2);
-							*/
-						});
-					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -404,9 +322,19 @@ public class GUI extends Application {
 			Group group = (Group)content.getRoot();
 			
 			if (toggleLegend.isSelected()) {
+				colorbar.setOpacity(0.0);
 				group.getChildren().add(colorbar);
+				
+				FadeTransition transition = new FadeTransition(new Duration(1000), colorbar);
+				transition.setToValue(1.0);
+				transition.play();
 			} else {
-				group.getChildren().remove(colorbar);
+				FadeTransition transition = new FadeTransition(new Duration(1000), colorbar);
+				transition.setToValue(0.0);
+				transition.setOnFinished(e -> {
+					group.getChildren().remove(colorbar);
+				});
+				transition.play();
 			}
 		});
 
