@@ -1,23 +1,41 @@
 package j3.dataframe;
 
-import org.apache.commons.lang3.ClassUtils;
+import j3.io.impl.CSVReader;
+
+import java.io.File;
+import java.io.IOException;
 
 public class Test {
 	
-	public static void main(String[] args) {
-		DataFrame df = new DataFrame();
-		df.appendColumn(new DoubleColumn());
-		df.appendColumn(new StringColumn());
+	public static void main(String[] args) throws IOException {
+//		DataFrame dataFrame = new DataFrame();
+//		
+//		DoubleAttribute doubleAttr = new DoubleAttribute("double");
+//		IntegerAttribute integerAttr = new IntegerAttribute("int");
+//		StringAttribute stringAttr = new StringAttribute("string");
+//		
+//		Instance instance = new Instance();
+//		instance.set(doubleAttr, 25.0);
+//		instance.set(integerAttr, 15);
+//		instance.set(stringAttr, "hello");
+//		instance.set(doubleAttr, "19.5");
+//		
+//		Object doubleValue = instance.get(doubleAttr);
+//		Object integerValue = instance.get(integerAttr);
+//		Object stringValue = instance.get(stringAttr);
+//		
+//		System.out.println(doubleValue + " " + integerValue + " " + stringValue);
 		
-		df.getColumn(0).set(0, 25.0);
-		df.getColumn(1).set(0, "hello");
+		CSVReader reader = new CSVReader();
+		DataFrame frame = reader.load(new File("cdice.csv"));
 		
-		df.getColumn(0).set(0, 14);
+		for (Attribute<?> attr : frame.getAttributes()) {
+			System.out.println(attr.getName() + " " + attr.getType());
+		}
 		
-		System.out.println(df.getColumn(0).get(0));
-		System.out.println(df.getColumn(1).get(0));
 		
-		System.out.println(ClassUtils.isAssignable(Integer.class, Double.class, true));
+		
+		//instance.set(doubleAttr, 15);
 	}
 
 }

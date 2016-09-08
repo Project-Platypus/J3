@@ -113,10 +113,10 @@ public class TextWidget extends Pane {
 				
 				Button okButton = new Button();
 				okButton.setGraphic(new ImageView(new Image(TextWidget.class.getResourceAsStream("/j3/icons/ok.png"))));
-				okButton.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+				okButton.setStyle("-fx-background-color: transparent; -fx-padding: 0 0 0 0;");
 				Button cancelButton = new Button();
 				cancelButton.setGraphic(new ImageView(new Image(TextWidget.class.getResourceAsStream("/j3/icons/cancel.png"))));
-				cancelButton.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+				cancelButton.setStyle("-fx-background-color: transparent; -fx-padding: 0 0 0 0;");
 				
 				HBox content = new HBox(4);
 				content.setPadding(new Insets(4, 0, 0, 0));

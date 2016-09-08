@@ -3,38 +3,32 @@ package j3;
 import j3.Subscene3D.MouseMode;
 import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
-import j3.io.TableReader;
-import j3.io.TableReaderFactory;
-import j3.widgets.TextWidget;
-
+import j3.dataframe.DataFrame;
+import j3.io.DataFrameReader;
+import j3.io.DataFrameReaderFactory;
+import j3.io.impl.CSVReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.control.SegmentedButton;
 import org.controlsfx.property.BeanPropertyUtils;
-
-import com.github.lwhite1.tablesaw.api.ColumnType;
-import com.github.lwhite1.tablesaw.api.Table;
+import org.apache.commons.lang3.StringUtils;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -47,12 +41,9 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -61,14 +52,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.ParallelCamera;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 public class GUI extends Application {
 
@@ -80,7 +69,7 @@ public class GUI extends Application {
 
 	private SubScene content;
 	
-	private Table table;
+	private DataFrame table;
 	
 	private Scatter scatter;
 	
@@ -114,7 +103,7 @@ public class GUI extends Application {
 		return (Group)content.getRoot();
 	}
 	
-	public Table getTable() {
+	public DataFrame getTable() {
 		return table;
 	}
 
@@ -225,9 +214,8 @@ public class GUI extends Application {
 			InputStream is = GUI.class.getResourceAsStream("cdice.txt");
 
 			try {
-				table = Table.createFromStream(
-						new ColumnType[] { ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT, ColumnType.FLOAT },
-						true, ',', is, "CDICE");
+				CSVReader reader = new CSVReader();
+				table = reader.load(is);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				return;
@@ -235,10 +223,10 @@ public class GUI extends Application {
 			
 			axes.clear();
 			
-			for (int i = 0; i < table.columnCount(); i++) {
-				if (table.column(i).type() == ColumnType.FLOAT) {
-					RealAxis axis = new RealAxis(i, table.column(i).name());
-					axis.scale(Arrays.asList(table.floatColumn(i).min(), table.floatColumn(i).max()));
+			for (int i = 0; i < table.attributeCount(); i++) {
+				if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
+					RealAxis axis = new RealAxis(i, table.getAttribute(i).getName());
+					axis.scale(table.getValues(i));
 					axes.add(axis);
 				}
 			}
@@ -252,7 +240,7 @@ public class GUI extends Application {
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
 			
-			for (TableReader reader : TableReaderFactory.getInstance().getProviders()) {
+			for (DataFrameReader reader : DataFrameReaderFactory.getInstance().getProviders()) {
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
 						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
 				fileChooser.getExtensionFilters().add(filter);
@@ -262,14 +250,19 @@ public class GUI extends Application {
 			
 			if (selectedFile != null) {
 				try {
-					table = TableReaderFactory.getInstance().load(selectedFile);
+					CSVReader reader = new CSVReader();
+					table = reader.load(selectedFile);
 					
 					axes.clear();
 					
-					for (int i = 0; i < table.columnCount(); i++) {
-						if (table.column(i).type() == ColumnType.FLOAT) {
-							RealAxis axis = new RealAxis(i, table.column(i).name());
-							axis.scale(Arrays.asList(table.floatColumn(i).min(), table.floatColumn(i).max()));
+					for (int i = 0; i < table.attributeCount(); i++) {
+						if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
+							RealAxis axis = new RealAxis(i, table.getAttribute(i).getName());
+							axis.scale(table.getValues(i));
+							axes.add(axis);
+						} else if (String.class.isAssignableFrom(table.getAttribute(i).getType())) {
+							CategoryAxis axis = new CategoryAxis(i, table.getAttribute(i).getName());
+							axis.scale(table.getValues(i));
 							axes.add(axis);
 						}
 					}

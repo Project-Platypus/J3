@@ -1,10 +1,7 @@
 package j3.widgets;
 
-import j3.Axis;
 import j3.GUI;
-import j3.Plot3D;
-import j3.Scatter;
-import javafx.beans.property.ObjectProperty;
+import j3.dataframe.Attribute;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
@@ -24,12 +21,13 @@ public class DataInspector extends Pane {
 		
 		TableView<Integer> table = new TableView<>();
 		
-		for (String name : gui.getTable().columnNames()) {
-			TableColumn<Integer, Object> column = new TableColumn<>(name);
+		for (int i = 0; i < gui.getTable().attributeCount(); i++) {
+			Attribute<?> attribute = gui.getTable().getAttribute(i);
+			TableColumn<Integer, Object> column = new TableColumn<>(attribute.getName());
 			
 			column.setCellValueFactory(new Callback<CellDataFeatures<Integer, Object>, ObservableValue<Object>>() {
 				public ObservableValue<Object> call(CellDataFeatures<Integer, Object> p) {
-					return new ReadOnlyObjectWrapper<Object>(gui.getTable().column(name).getString(p.getValue()));
+					return new ReadOnlyObjectWrapper<Object>(gui.getTable().getInstance(p.getValue()).get(attribute));
 				}
 			});
 

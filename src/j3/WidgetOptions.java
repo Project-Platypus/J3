@@ -3,8 +3,7 @@ package j3;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.NotificationPane;
 
-import com.github.lwhite1.tablesaw.api.Table;
-
+import j3.dataframe.DataFrame;
 import j3.widgets.DataInspector;
 import j3.widgets.TextWidget;
 import javafx.geometry.Point2D;
@@ -54,7 +53,7 @@ public class WidgetOptions extends Pane {
 		inspectorWidget.setOnAction(event -> handleWidget("inspector"));
 		inspectorWidget.setTooltip(new Tooltip("Inspects points hovered by the mouse"));
 		
-		tiles.getChildren().addAll(textWidget, annotationWidget, inspectorWidget);
+		tiles.getChildren().addAll(textWidget, annotationWidget);
 		
 		TitledPane pane = new TitledPane();
 		pane.setText("Standard Widgets");
@@ -85,7 +84,7 @@ public class WidgetOptions extends Pane {
 				if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
 						(event.getPickResult().getIntersectedNode().getUserData() != null)) {
 					int index = (Integer)event.getPickResult().getIntersectedNode().getUserData();
-					Table table = gui.getTable();
+					DataFrame table = gui.getTable();
 					
 					TableView tableView = new TableView();
 					tableView.setEditable(false);
@@ -98,8 +97,8 @@ public class WidgetOptions extends Pane {
 					
 					tableView.getColumns().addAll(keyColumn, valueColumn);
 
-					for (int j = 0; j < table.columnCount(); j++) {
-						tableView.getItems().add(new Pair<String, Object>(table.column(j).name(), table.column(j).getString(index)));
+					for (int j = 0; j < table.attributeCount(); j++) {
+						tableView.getItems().add(new Pair<String, Object>(table.getAttribute(j).getName(), table.getInstance(index).get(table.getAttribute(j))));
 					}
 					
 					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));

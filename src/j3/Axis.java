@@ -1,5 +1,6 @@
 package j3;
 
+import java.util.Collection;
 import java.util.List;
 
 public abstract class Axis {
@@ -34,7 +35,7 @@ public abstract class Axis {
 	
 	public abstract double[] getTickPositions();
 	
-	public abstract void scale(List<?> values);
+	public abstract void scale(Collection<?> values);
 
 	/**
 	 * Maps from a value to a number between 0 and 1.  This number will subsequently be scaled by the plotting routines

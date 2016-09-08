@@ -2,6 +2,7 @@ package j3;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
 
 public class RealAxis extends Axis {
@@ -44,7 +45,7 @@ public class RealAxis extends Axis {
 	}
 	
 	@Override
-	public void scale(List<?> values) {
+	public void scale(Collection<?> values) {
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
 		

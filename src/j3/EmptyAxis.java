@@ -1,5 +1,6 @@
 package j3;
 
+import java.util.Collection;
 import java.util.List;
 
 public class EmptyAxis extends Axis {
@@ -19,7 +20,7 @@ public class EmptyAxis extends Axis {
 	}
 
 	@Override
-	public void scale(List<?> values) {
+	public void scale(Collection<?> values) {
 		// do nothing
 	}
 

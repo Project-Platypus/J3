@@ -3,9 +3,11 @@ package j3;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.github.lwhite1.tablesaw.api.Table;
 
 import j3.colormap.Colormap;
+import j3.dataframe.Attribute;
+import j3.dataframe.DataFrame;
+import j3.dataframe.DoubleAttribute;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
@@ -21,7 +23,7 @@ public class Scatter extends Region implements Plot3D {
 	
 	private Axis3D axisBox;
 
-	private Table table;
+	private DataFrame table;
 
 	private ObjectProperty<Axis> xAxis = new ObjectPropertyBase<Axis>() {
 
@@ -224,7 +226,7 @@ public class Scatter extends Region implements Plot3D {
 
 	private List<PhongMaterial> materials;
 
-	public Scatter(Axis3D axisBox, Table table, Axis xAxis, Axis yAxis, Axis zAxis, Axis colorAxis, 
+	public Scatter(Axis3D axisBox, DataFrame table, Axis xAxis, Axis yAxis, Axis zAxis, Axis colorAxis, 
 			Axis sizeAxis, Colormap colormap) {
 		super();
 		this.axisBox = axisBox;
@@ -269,20 +271,19 @@ public class Scatter extends Region implements Plot3D {
 		setColorAxis(colorAxis);
 		setSizeAxis(sizeAxis);
 
-		for (int i = 0; i < table.rowCount(); i++) {
+		for (int i = 0; i < table.instanceCount(); i++) {
 			Shape3D box = new Box(10, 10, 10);
-			box.setMaterial(materials.get((int)(255*((table.floatColumn(colorAxis.getColumn()).get(i) - table.floatColumn(colorAxis.getColumn()).min())/table.floatColumn(colorAxis.getColumn()).range()))));
+			
+			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, table.getAttribute(xAxis.getColumn()), i)) - 0.5));
+			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, table.getAttribute(yAxis.getColumn()), i))));
+			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, table.getAttribute(zAxis.getColumn()), i)) - 0.5));
 
-			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : xAxis.map(table.floatColumn(xAxis.getColumn()).get(i))) - 0.5));
-			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i)))));
-			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : zAxis.map(table.floatColumn(zAxis.getColumn()).get(i))) - 0.5));
-
-			double scale = (sizeAxis == null ? 0.9 : sizeAxis.map(table.floatColumn(sizeAxis.getColumn()).get(i))) + 0.1;
+			double scale = (sizeAxis == null ? 0.9 : map(sizeAxis, table.getAttribute(sizeAxis.getColumn()), i)) + 0.1;
 			box.setScaleX(scale);
 			box.setScaleY(scale);
 			box.setScaleZ(scale);
 			
-			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : colorAxis.map(table.floatColumn(colorAxis.getColumn()).get(i))))));
+			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : map(colorAxis, table.getAttribute(colorAxis.getColumn()), i)))));
 			box.setUserData(i);
 			
 			points.add(box);
@@ -326,9 +327,9 @@ public class Scatter extends Region implements Plot3D {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
 
-				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : xAxis.map(table.floatColumn(xAxis.getColumn()).get(i))) - 0.5);
-				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : yAxis.map(table.floatColumn(yAxis.getColumn()).get(i))));
-				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : zAxis.map(table.floatColumn(zAxis.getColumn()).get(i))) - 0.5);
+				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, table.getAttribute(xAxis.getColumn()), i)) - 0.5);
+				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, table.getAttribute(yAxis.getColumn()), i)));
+				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, table.getAttribute(zAxis.getColumn()), i)) - 0.5);
 				
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);
 				box.setTranslateY(startY[i] + (endY - startY[i]) * frac);
@@ -336,6 +337,10 @@ public class Scatter extends Region implements Plot3D {
 			}
 		}
 		
+	}
+	
+	private double map(Axis axis, Attribute<?> column, int row) {
+		return axis.map(table.getInstance(row).get(column));
 	}
 	
 	private class ColorTransition extends Transition {
@@ -354,7 +359,7 @@ public class Scatter extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				end[i] = (int)(255*(colorAxis == null ? 0.0 : colorAxis.map(table.floatColumn(colorAxis.getColumn()).get(i))));
+				end[i] = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, table.getAttribute(colorAxis.getColumn()), i)));
 			}
 		}
 
@@ -384,7 +389,7 @@ public class Scatter extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
-				end[i] = (sizeAxis == null ? 0.9 : sizeAxis.map(table.floatColumn(sizeAxis.getColumn()).get(i))) + 0.1;
+				end[i] = (sizeAxis == null ? 0.9 : map(sizeAxis, table.getAttribute(sizeAxis.getColumn()), i)) + 0.1;
 			}
 		}
 
