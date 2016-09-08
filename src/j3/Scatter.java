@@ -1,13 +1,13 @@
 package j3;
 
+import j3.colormap.Colormap;
+import j3.dataframe.Attribute;
+import j3.dataframe.DataFrame;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import j3.colormap.Colormap;
-import j3.dataframe.Attribute;
-import j3.dataframe.DataFrame;
-import j3.dataframe.DoubleAttribute;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
@@ -274,16 +274,16 @@ public class Scatter extends Region implements Plot3D {
 		for (int i = 0; i < table.instanceCount(); i++) {
 			Shape3D box = new Box(10, 10, 10);
 			
-			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, table.getAttribute(xAxis.getColumn()), i)) - 0.5));
-			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, table.getAttribute(yAxis.getColumn()), i))));
-			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, table.getAttribute(zAxis.getColumn()), i)) - 0.5));
+			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, xAxis.getColumn(), i)) - 0.5));
+			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, yAxis.getColumn(), i))));
+			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, zAxis.getColumn(), i)) - 0.5));
 
-			double scale = (sizeAxis == null ? 0.9 : map(sizeAxis, table.getAttribute(sizeAxis.getColumn()), i)) + 0.1;
+			double scale = (sizeAxis == null ? 0.9 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.1;
 			box.setScaleX(scale);
 			box.setScaleY(scale);
 			box.setScaleZ(scale);
 			
-			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : map(colorAxis, table.getAttribute(colorAxis.getColumn()), i)))));
+			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)))));
 			
 			box.setUserData(table.getInstance(i));
 			
@@ -328,9 +328,9 @@ public class Scatter extends Region implements Plot3D {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
 
-				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, table.getAttribute(xAxis.getColumn()), i)) - 0.5);
-				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, table.getAttribute(yAxis.getColumn()), i)));
-				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, table.getAttribute(zAxis.getColumn()), i)) - 0.5);
+				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, xAxis.getColumn(), i)) - 0.5);
+				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, yAxis.getColumn(), i)));
+				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, zAxis.getColumn(), i)) - 0.5);
 				
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);
 				box.setTranslateY(startY[i] + (endY - startY[i]) * frac);
@@ -360,7 +360,7 @@ public class Scatter extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				end[i] = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, table.getAttribute(colorAxis.getColumn()), i)));
+				end[i] = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)));
 			}
 		}
 
@@ -390,7 +390,7 @@ public class Scatter extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
-				end[i] = (sizeAxis == null ? 0.9 : map(sizeAxis, table.getAttribute(sizeAxis.getColumn()), i)) + 0.1;
+				end[i] = (sizeAxis == null ? 0.9 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.1;
 			}
 		}
 

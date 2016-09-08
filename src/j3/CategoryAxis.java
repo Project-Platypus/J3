@@ -1,9 +1,10 @@
 package j3;
 
+import j3.dataframe.Attribute;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,8 +18,8 @@ public class CategoryAxis extends Axis {
 	
 	private Map<Object, Double> positionMap;
 
-	public CategoryAxis(int column, String label) {
-		super(column, label);
+	public CategoryAxis(Attribute<?> column) {
+		super(column);
 		
 		categories = new LinkedHashSet<>();
 		positionMap = new HashMap<>();

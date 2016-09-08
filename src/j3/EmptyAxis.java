@@ -1,12 +1,11 @@
 package j3;
 
 import java.util.Collection;
-import java.util.List;
 
 public class EmptyAxis extends Axis {
 
 	public EmptyAxis() {
-		super(-1, "");
+		super(null);
 	}
 
 	@Override

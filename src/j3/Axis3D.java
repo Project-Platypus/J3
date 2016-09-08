@@ -212,10 +212,6 @@ public class Axis3D extends Region {
 		this.textGroup = textGroup;
 
 		sides = new ArrayList<Side>();
-		
-		setXAxis(new RealAxis(0, "X"));
-		setYAxis(new RealAxis(1, "Y"));
-		setZAxis(new RealAxis(2, "Z"));
 
 		for (int i = 0; i < 6; i++) {
 			double fx, fy, fz, r;
@@ -342,6 +338,14 @@ public class Axis3D extends Region {
 	}
 
 	public void updateAxes() {
+		if (getXAxis() == null || getYAxis() == null || getZAxis() == null) {
+			for (Side side : sides) {
+				side.setVisible(false);
+			}
+			
+			return;
+		}
+		
 		// sort sides by Z dimension
 		List<Side> sortedSides = new ArrayList<Side>(sides);
 		

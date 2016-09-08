@@ -1,9 +1,10 @@
 package j3;
 
+import j3.dataframe.Attribute;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.List;
 
 public class RealAxis extends Axis {
 	
@@ -19,8 +20,8 @@ public class RealAxis extends Axis {
 	
 	private NumberFormat format = new DecimalFormat("0.0");
 
-	public RealAxis(int column, String label) {
-		super(column, label);
+	public RealAxis(Attribute<?> column) {
+		super(column);
 		
 		computeTicks();
 	}

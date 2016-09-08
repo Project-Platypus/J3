@@ -1,4 +1,4 @@
-package j3;
+package j3.widgets;
 
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.StringPropertyBase;

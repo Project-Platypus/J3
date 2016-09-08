@@ -224,10 +224,12 @@ public class GUI extends Application {
 			axes.clear();
 			
 			for (int i = 0; i < table.attributeCount(); i++) {
-				if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
-					RealAxis axis = new RealAxis(i, table.getAttribute(i).getName());
-					axis.scale(table.getValues(i));
-					axes.add(axis);
+				if (!table.getAttribute(i).getName().isEmpty()) {
+					if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
+						RealAxis axis = new RealAxis(table.getAttribute(i));
+						axis.scale(table.getValues(i));
+						axes.add(axis);
+					}
 				}
 			}
 			
@@ -256,14 +258,16 @@ public class GUI extends Application {
 					axes.clear();
 					
 					for (int i = 0; i < table.attributeCount(); i++) {
-						if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
-							RealAxis axis = new RealAxis(i, table.getAttribute(i).getName());
-							axis.scale(table.getValues(i));
-							axes.add(axis);
-						} else if (String.class.isAssignableFrom(table.getAttribute(i).getType())) {
-							CategoryAxis axis = new CategoryAxis(i, table.getAttribute(i).getName());
-							axis.scale(table.getValues(i));
-							axes.add(axis);
+						if (!table.getAttribute(i).getName().isEmpty()) {
+							if (Double.class.isAssignableFrom(table.getAttribute(i).getType())) {
+								RealAxis axis = new RealAxis(table.getAttribute(i));
+								axis.scale(table.getValues(i));
+								axes.add(axis);
+							} else if (String.class.isAssignableFrom(table.getAttribute(i).getType())) {
+								CategoryAxis axis = new CategoryAxis(table.getAttribute(i));
+								axis.scale(table.getValues(i));
+								axes.add(axis);
+							}
 						}
 					}
 					

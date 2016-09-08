@@ -5,6 +5,7 @@ import org.controlsfx.control.NotificationPane;
 
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widgets.Annotation;
 import j3.widgets.DataInspector;
 import j3.widgets.TextWidget;
 import javafx.geometry.Point2D;

@@ -104,7 +104,7 @@ public class Colorbar extends Region {
 		imageView = new ImageView();
 		
 		axisLabel.getStyleClass().add("j3-axis-label");
-		axisLabel.layoutBoundsProperty().addListener(event -> updateLabels());
+		axisLabel.layoutBoundsProperty().addListener(event -> layoutLabels());
 		
 		getChildren().addAll(imageView, axisLabel);
 		getStyleClass().add("j3-colorbar");

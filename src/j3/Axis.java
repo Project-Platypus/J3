@@ -1,25 +1,29 @@
 package j3;
 
+import j3.dataframe.Attribute;
+
 import java.util.Collection;
-import java.util.List;
 
 public abstract class Axis {
 	
-	private int column;
+	private Attribute<?> column;
 	
 	private String label;
 
-	public Axis(int column, String label) {
+	public Axis(Attribute<?> column) {
 		super();
 		this.column = column;
-		this.label = label;
+		
+		if (column != null) {
+			this.label = column.getName();
+		}
 	}
 	
-	public int getColumn() {
+	public Attribute<?> getColumn() {
 		return column;
 	}
 
-	public void setColumn(int column) {
+	public void setColumn(Attribute<?> column) {
 		this.column = column;
 	}
 
