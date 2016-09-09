@@ -1,5 +1,7 @@
 package j3.widgets;
 
+import j3.Canvas;
+
 import org.controlsfx.control.SegmentedButton;
 
 import javafx.css.CssMetaData;
@@ -7,6 +9,7 @@ import javafx.css.Styleable;
 import javafx.css.StyleableProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -21,7 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.converter.IntegerStringConverter;
 
-public class TextWidget extends Pane {
+public class TextWidget extends Pane implements Widget<TextWidget> {
 	
 	private Text text;
 	
@@ -42,6 +45,7 @@ public class TextWidget extends Pane {
 	private double mousePosX, mousePosY;
 	private double mouseOldX, mouseOldY;
 	
+	@SuppressWarnings("unchecked")
 	public TextWidget() {
 		super();
 
@@ -49,8 +53,8 @@ public class TextWidget extends Pane {
 
 		text.setOnMouseClicked(event -> {
 			if (event.getClickCount() % 2 == 0) {
-				double textWidth = text.prefWidth(30);
-				double textHeight = text.prefHeight(textWidth);
+//				double textWidth = text.prefWidth(30);
+//				double textHeight = text.prefHeight(textWidth);
 				
 				fontFamily = new ComboBox<String>();
 				fontFamily.getItems().addAll(Font.getFamilies());
@@ -201,6 +205,26 @@ public class TextWidget extends Pane {
 		getChildren().removeAll(pane);
 		getChildren().add(text);
 		pane = null;
+	}
+
+	@Override
+	public TextWidget getNode() {
+		return this;
+	}
+
+	@Override
+	public void onActivate(Canvas canvas) {
+		canvas.setSingleClickHandler(event -> {
+			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
+			
+			point = canvas.screenToLocal(point);
+			
+			setLayoutX(point.getX() - prefWidth(30)/2);
+			setLayoutY(point.getY() - prefHeight(30)/2);
+			canvas.add(this);
+			
+			event.consume();
+		});
 	}
 
 }

@@ -1,6 +1,11 @@
-package j3;
+package j3.widgets.threed;
+
+import j3.Axis;
+import j3.Canvas;
+import j3.EmptyAxis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,14 +22,14 @@ import javafx.scene.layout.Priority;
 
 public class PlottingOptions extends Pane {
 	
-	private final List<Axis> options;
-
-	public PlottingOptions(Plot3D plot, List<Axis> options) {
+	@SuppressWarnings("unchecked")
+	public PlottingOptions(Canvas canvas) {
 		super();
-		this.options = new ArrayList<Axis>(options);
+		
+		List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getSharedData().get("axes")).get());
 		
 		EmptyAxis empty = new EmptyAxis();
-		this.options.add(0, empty);
+		options.add(0, empty);
 		
 		GridPane root = new GridPane();
 
@@ -43,12 +48,19 @@ public class PlottingOptions extends Pane {
 
 		// use reflection to identify all axis properties
 		int count = 0;
+		
+		List<ObjectProperty<Axis>> axisProperties = Arrays.asList(
+				(ObjectProperty<Axis>)canvas.getSharedData().get("xAxis"),
+				(ObjectProperty<Axis>)canvas.getSharedData().get("yAxis"),
+				(ObjectProperty<Axis>)canvas.getSharedData().get("zAxis"),
+				(ObjectProperty<Axis>)canvas.getSharedData().get("colorAxis"),
+				(ObjectProperty<Axis>)canvas.getSharedData().get("sizeAxis"));
 
-		for (ObjectProperty<Axis> axisProperty : plot.getAxisProperties()) {
+		for (ObjectProperty<Axis> axisProperty : axisProperties) {
 			Label label = new Label(StringUtils.capitalize(axisProperty.getName()) + ":");
 
 			ComboBox<Axis> combobox = new ComboBox<>();
-			combobox.getItems().addAll(this.options);
+			combobox.getItems().addAll(options);
 			combobox.setMaxWidth(Double.POSITIVE_INFINITY);
 			label.setLabelFor(combobox);
 			

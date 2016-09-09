@@ -6,6 +6,7 @@ import java.util.List;
 import j3.colormap.Colormap;
 import j3.colormap.ColormapFactory;
 import j3.colormap.ColormapProvider;
+import j3.widgets.Colorbar;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.geometry.Orientation;

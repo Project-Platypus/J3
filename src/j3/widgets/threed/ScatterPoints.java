@@ -1,8 +1,10 @@
-package j3;
+package j3.widgets.threed;
 
+import j3.Axis;
 import j3.colormap.Colormap;
 import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
+import j3.transition.DiffuseColorTransition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +21,7 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
 import javafx.util.Duration;
 
-public class Scatter extends Region implements Plot3D {
+public class ScatterPoints extends Region implements Plot3D {
 	
 	private Axis3D axisBox;
 
@@ -198,7 +200,7 @@ public class Scatter extends Region implements Plot3D {
 
 		@Override
 		public Object getBean() {
-			return Scatter.this;
+			return ScatterPoints.this;
 		}
 
 		@Override
@@ -226,8 +228,7 @@ public class Scatter extends Region implements Plot3D {
 
 	private List<PhongMaterial> materials;
 
-	public Scatter(Axis3D axisBox, DataFrame table, Axis xAxis, Axis yAxis, Axis zAxis, Axis colorAxis, 
-			Axis sizeAxis, Colormap colormap) {
+	public ScatterPoints(Axis3D axisBox, DataFrame table) {
 		super();
 		this.axisBox = axisBox;
 		this.table = table;
@@ -240,53 +241,16 @@ public class Scatter extends Region implements Plot3D {
 			materials.add(new PhongMaterial());
 		}
 
-		setColormap(colormap);
-
 		pointGroup = new Group();
 		pointGroup.getStyleClass().addAll("j3-points");
-
-		//    	Random random = new Random();
-		//    	axisBox.getAxis(0).scale(Arrays.asList(0.0, 1.0));
-		//    	axisBox.getAxis(1).scale(Arrays.asList(0.0, 1.0));
-		//    	axisBox.getAxis(2).scale(Arrays.asList(0.0, 1.0));
-		//        
-		//        for (int i = 0; i < 10000; i++) {
-		//        	Shape3D box = new Box(10, 10, 10);
-		//        	box.setMaterial(materials.get(random.nextInt(256)));
-		//        	
-		//        	box.setTranslateX(axisBox.getSide(0).getSize() * (axisBox.getAxis(0).map(random.nextDouble()) - 0.5));
-		//        	box.setTranslateY(axisBox.getSide(1).getSize() * (axisBox.getAxis(1).map(random.nextDouble()) - 0.5));
-		//        	box.setTranslateZ(axisBox.getSide(2).getSize() * (axisBox.getAxis(2).map(random.nextDouble()) - 0.5));
-		//
-		//        	points.add(box);
-		//        }
 
 		axisBox.xAxisProperty().bind(xAxisProperty());
 		axisBox.yAxisProperty().bind(yAxisProperty());
 		axisBox.zAxisProperty().bind(zAxisProperty());
-		
-		setXAxis(xAxis);
-		setYAxis(yAxis);
-		setZAxis(zAxis);
-		setColorAxis(colorAxis);
-		setSizeAxis(sizeAxis);
 
 		for (int i = 0; i < table.instanceCount(); i++) {
 			Shape3D box = new Box(10, 10, 10);
-			
-			box.setTranslateX(axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, xAxis.getColumn(), i)) - 0.5));
-			box.setTranslateY(axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, yAxis.getColumn(), i))));
-			box.setTranslateZ(axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, zAxis.getColumn(), i)) - 0.5));
-
-			double scale = (sizeAxis == null ? 0.9 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.1;
-			box.setScaleX(scale);
-			box.setScaleY(scale);
-			box.setScaleZ(scale);
-			
-			box.setMaterial(materials.get((int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)))));
-			
 			box.setUserData(table.getInstance(i));
-			
 			points.add(box);
 		}
 
@@ -359,8 +323,15 @@ public class Scatter extends Region implements Plot3D {
 			Axis colorAxis = getColorAxis();
 			
 			for (int i = 0; i < points.size(); i++) {
-				start[i] = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				end[i] = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)));
+				int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
+				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)));
+				
+				if (startIndex < 0) {
+					startIndex = 0;
+				}
+				
+				start[i] = startIndex;
+				end[i] = endIndex;
 			}
 		}
 
@@ -390,7 +361,7 @@ public class Scatter extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
-				end[i] = (sizeAxis == null ? 0.9 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.1;
+				end[i] = (sizeAxis == null ? 0.8 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.2;
 			}
 		}
 

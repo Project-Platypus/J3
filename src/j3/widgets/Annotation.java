@@ -1,5 +1,8 @@
 package j3.widgets;
 
+import j3.Canvas;
+import j3.dataframe.DataFrame;
+import j3.dataframe.Instance;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.StringPropertyBase;
 import javafx.beans.value.ChangeListener;
@@ -10,16 +13,21 @@ import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape3D;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.util.Pair;
 
-public class Annotation extends Region {
+public class Annotation extends Region implements Widget<Annotation> {
 	
 	private StringProperty title = new StringPropertyBase("") {
 
@@ -67,7 +75,7 @@ public class Annotation extends Region {
 	private double initX, initY, initWidth, initHeight;
 	private Translate translate = new Translate();
 
-	public Annotation(Node content) {
+	public Annotation() {
 		pane = new BorderPane();
 		pane.setStyle("-fx-background-radius: 5; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 5; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);");
 		pane.setPrefWidth(300);
@@ -84,7 +92,6 @@ public class Annotation extends Region {
 		title.setRight(button);
 		
 		pane.setTop(title);
-		pane.setCenter(content);
 		getChildren().add(pane);
 		
 		pane.setOnMousePressed(event -> {
@@ -228,6 +235,64 @@ public class Annotation extends Region {
 		
 		node.localToSceneTransformProperty().addListener(changeListener);
 		pane.localToSceneTransformProperty().addListener(changeListener);
+	}
+
+	@Override
+	public Annotation getNode() {
+		return this;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void onActivate(Canvas canvas) {
+		canvas.setSingleClickHandler(event -> {
+			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
+					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
+				Instance instance = (Instance)event.getPickResult().getIntersectedNode().getUserData();
+				DataFrame table = (DataFrame)canvas.getSharedData().get("data").getValue();
+				
+				TableView tableView = new TableView();
+				tableView.setEditable(false);
+				tableView.setFocusTraversable(false);
+				tableView.setPrefHeight(100);
+				tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+				
+				TableColumn keyColumn = new TableColumn("Key");
+				TableColumn valueColumn = new TableColumn("Value");
+				
+				tableView.getColumns().addAll(keyColumn, valueColumn);
+
+				for (int j = 0; j < table.attributeCount(); j++) {
+					tableView.getItems().add(new Pair<String, Object>(table.getAttribute(j).getName(), instance.get(table.getAttribute(j))));
+				}
+				
+				keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
+				valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
+				
+				pane.setCenter(tableView);
+				setTitle("Instance Details");
+				target(event.getPickResult().getIntersectedNode());
+				
+				canvas.add(this);
+			}
+			
+			event.consume();
+		});
+	}
+
+	@Override
+	public void onAdd(Canvas canvas) {
+
+	}
+
+	@Override
+	public void onRemove(Canvas canvas) {
+
+	}
+
+	@Override
+	public void initialize(Canvas canvas) {
+
 	}
 
 }

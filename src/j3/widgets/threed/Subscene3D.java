@@ -1,4 +1,4 @@
-package j3;
+package j3.widgets.threed;
 
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -91,7 +91,7 @@ public class Subscene3D extends SubScene {
 		setManaged(false);
 	}
 
-	protected Axis3D getAxis3D() {
+	public Axis3D getAxis3D() {
 		return axis3D;
 	}
 
@@ -99,7 +99,7 @@ public class Subscene3D extends SubScene {
 		return mouseMode;
 	}
 
-	protected void setMouseMode(MouseMode mouseMode) {
+	public void setMouseMode(MouseMode mouseMode) {
 		if (this.mouseMode != mouseMode) {
 			this.mouseMode = mouseMode;
 

@@ -1,39 +1,25 @@
 package j3;
 
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.NotificationPane;
-
-import j3.dataframe.DataFrame;
-import j3.dataframe.Instance;
 import j3.widgets.Annotation;
-import j3.widgets.DataInspector;
 import j3.widgets.TextWidget;
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.shape.Shape3D;
-import javafx.scene.transform.Translate;
-import javafx.util.Pair;
 
 public class WidgetOptions extends Pane {
 
-	private final GUI gui;
+	private final Canvas canvas;
 	
 	private final PopOver popover;
 	
-	public WidgetOptions(GUI gui, PopOver popover) {
+	public WidgetOptions(Canvas canvas, PopOver popover) {
 		super();
-		this.gui = gui;
+		this.canvas = canvas;
 		this.popover = popover;
 		
 		TilePane tiles = new TilePane();
@@ -67,68 +53,23 @@ public class WidgetOptions extends Pane {
 	public void handleWidget(String type) {
 		switch (type) {
 		case "text":
-			gui.setSingleClickHandler(event -> {
-				TextWidget widget = new TextWidget();
-				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
-				
-				point = gui.getContentRoot().screenToLocal(point);
-				
-				widget.setLayoutX(point.getX() - widget.prefWidth(30)/2);
-				widget.setLayoutY(point.getY() + widget.prefHeight(30)/2);
-				gui.getContentRoot().getChildren().add(widget);
-				event.consume();
-			});
+			new TextWidget().onActivate(canvas);
 			break;
 		case "annotation":
-			gui.setSingleClickHandler(event -> {
-				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
-				
-				if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-						(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
-					Instance instance = (Instance)event.getPickResult().getIntersectedNode().getUserData();
-					DataFrame table = gui.getTable();
-					
-					TableView tableView = new TableView();
-					tableView.setEditable(false);
-					tableView.setFocusTraversable(false);
-					tableView.setPrefHeight(100);
-					tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-					
-					TableColumn keyColumn = new TableColumn("Key");
-					TableColumn valueColumn = new TableColumn("Value");
-					
-					tableView.getColumns().addAll(keyColumn, valueColumn);
-
-					for (int j = 0; j < table.attributeCount(); j++) {
-						tableView.getItems().add(new Pair<String, Object>(table.getAttribute(j).getName(), instance.get(table.getAttribute(j))));
-					}
-					
-					keyColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, String>("key"));
-					valueColumn.setCellValueFactory(new PropertyValueFactory<Pair<String, Number>, Number>("value"));
-					
-					Annotation annotation = new Annotation(tableView);
-					annotation.setTitle("Instance Details");
-					annotation.target(event.getPickResult().getIntersectedNode());
-					annotation.getTransforms().add(new Translate(0, 0));
-					
-					gui.getContentRoot().getChildren().add(annotation);
-				}
-				
-				event.consume();
-			});
+			new Annotation().onActivate(canvas);
 			break;
 		case "inspector":
-			gui.setSingleClickHandler(event -> {
-				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
-				
-				point = gui.getContentRoot().screenToLocal(point);
-				
-				DataInspector inspector = new DataInspector(gui);
-				inspector.setLayoutX(point.getX());
-				inspector.setLayoutY(point.getY());
-				gui.getContentRoot().getChildren().add(inspector);
-				event.consume();
-			});
+//			gui.setSingleClickHandler(event -> {
+//				Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
+//				
+//				point = gui.getContentRoot().screenToLocal(point);
+//				
+//				DataInspector inspector = new DataInspector(gui);
+//				inspector.setLayoutX(point.getX());
+//				inspector.setLayoutY(point.getY());
+//				gui.getContentRoot().getChildren().add(inspector);
+//				event.consume();
+//			});
 			break;
 		default:
 			break;

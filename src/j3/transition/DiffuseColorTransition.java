@@ -1,4 +1,4 @@
-package j3;
+package j3.transition;
 
 import javafx.animation.Transition;
 import javafx.scene.paint.Color;

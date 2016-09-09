@@ -1,4 +1,6 @@
-package j3;
+package j3.widgets.threed;
+
+import j3.Axis;
 
 import java.util.List;
 
