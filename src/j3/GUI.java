@@ -30,6 +30,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -142,9 +143,13 @@ public class GUI extends Application {
 		});
 		
 		camera.setOnAction(event -> {
+			double scale = 2.0;
+			WritableImage image = new WritableImage((int)Math.rint(scale*canvas.getWidth()), (int)Math.rint(scale*canvas.getHeight()));
 			SnapshotParameters params = new SnapshotParameters();
 			params.setCamera(new ParallelCamera());
-			WritableImage image = canvas.snapshot(params, null);
+			params.setTransform(Transform.scale(2.0, 2.0));
+			
+			image = canvas.snapshot(params, image);
 			
 			FileChooser fileChooser = new FileChooser();
 

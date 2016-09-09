@@ -100,7 +100,7 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 	
 	private Text axisLabel = new Text();
 	
-	private Translate location = new Translate(0, 0);
+	private Translate location = new Translate(Integer.MIN_VALUE, 0);
 	
 	private double mousePosX, mousePosY, mouseOldX, mouseOldY;
 	
@@ -294,6 +294,11 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 		
 		canvas.widthProperty().addListener(widthListener);
 		canvas.heightProperty().addListener(heightListener);
+		
+		if (location.getX() <= Integer.MIN_VALUE) {
+			location.setX((canvas.getWidth() - getPrefWidth()) / 2.0);
+			location.setY(canvas.getHeight() - getPrefHeight() - 50);
+		}
 	}
 	
 	@Override

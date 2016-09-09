@@ -12,10 +12,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -43,6 +46,7 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 	private BorderPane pane;
 	
 	private double mousePosX, mousePosY;
+	
 	private double mouseOldX, mouseOldY;
 	
 	@SuppressWarnings("unchecked")
@@ -50,9 +54,78 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 		super();
 
 		text = new Text("Text Widget");
+		
+		text.setOnMousePressed(me -> {
+			mouseOldX = me.getScreenX();
+			mouseOldY = me.getScreenY();
+		});
 
+		text.setOnMouseDragged(me -> {
+			mousePosX = me.getScreenX();
+			mousePosY = me.getScreenY();
+			setLayoutX(getLayoutX() + (mousePosX - mouseOldX));
+			setLayoutY(getLayoutY() + (mousePosY - mouseOldY));
+			mouseOldX = mousePosX;
+			mouseOldY = mousePosY;
+		});
+		
+		text.setLayoutY(text.prefHeight(30));
+		getChildren().add(text);
+	}
+	
+	protected void apply() {
+		StringBuilder style = new StringBuilder();
+		style.append("-fx-font-size: ");
+		style.append(fontSize.getValue().intValue());
+		style.append(";");
+		style.append("-fx-font-family: '");
+		style.append(fontFamily.getValue());
+		style.append("';");
+		
+		if (bold.isSelected()) {
+			style.append("-fx-font-weight: bold;");
+		}
+		
+		if (italic.isSelected()) {
+			style.append("-fx-font-style: italic;");
+		}
+		
+		if (underline.isSelected()) {
+			style.append("-fx-underline: true;");
+		}
+		
+		text.setStyle(style.toString());
+		text.setText(editor.getText());
+		
+		getChildren().removeAll(pane);
+		getChildren().add(text);
+		pane = null;
+	}
+
+	@Override
+	public TextWidget getNode() {
+		return this;
+	}
+
+	@Override
+	public void onActivate(Canvas canvas) {
+		canvas.setSingleClickHandler(event -> {
+			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
+			
+			point = canvas.screenToLocal(point);
+			
+			setLayoutX(point.getX() - prefWidth(30)/2);
+			setLayoutY(point.getY() - prefHeight(30)/2);
+			canvas.add(this);
+			
+			event.consume();
+		});
+	}
+
+	@Override
+	public void onAdd(Canvas canvas) {
 		text.setOnMouseClicked(event -> {
-			if (event.getClickCount() % 2 == 0) {
+			if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() % 2 == 0) {
 //				double textWidth = text.prefWidth(30);
 //				double textHeight = text.prefHeight(textWidth);
 				
@@ -157,73 +230,17 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 				
 				editor.requestFocus();
 				editor.selectAll();
+			} else if (event.getButton() == MouseButton.SECONDARY) {
+				ContextMenu menu = new ContextMenu();
+				
+				MenuItem delete = new MenuItem("Delete");
+				delete.setOnAction(e -> {
+					canvas.remove(this);
+				});
+				
+				menu.getItems().add(delete);
+				menu.show(this, event.getScreenX(), event.getScreenY());
 			}
-		});
-		
-		text.setOnMousePressed(me -> {
-			mouseOldX = me.getScreenX();
-			mouseOldY = me.getScreenY();
-		});
-
-		text.setOnMouseDragged(me -> {
-			mousePosX = me.getScreenX();
-			mousePosY = me.getScreenY();
-			setLayoutX(getLayoutX() + (mousePosX - mouseOldX));
-			setLayoutY(getLayoutY() + (mousePosY - mouseOldY));
-			mouseOldX = mousePosX;
-			mouseOldY = mousePosY;
-		});
-		
-		text.setLayoutY(text.prefHeight(30));
-		getChildren().add(text);
-	}
-	
-	protected void apply() {
-		StringBuilder style = new StringBuilder();
-		style.append("-fx-font-size: ");
-		style.append(fontSize.getValue().intValue());
-		style.append(";");
-		style.append("-fx-font-family: '");
-		style.append(fontFamily.getValue());
-		style.append("';");
-		
-		if (bold.isSelected()) {
-			style.append("-fx-font-weight: bold;");
-		}
-		
-		if (italic.isSelected()) {
-			style.append("-fx-font-style: italic;");
-		}
-		
-		if (underline.isSelected()) {
-			style.append("-fx-underline: true;");
-		}
-		
-		text.setStyle(style.toString());
-		text.setText(editor.getText());
-		
-		getChildren().removeAll(pane);
-		getChildren().add(text);
-		pane = null;
-	}
-
-	@Override
-	public TextWidget getNode() {
-		return this;
-	}
-
-	@Override
-	public void onActivate(Canvas canvas) {
-		canvas.setSingleClickHandler(event -> {
-			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
-			
-			point = canvas.screenToLocal(point);
-			
-			setLayoutX(point.getX() - prefWidth(30)/2);
-			setLayoutY(point.getY() - prefHeight(30)/2);
-			canvas.add(this);
-			
-			event.consume();
 		});
 	}
 
