@@ -26,6 +26,7 @@ import org.controlsfx.control.SegmentedButton;
 import org.controlsfx.property.BeanPropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
@@ -307,8 +308,10 @@ public class GUI extends Application {
 		});
 
 		colorbar = new Colorbar(colormap, 500, 40, Orientation.HORIZONTAL, new EmptyAxis());
-		Translate colorbarTranslate = new Translate();
+		Translate colorbarTranslate = new Translate(-1, -1);
 		colorbar.getTransforms().addAll(colorbarTranslate);
+		
+		FadeTransition colorbarFadeTransition = new FadeTransition(new Duration(1000), colorbar);
 
 		colorbar.setOnMousePressed(event -> {
 			mouseOldX = event.getSceneX();
@@ -327,20 +330,31 @@ public class GUI extends Application {
 		toggleLegend.setOnAction(event -> {
 			Group group = (Group)content.getRoot();
 			
-			if (toggleLegend.isSelected()) {
+			if (colorbarFadeTransition.getStatus() == Animation.Status.RUNNING) {
+				colorbarFadeTransition.stop();
+			}
+			
+			if (toggleLegend.isSelected()) {				
 				colorbar.setOpacity(0.0);
-				group.getChildren().add(colorbar);
 				
-				FadeTransition transition = new FadeTransition(new Duration(1000), colorbar);
-				transition.setToValue(1.0);
-				transition.play();
+				if (colorbar.getParent() == null) {
+					group.getChildren().add(colorbar);
+				}
+				
+				if (colorbarTranslate.getX() < 0) {
+					Bounds bounds = plot.getAxis3D().localToScene(plot.getAxis3D().getBoundsInLocal());
+					colorbarTranslate.setY(bounds.getMaxY());
+					colorbarTranslate.setX((bounds.getMinX() + bounds.getMaxX() - colorbar.getPrefWidth()) / 2.0);
+				}
+				
+				colorbarFadeTransition.setToValue(1.0);
+				colorbarFadeTransition.play();
 			} else {
-				FadeTransition transition = new FadeTransition(new Duration(1000), colorbar);
-				transition.setToValue(0.0);
-				transition.setOnFinished(e -> {
+				colorbarFadeTransition.setToValue(0.0);
+				colorbarFadeTransition.setOnFinished(e -> {
 					group.getChildren().remove(colorbar);
 				});
-				transition.play();
+				colorbarFadeTransition.play();
 			}
 		});
 
