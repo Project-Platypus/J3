@@ -338,13 +338,13 @@ public class Axis3D extends Region {
 	}
 
 	public void updateAxes() {
-		if (getXAxis() == null || getYAxis() == null || getZAxis() == null) {
-			for (Side side : sides) {
-				side.setVisible(false);
-			}
-			
-			return;
-		}
+//		if (getXAxis() == null || getYAxis() == null || getZAxis() == null) {
+//			for (Side side : sides) {
+//				side.setVisible(false);
+//			}
+//			
+//			return;
+//		}
 		
 		// sort sides by Z dimension
 		List<Side> sortedSides = new ArrayList<Side>(sides);

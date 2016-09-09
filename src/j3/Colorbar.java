@@ -153,26 +153,28 @@ public class Colorbar extends Region {
 	}
 	
 	public void layoutLabels() {
-		double[] tickPositions = getColorAxis().getTickPositions();
-		double maxLabelHeight = 0.0;
-		
-		for (int i = 0; i < labels.size(); i++) {
-			Text label = labels.get(i);
+		if (getColorAxis() != null) {
+			double[] tickPositions = getColorAxis().getTickPositions();
+			double maxLabelHeight = 0.0;
 			
-			double labelWidth = label.prefWidth(30);
-			double labelHeight = label.prefHeight(labelWidth);
+			for (int i = 0; i < labels.size(); i++) {
+				Text label = labels.get(i);
+				
+				double labelWidth = label.prefWidth(30);
+				double labelHeight = label.prefHeight(labelWidth);
+				
+				label.setTranslateX(getPrefWidth()*tickPositions[i] - labelWidth/2);
+				label.setTranslateY(getPrefHeight() + TICK_LENGTH + labelHeight);
+				
+				maxLabelHeight = Math.max(maxLabelHeight, labelHeight);
+			}
 			
-			label.setTranslateX(getPrefWidth()*tickPositions[i] - labelWidth/2);
-			label.setTranslateY(getPrefHeight() + TICK_LENGTH + labelHeight);
-			
-			maxLabelHeight = Math.max(maxLabelHeight, labelHeight);
+			double textWidth = axisLabel.prefWidth(200);
+			double textHeight = axisLabel.prefHeight(textWidth);
+	
+			axisLabel.setLayoutX(getPrefWidth()/2 - textWidth/2);
+			axisLabel.setLayoutY(getPrefHeight() + TICK_LENGTH + maxLabelHeight + textHeight);
 		}
-		
-		double textWidth = axisLabel.prefWidth(200);
-		double textHeight = axisLabel.prefHeight(textWidth);
-
-		axisLabel.setLayoutX(getPrefWidth()/2 - textWidth/2);
-		axisLabel.setLayoutY(getPrefHeight() + TICK_LENGTH + maxLabelHeight + textHeight);
 	}
 	
 	public void update() {
