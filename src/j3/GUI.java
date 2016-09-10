@@ -91,7 +91,12 @@ public class GUI extends Application {
 		
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setInitialDirectory(new File("data/"));
+			
+			File initialFile = new File("data/");
+			
+			if (initialFile.exists() && initialFile.isDirectory()) {
+				fileChooser.setInitialDirectory(new File("data/"));
+			}
 			
 			List<DataFrameReader> readers = DataFrameReaderFactory.getInstance().getProviders();
 			

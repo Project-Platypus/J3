@@ -47,35 +47,6 @@ public class WidgetOptions extends Pane {
 			root.getChildren().add(pane);
 		}
 		
-//		Button textWidget = new Button();
-//		textWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/text_1x.png"))));
-//		textWidget.setOnAction(event -> handleWidget("text"));
-//		textWidget.setTooltip(new Tooltip("Display text anywhere in canvas"));
-//		
-//		Button annotationWidget = new Button();
-//		annotationWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/comment_1x.png"))));
-//		annotationWidget.setOnAction(event -> handleWidget("annotation"));
-//		annotationWidget.setTooltip(new Tooltip("Display details about a selected data point"));
-//		
-//		Button inspectorWidget = new Button();
-//		inspectorWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/inspect_1x.png"))));
-//		inspectorWidget.setOnAction(event -> handleWidget("inspector"));
-//		inspectorWidget.setTooltip(new Tooltip("Inspects points hovered by the mouse"));
-//		
-//		Button brushingWidget = new Button();
-//		brushingWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/brush_1x.png"))));
-//		brushingWidget.setOnAction(event -> handleWidget("brushing"));
-//		brushingWidget.setTooltip(new Tooltip("Enable brushing points by their range"));
-//		
-//		Button animateWidget = new Button();
-//		animateWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/animate_1x.png"))));
-//		animateWidget.setOnAction(event -> handleWidget("animate"));
-//		animateWidget.setTooltip(new Tooltip("Animations"));
-//		
-//		
-//		
-
-		
 		getChildren().add(root);
 	}
 	
