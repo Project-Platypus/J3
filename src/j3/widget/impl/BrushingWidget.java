@@ -75,7 +75,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 					instance.set(BRUSHING_ATTRIBUTE, isWithinBounds);
 				});
 				
-				Selector.on(canvas).select("*").get(ScatterPoints.class).forEach(node -> node.update());
+				Selector.on(canvas).get(ScatterPoints.class).forEach(node -> node.update());
 			};
 			
 			// call change listener to initialize the attribute values before setting the visibility axis

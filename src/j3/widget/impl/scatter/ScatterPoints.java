@@ -289,6 +289,9 @@ public class ScatterPoints extends Region implements Plot3D {
 		pointGroup.getChildren().addAll(points);
 		getChildren().addAll(pointGroup);
 		axisBox.setPlotContents(this);
+		
+		setManaged(false);
+		setPickOnBounds(false);
 	}
 
 	protected List<Shape3D> getPoints() {
