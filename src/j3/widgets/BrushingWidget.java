@@ -11,9 +11,10 @@ import j3.Axis;
 import j3.Canvas;
 import j3.CategoryAxis;
 import j3.RealAxis;
+import j3.Selector;
 import j3.dataframe.BooleanAttribute;
 import j3.dataframe.DataFrame;
-import j3.widgets.threed.ScatterPlot;
+import j3.widgets.threed.ScatterPoints;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -73,11 +74,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 					instance.set(BRUSHING_ATTRIBUTE, isWithinBounds);
 				});
 				
-				for (Widget<?> widget : canvas.getWidgets()) {
-					if (widget instanceof ScatterPlot) {
-						((ScatterPlot)widget).update();
-					}
-				}
+				Selector.on(canvas).select("*").get(ScatterPoints.class).forEach(node -> node.update());
 			};
 			
 			// call change listener to initialize the attribute values before setting the visibility axis

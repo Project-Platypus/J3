@@ -23,3 +23,9 @@ We also have plans to enable sharing the J3 visualizations.  Each widget will be
 responsible for serializing and deserializing its state.  Then, we can export
 the J3 canvas to a file, which can later be imported by another user to recreate
 the exact same view.  Similar methods could potentially enable "live streaming".
+
+J3 also attempts to combine Java 8's functional programming (lambdas) with
+D3/jQuery-like selectors for manipulating the scene graph.  Combined with
+JavaFX's reactive programming style (via properties and bindings) makes a
+powerful means to update the scene graph in response to user inputs or changing
+data.
