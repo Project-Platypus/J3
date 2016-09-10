@@ -1,4 +1,4 @@
-package j3.widgets.impl.scatter;
+package j3.widget.impl.scatter;
 
 import j3.Axis;
 import j3.colormap.Colormap;

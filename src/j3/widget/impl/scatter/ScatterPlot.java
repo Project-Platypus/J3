@@ -1,4 +1,4 @@
-package j3.widgets.impl.scatter;
+package j3.widget.impl.scatter;
 
 import j3.Axis;
 import j3.Canvas;
@@ -9,7 +9,7 @@ import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.widget.Widget;
 import j3.widget.impl.Colorbar;
-import j3.widgets.impl.scatter.Subscene3D.MouseMode;
+import j3.widget.impl.scatter.Subscene3D.MouseMode;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,7 +9,7 @@ import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
 import j3.transition.ImageTransition;
 import j3.widget.Widget;
-import j3.widgets.impl.scatter.Axis3D;
+import j3.widget.impl.scatter.Axis3D;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.Property;

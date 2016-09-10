@@ -15,7 +15,7 @@ import j3.Selector;
 import j3.dataframe.BooleanAttribute;
 import j3.dataframe.DataFrame;
 import j3.widget.TitledWidget;
-import j3.widgets.impl.scatter.ScatterPoints;
+import j3.widget.impl.scatter.ScatterPoints;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;

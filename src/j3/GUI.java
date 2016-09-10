@@ -5,7 +5,7 @@ import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.io.DataFrameReader;
 import j3.io.DataFrameReaderFactory;
-import j3.widgets.impl.scatter.ScatterPlot;
+import j3.widget.impl.scatter.ScatterPlot;
 
 import java.io.File;
 import java.io.IOException;
