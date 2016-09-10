@@ -1,3 +1,4 @@
 j3.colormap.impl.PerceptuallyUniformSequentialColormaps
+j3.colormap.impl.SequentialColormaps
 j3.colormap.impl.MiscellaneousColormaps
 j3.colormap.impl.DivergingColormaps
