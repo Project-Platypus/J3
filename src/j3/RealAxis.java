@@ -26,6 +26,14 @@ public class RealAxis extends Axis {
 		computeTicks();
 	}
 
+	public double getMinValue() {
+		return minValue;
+	}
+
+	public double getMaxValue() {
+		return maxValue;
+	}
+
 	@Override
 	public String[] getTickLabels() {
 		return tickLabels;
@@ -39,7 +47,7 @@ public class RealAxis extends Axis {
 	@Override
 	public double map(Object value) {
 		if (value instanceof Number) {
-		return (((Number)value).doubleValue() - minValue) / (maxValue - minValue);
+			return (((Number)value).doubleValue() - minValue) / (maxValue - minValue);
 		} else {
 			throw new IllegalArgumentException("RealAxis can only map numbers");
 		}

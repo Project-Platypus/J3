@@ -186,6 +186,38 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Axis> sizeAxisProperty() {
 		return sizeAxis;
 	}
+	
+	private ObjectProperty<Axis> visibilityAxis = new ObjectPropertyBase<Axis>() {
+		
+		{
+			addListener((observable, oldValue, newValue) -> {
+				updateVisibilityAxis();
+			});
+		}
+
+		@Override
+		public Object getBean() {
+			return Axis3D.class;
+		}
+
+		@Override
+		public String getName() {
+			return "Visibility";
+		}
+
+	};
+
+	public void setVisibilityAxis(Axis axis) {
+		visibilityAxis.set(axis);
+	}
+
+	public Axis getVisibilityAxis() {
+		return visibilityAxis.get();
+	}
+
+	public ObjectProperty<Axis> visibilityAxisProperty() {
+		return visibilityAxis;
+	}
 
 	private ObjectProperty<Colormap> colormap = new ObjectPropertyBase<Colormap>() {
 
@@ -255,7 +287,8 @@ public class ScatterPoints extends Region implements Plot3D {
 		}
 
 		pointGroup.getChildren().addAll(points);
-		axisBox.setPlotContents(pointGroup);
+		getChildren().addAll(pointGroup);
+		axisBox.setPlotContents(this);
 	}
 
 	protected List<Shape3D> getPoints() {
@@ -403,6 +436,18 @@ public class ScatterPoints extends Region implements Plot3D {
 		SizeTransition st = new SizeTransition();
 		st.play();
 	}
+	
+	public void updateVisibilityAxis() {
+		if (points.isEmpty()) {
+			return;
+		}
+
+		Axis visibilityAxis = getVisibilityAxis();
+		
+		for (int i = 0; i < points.size(); i++) {
+			points.get(i).setVisible(visibilityAxis == null ? true : map(visibilityAxis, visibilityAxis.getColumn(), i) > 0.5);
+		}
+	}
 
 	@Override
 	public List<ObjectProperty<Axis>> getAxisProperties() {
@@ -412,6 +457,10 @@ public class ScatterPoints extends Region implements Plot3D {
 				zAxis,
 				colorAxis,
 				sizeAxis);
+	}
+	
+	public void update() {
+		updateVisibilityAxis();
 	}
 
 }

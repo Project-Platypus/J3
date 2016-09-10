@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
  */
 public class DataFrame {
 	
-	public final List<Attribute<?>> attributes;
+	private final List<Attribute<?>> attributes;
 	
-	public final List<Instance> instances;
-	
+	private final List<Instance> instances;
+
 	public DataFrame(Attribute<?>... attributes) {
 		this(Arrays.asList(attributes));
 	}

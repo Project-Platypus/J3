@@ -57,7 +57,6 @@ public class ColormapFactory {
 	
 	public List<ColormapProvider> getProviders() {
 		List<ColormapProvider> providers = new ArrayList<ColormapProvider>();
-		System.out.println(loader.iterator().next());
 		loader.forEach(provider -> providers.add(provider));
 		return providers;
 	}

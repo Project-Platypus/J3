@@ -69,6 +69,7 @@ public class GUI extends Application {
 		canvas.getSharedData().put("zAxis", null, "Z");
 		canvas.getSharedData().put("colorAxis", null, "Color");
 		canvas.getSharedData().put("sizeAxis", null, "Size");
+		canvas.getSharedData().put("visibilityAxis", null, "Visibility");
 		
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));
@@ -104,10 +105,19 @@ public class GUI extends Application {
 			
 			if (selectedFile != null) {
 				try {
+					canvas.removeAll();
+					
 					DataFrameReader selectedReader = readers.get(fileChooser.getExtensionFilters().indexOf(
 							fileChooser.getSelectedExtensionFilter()));
 
 					DataFrame table = selectedReader.load(selectedFile);
+					
+					((Property<Axis>)canvas.getSharedData().get("xAxis")).setValue(null);
+					((Property<Axis>)canvas.getSharedData().get("yAxis")).setValue(null);
+					((Property<Axis>)canvas.getSharedData().get("zAxis")).setValue(null);
+					((Property<Axis>)canvas.getSharedData().get("colorAxis")).setValue(null);
+					((Property<Axis>)canvas.getSharedData().get("sizeAxis")).setValue(null);
+					((Property<Axis>)canvas.getSharedData().get("visibilityAxis")).setValue(null);
 					
 					List<Axis> axes = new ArrayList<Axis>();
 					
@@ -130,9 +140,10 @@ public class GUI extends Application {
 					((Property<DataFrame>)canvas.getSharedData().get("data")).setValue(table);
 					((Property<Axis>)canvas.getSharedData().get("xAxis")).setValue(axes.size() > 0 ? axes.get(0) : null);
 					((Property<Axis>)canvas.getSharedData().get("yAxis")).setValue(axes.size() > 1 ? axes.get(1) : null);
-					((Property<Axis>)canvas.getSharedData().get("zAxis")).setValue(axes.size() > 2 ? axes.get(2) : null);;
+					((Property<Axis>)canvas.getSharedData().get("zAxis")).setValue(axes.size() > 2 ? axes.get(2) : null);
 					((Property<Axis>)canvas.getSharedData().get("colorAxis")).setValue(axes.size() > 3 ? axes.get(3) : null);
 					((Property<Axis>)canvas.getSharedData().get("sizeAxis")).setValue(axes.size() > 4 ? axes.get(4) : null);
+					((Property<Axis>)canvas.getSharedData().get("visibilityAxis")).setValue(null);
 					((Property<List<Axis>>)canvas.getSharedData().get("axes")).setValue(axes);
 					
 					canvas.add(new ScatterPlot());

@@ -145,5 +145,9 @@ public class Canvas extends SubScene {
 		});
 		newTransition.play();
 	}
+	
+	public void removeAll() {
+		widgets.clear();
+	}
 
 }

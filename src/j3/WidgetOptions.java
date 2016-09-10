@@ -2,7 +2,9 @@ package j3;
 
 import org.controlsfx.control.PopOver;
 import j3.widgets.Annotation;
+import j3.widgets.BrushingWidget;
 import j3.widgets.TextWidget;
+import j3.widgets.TitledWidget;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
@@ -41,7 +43,12 @@ public class WidgetOptions extends Pane {
 		inspectorWidget.setOnAction(event -> handleWidget("inspector"));
 		inspectorWidget.setTooltip(new Tooltip("Inspects points hovered by the mouse"));
 		
-		tiles.getChildren().addAll(textWidget, annotationWidget);
+		Button brushingWidget = new Button();
+		brushingWidget.setGraphic(new ImageView(new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/brush_1x.png"))));
+		brushingWidget.setOnAction(event -> handleWidget("brushing"));
+		brushingWidget.setTooltip(new Tooltip("Enable brushing points by their range"));
+		
+		tiles.getChildren().addAll(textWidget, annotationWidget, brushingWidget);
 		
 		TitledPane pane = new TitledPane();
 		pane.setText("Standard Widgets");
@@ -70,6 +77,9 @@ public class WidgetOptions extends Pane {
 //				gui.getContentRoot().getChildren().add(inspector);
 //				event.consume();
 //			});
+			break;
+		case "brushing":
+			new BrushingWidget().onActivate(canvas);
 			break;
 		default:
 			break;

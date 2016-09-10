@@ -75,6 +75,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		ObjectProperty<Axis> zAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("zAxis");
 		ObjectProperty<Axis> colorAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("colorAxis");
 		ObjectProperty<Axis> sizeAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("sizeAxis");
+		ObjectProperty<Axis> visibilityAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("visibilityAxis");
 		ObjectProperty<Colormap> colormap = (ObjectProperty<Colormap>)canvas.getSharedData().get("colormap");
 		
 		scatter.xAxisProperty().bind(xAxis);
@@ -82,6 +83,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		scatter.zAxisProperty().bind(zAxis);
 		scatter.colorAxisProperty().bind(colorAxis);
 		scatter.sizeAxisProperty().bind(sizeAxis);
+		scatter.visibilityAxisProperty().bind(visibilityAxis);
 		scatter.colormapProperty().bind(colormap);
 	}
 
@@ -372,6 +374,10 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		if (canvas.getToolBar() != null) {
 			canvas.getToolBar().getItems().removeAll(mouseControls, axisControls, animationControls, changeColor, plotOptions);
 		}
+	}
+	
+	public void update() {
+		((ScatterPoints)plot.getAxis3D().getPlotContents()).update();
 	}
 
 }

@@ -14,9 +14,9 @@ public class CategoryAxis extends Axis {
 	
 	private double[] tickPositions;
 	
-	private Set<Object> categories;
+	private final Set<Object> categories;
 	
-	private Map<Object, Double> positionMap;
+	private final Map<Object, Double> positionMap;
 
 	public CategoryAxis(Attribute<?> column) {
 		super(column);
@@ -44,6 +44,7 @@ public class CategoryAxis extends Axis {
 	@Override
 	public void scale(Collection<?> values) {
 		categories.clear();
+		positionMap.clear();
 		categories.addAll(values);
 		computeTicks();
 	}

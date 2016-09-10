@@ -13,5 +13,7 @@ public enum Dimension {
 	Size,
 	
 	Transparency,
+	
+	Visibility
 
 }
