@@ -110,6 +110,10 @@ public class Selector {
 	}
 	
 	private boolean matches(Node node, List<String> keys) {
+		if (keys.isEmpty()) {
+			return true;
+		}
+		
 		return keys.stream().anyMatch(key -> {
 			if (key.equals("*")) {
 				return true;

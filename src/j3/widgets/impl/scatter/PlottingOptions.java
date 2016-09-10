@@ -1,4 +1,4 @@
-package j3.widgets.threed;
+package j3.widgets.impl.scatter;
 
 import j3.Axis;
 import j3.Canvas;
@@ -26,7 +26,7 @@ public class PlottingOptions extends Pane {
 	public PlottingOptions(Canvas canvas) {
 		super();
 		
-		List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getSharedData().get("axes")).get());
+		List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get());
 		
 		EmptyAxis empty = new EmptyAxis();
 		options.add(0, empty);
@@ -50,11 +50,11 @@ public class PlottingOptions extends Pane {
 		int count = 0;
 		
 		List<ObjectProperty<Axis>> axisProperties = Arrays.asList(
-				(ObjectProperty<Axis>)canvas.getSharedData().get("xAxis"),
-				(ObjectProperty<Axis>)canvas.getSharedData().get("yAxis"),
-				(ObjectProperty<Axis>)canvas.getSharedData().get("zAxis"),
-				(ObjectProperty<Axis>)canvas.getSharedData().get("colorAxis"),
-				(ObjectProperty<Axis>)canvas.getSharedData().get("sizeAxis"));
+				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("xAxis"),
+				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("yAxis"),
+				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("zAxis"),
+				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis"),
+				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("sizeAxis"));
 
 		for (ObjectProperty<Axis> axisProperty : axisProperties) {
 			Label label = new Label(StringUtils.capitalize(axisProperty.getName()) + ":");

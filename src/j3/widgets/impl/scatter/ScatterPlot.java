@@ -1,4 +1,4 @@
-package j3.widgets.threed;
+package j3.widgets.impl.scatter;
 
 import j3.Axis;
 import j3.Canvas;
@@ -7,9 +7,9 @@ import j3.EmptyAxis;
 import j3.GUI;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
-import j3.widgets.Colorbar;
-import j3.widgets.Widget;
-import j3.widgets.threed.Subscene3D.MouseMode;
+import j3.widget.Widget;
+import j3.widget.impl.Colorbar;
+import j3.widgets.impl.scatter.Subscene3D.MouseMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,18 +65,18 @@ public class ScatterPlot implements Widget<Subscene3D> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(Canvas canvas) {
-		DataFrame table = (DataFrame)canvas.getSharedData().get("data").getValue();
+		DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
 		
 		plot = new Subscene3D(400);
 		scatter = new ScatterPoints(plot.getAxis3D(), table);
 		
-		ObjectProperty<Axis> xAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("xAxis");
-		ObjectProperty<Axis> yAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("yAxis");
-		ObjectProperty<Axis> zAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("zAxis");
-		ObjectProperty<Axis> colorAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("colorAxis");
-		ObjectProperty<Axis> sizeAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("sizeAxis");
-		ObjectProperty<Axis> visibilityAxis = (ObjectProperty<Axis>)canvas.getSharedData().get("visibilityAxis");
-		ObjectProperty<Colormap> colormap = (ObjectProperty<Colormap>)canvas.getSharedData().get("colormap");
+		ObjectProperty<Axis> xAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("xAxis");
+		ObjectProperty<Axis> yAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("yAxis");
+		ObjectProperty<Axis> zAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("zAxis");
+		ObjectProperty<Axis> colorAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis");
+		ObjectProperty<Axis> sizeAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("sizeAxis");
+		ObjectProperty<Axis> visibilityAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis");
+		ObjectProperty<Colormap> colormap = (ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap");
 		
 		scatter.xAxisProperty().bind(xAxis);
 		scatter.yAxisProperty().bind(yAxis);
@@ -330,7 +330,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 				popover.setContentNode(colormapSelector);
 				
 				colormapSelector.colormapProperty().addListener((observable, oldValue, newValue) -> {
-					((ObjectProperty<Colormap>)canvas.getSharedData().get("colormap")).set(newValue);;
+					((ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap")).set(newValue);;
 					popover.hide();
 				});
 				

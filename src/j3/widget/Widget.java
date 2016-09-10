@@ -1,4 +1,4 @@
-package j3.widgets;
+package j3.widget;
 
 import j3.Canvas;
 import javafx.scene.Node;

@@ -1,4 +1,4 @@
-package j3.widgets;
+package j3.widget.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,8 @@ import j3.Canvas;
 import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
 import j3.transition.ImageTransition;
-import j3.widgets.threed.Axis3D;
+import j3.widget.Widget;
+import j3.widgets.impl.scatter.Axis3D;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.Property;
@@ -257,16 +258,16 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 		Property<Colormap> colormap = null;
 		Property<Axis> colorAxis = null;
 		
-		if (canvas.getSharedData().contains("colormap")) {
-			colormap = (Property<Colormap>)canvas.getSharedData().get("colormap");
+		if (canvas.getPropertyRegistry().contains("colormap")) {
+			colormap = (Property<Colormap>)canvas.getPropertyRegistry().get("colormap");
 		} else {
-			colormap = canvas.getSharedData().put("colormap", new RainbowColormap());
+			colormap = canvas.getPropertyRegistry().put("colormap", new RainbowColormap());
 		}
 		
-		if (canvas.getSharedData().contains("colorAxis")) {
-			colorAxis = (Property<Axis>)canvas.getSharedData().get("colorAxis");
+		if (canvas.getPropertyRegistry().contains("colorAxis")) {
+			colorAxis = (Property<Axis>)canvas.getPropertyRegistry().get("colorAxis");
 		} else {
-			colorAxis = canvas.getSharedData().put("colorAxis", null);
+			colorAxis = canvas.getPropertyRegistry().put("colorAxis", null);
 		}
 		
 		this.colormap.bind(colormap);

@@ -1,4 +1,4 @@
-package j3.widgets.threed;
+package j3.widgets.impl.scatter;
 
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -44,8 +44,8 @@ public class Subscene3D extends SubScene {
 	private double mousePosX, mousePosY;
 	private double mouseOldX, mouseOldY;
 	private double scaleOld;
-	final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
-	protected final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
+	public final Rotate rotateX = new Rotate(20, Rotate.X_AXIS);
+	public final Rotate rotateY = new Rotate(-45, Rotate.Y_AXIS);
 	protected final Translate translate = new Translate(0, 0, 0);
 	protected final Scale scale = new Scale(0.5, 0.5, 0.5);
 

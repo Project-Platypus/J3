@@ -1,13 +1,12 @@
 package j3;
 
-import j3.widgets.Widget;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import j3.widget.Widget;
 import javafx.animation.Animation.Status;
 import javafx.animation.FadeTransition;
 import javafx.animation.Transition;
@@ -29,7 +28,7 @@ public class Canvas extends SubScene {
 
 	private final ObservableList<Widget<? extends Node>> widgets;
 	
-	private final SharedData sharedData;
+	private final PropertyRegistry propertyRegistry;
 	
 	private final Map<Widget<? extends Node>, Transition> transitions;
 	
@@ -42,7 +41,7 @@ public class Canvas extends SubScene {
 		this.toolBar = toolBar;
 		
 		root = (Group)getRoot();
-		sharedData = new SharedData();
+		propertyRegistry = new PropertyRegistry();
 		widgets = FXCollections.observableArrayList();
 		transitions = new HashMap<>();
 		
@@ -93,8 +92,8 @@ public class Canvas extends SubScene {
 		return widgets;
 	}
 	
-	public SharedData getSharedData() {
-		return sharedData;
+	public PropertyRegistry getPropertyRegistry() {
+		return propertyRegistry;
 	}
 	
 	public ToolBar getToolBar() {

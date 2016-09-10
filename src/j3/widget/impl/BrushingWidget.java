@@ -1,4 +1,4 @@
-package j3.widgets;
+package j3.widget.impl;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +14,8 @@ import j3.RealAxis;
 import j3.Selector;
 import j3.dataframe.BooleanAttribute;
 import j3.dataframe.DataFrame;
-import j3.widgets.threed.ScatterPoints;
+import j3.widget.TitledWidget;
+import j3.widgets.impl.scatter.ScatterPoints;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -51,8 +52,8 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 			VBox container = new VBox();
 			container.setPadding(new Insets(5, 5, 5, 5));
 			
-			DataFrame table = (DataFrame)canvas.getSharedData().get("data").getValue();
-			List<Axis> options = ((ObjectProperty<List<Axis>>)canvas.getSharedData().get("axes")).get();
+			DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
+			List<Axis> options = ((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get();
 			
 			CategoryAxis brushingAxis = new CategoryAxis(BRUSHING_ATTRIBUTE);
 			brushingAxis.scale(Arrays.asList(false, true));
@@ -79,7 +80,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 			
 			// call change listener to initialize the attribute values before setting the visibility axis
 			changeListener.changed(null, null, null);
-			((ObjectProperty<Axis>)canvas.getSharedData().get("visibilityAxis")).set(brushingAxis);
+			((ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis")).set(brushingAxis);
 			
 			for (Axis axis : options) {
 				if (axis instanceof RealAxis) {
@@ -136,6 +137,5 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 			slider.setHighValue(slider.getMax());
 		}
 	}
-	
 	
 }

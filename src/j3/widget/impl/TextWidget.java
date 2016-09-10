@@ -1,6 +1,7 @@
-package j3.widgets;
+package j3.widget.impl;
 
 import j3.Canvas;
+import j3.widget.Widget;
 
 import org.controlsfx.control.SegmentedButton;
 
@@ -49,7 +50,6 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 	
 	private double mouseOldX, mouseOldY;
 	
-	@SuppressWarnings("unchecked")
 	public TextWidget() {
 		super();
 
@@ -122,13 +122,11 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onAdd(Canvas canvas) {
 		text.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() % 2 == 0) {
-//				double textWidth = text.prefWidth(30);
-//				double textHeight = text.prefHeight(textWidth);
-				
 				fontFamily = new ComboBox<String>();
 				fontFamily.getItems().addAll(Font.getFamilies());
 				

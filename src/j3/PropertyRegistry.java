@@ -5,11 +5,11 @@ import javafx.beans.property.ObjectPropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-public class SharedData {
+public class PropertyRegistry {
 	
 	private ObservableMap<String, ObjectProperty<?>> properties;
 	
-	public SharedData() {
+	public PropertyRegistry() {
 		super();
 		
 		properties = FXCollections.observableHashMap();
@@ -30,7 +30,7 @@ public class SharedData {
 
 				@Override
 				public Object getBean() {
-					return SharedData.this;
+					return PropertyRegistry.this;
 				}
 
 				@Override

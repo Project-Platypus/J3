@@ -1,4 +1,4 @@
-package j3.widgets.threed;
+package j3.widgets.impl.scatter;
 
 import j3.Axis;
 

@@ -1,8 +1,9 @@
-package j3.widgets;
+package j3.widget.impl;
 
 import j3.Canvas;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.TitledWidget;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -76,7 +77,7 @@ public class Annotation extends TitledWidget<Annotation> {
 			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
 					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
 				Instance instance = (Instance)event.getPickResult().getIntersectedNode().getUserData();
-				DataFrame table = (DataFrame)canvas.getSharedData().get("data").getValue();
+				DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
 				
 				TableView tableView = new TableView();
 				tableView.setEditable(false);
