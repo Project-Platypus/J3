@@ -374,6 +374,14 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		if (canvas.getToolBar() != null) {
 			canvas.getToolBar().getItems().removeAll(mouseControls, axisControls, animationControls, changeColor, plotOptions);
 		}
+		
+		scatter.xAxisProperty().unbind();
+		scatter.yAxisProperty().unbind();
+		scatter.zAxisProperty().unbind();
+		scatter.colorAxisProperty().unbind();
+		scatter.sizeAxisProperty().unbind();
+		scatter.visibilityAxisProperty().unbind();
+		scatter.colormapProperty().unbind();
 	}
 	
 	public void update() {

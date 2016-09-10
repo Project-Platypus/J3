@@ -135,19 +135,23 @@ public class Canvas extends SubScene {
 			oldTransition.stop();
 		}
 		
+		// call the onRemove method so the widget can unregister any listeners/bindings immediately
+		widget.onRemove(this);
+		
 		// start the transition
 		Node node = widget.getNode();
 		FadeTransition newTransition = new FadeTransition(new Duration(1000), node);
 		newTransition.setToValue(0.0);
 		newTransition.setOnFinished(e -> {
 			widgets.remove(widget);
-			widget.onRemove(this);
 		});
 		newTransition.play();
 	}
 	
 	public void removeAll() {
-		widgets.clear();
+		for (Widget<?> widget : widgets) {
+			remove(widget);
+		}
 	}
 
 }
