@@ -388,9 +388,10 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 				IntStream.range(0, ncol).forEach(i -> {
 					Line line = new Line();
 					line.setStroke(colormap.map(colorAxis.map(instance.get(colorAxis.getColumn()))));
-					line.setStrokeWidth(1.5);
+					line.setStrokeWidth(2.0);
 					line.setUserData(instance);
 					line.setManaged(false);
+					line.setOnMouseClicked(event -> selectedInstance.set(instance));
 					lines.add(line);
 				});
 

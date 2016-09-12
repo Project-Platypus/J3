@@ -58,6 +58,7 @@ public class VerticalAxis extends Region {
 		prefHeightProperty().addListener((observable, oldValue, newValue) -> update());
 		
 		setManaged(false);
+		setPickOnBounds(false);
 	}
 	
 	public Axis getAxis() {
