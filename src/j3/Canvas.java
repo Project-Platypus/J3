@@ -91,6 +91,7 @@ public class Canvas extends SubScene {
 		selectionBox = new Rectangle();
 		selectionBox.setStroke(Color.BLACK);
 		selectionBox.setFill(Color.TRANSPARENT);
+		selectionBox.getStrokeDashArray().addAll(5.0, 5.0);
 		
 		setOnMousePressed(event -> {
 			if (boxSelectionHandler != null) {

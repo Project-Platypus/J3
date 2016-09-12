@@ -115,8 +115,6 @@ public class Subscene3D extends SubScene {
 						return;
 					}
 					
-					System.out.println("Subscene pressed");
-					
 					mouseOldX = me.getSceneX();
 					mouseOldY = me.getSceneY();
 				});
