@@ -71,7 +71,6 @@ public class GUI extends Application {
 		canvas.getPropertyRegistry().put("sizeAxis", null, "Size");
 		canvas.getPropertyRegistry().put("visibilityAxis", null, "Visibility");
 		canvas.getPropertyRegistry().put("selectedInstance", null);
-		canvas.getPropertyRegistry().put("hoveredInstance", null);
 		
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));

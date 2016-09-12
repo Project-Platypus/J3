@@ -7,7 +7,6 @@ import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.widget.TitledWidget;
 import j3.widget.impl.scatter.Axis3D;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -135,6 +134,44 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		return visibilityAxis;
 	}
 	
+	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
+		
+		private Instance oldInstance = null;
+
+		@Override
+		protected void invalidated() {
+			if (oldInstance != null) {
+				lineMap.get(oldInstance).forEach(line -> line.setStrokeWidth(1.0));
+			}
+			
+			lineMap.get(selectedInstance.get()).forEach(line -> line.setStrokeWidth(4.0));
+			oldInstance = selectedInstance.get();
+		}
+
+		@Override
+		public Object getBean() {
+			return ParallelCoordinates.this;
+		}
+
+		@Override
+		public String getName() {
+			return "selectedInstance";
+		}
+
+	};
+
+	public void setSelectedInstance(Instance instance) {
+		selectedInstance.set(instance);
+	}
+
+	public Instance getSelectedInstance() {
+		return selectedInstance.get();
+	}
+
+	public ObjectProperty<Instance> selectedInstanceProperty() {
+		return selectedInstance;
+	}
+	
 	private Point2D initPoint;
 
 	private Point2D anchorPoint;
@@ -178,6 +215,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		colormap.bind((ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap"));
 		colorAxis.bind((ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis"));
 		visibilityAxis.bind((ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis"));
+		selectedInstance.bindBidirectional((ObjectProperty<Instance>)canvas.getPropertyRegistry().get("selectedInstance"));
 		
 		List<Axis> options = ((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get();
 
@@ -443,6 +481,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		colormap.unbind();
 		colorAxis.unbind();
 		visibilityAxis.unbind();
+		selectedInstance.unbind();
 	}
 
 }

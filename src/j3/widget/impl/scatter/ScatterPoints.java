@@ -17,6 +17,7 @@ import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.Group;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
@@ -254,6 +255,56 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Colormap> colormapProperty() {
 		return colormap;
 	}
+	
+	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
+		
+		private Instance oldInstance = null;
+		
+		private Material oldMaterial = null;
+		
+		private final Material selectedMaterial = new PhongMaterial(Color.WHITE);
+
+		@Override
+		protected void invalidated() {
+			for (Shape3D shape : points) {
+				if (shape.getUserData() == oldInstance) {
+					shape.setMaterial(oldMaterial);
+				}
+			}
+			
+			for (Shape3D shape : points) {
+				if (shape.getUserData() == selectedInstance.get()) {
+					oldMaterial = shape.getMaterial();
+					shape.setMaterial(selectedMaterial);
+				}
+			}
+			
+			oldInstance = selectedInstance.get();
+		}
+
+		@Override
+		public Object getBean() {
+			return ScatterPoints.this;
+		}
+
+		@Override
+		public String getName() {
+			return "selectedInstance";
+		}
+
+	};
+
+	public void setSelectedInstance(Instance instance) {
+		selectedInstance.set(instance);
+	}
+
+	public Instance getSelectedInstance() {
+		return selectedInstance.get();
+	}
+
+	public ObjectProperty<Instance> selectedInstanceProperty() {
+		return selectedInstance;
+	}
 
 	private Group pointGroup;
 
@@ -285,6 +336,7 @@ public class ScatterPoints extends Region implements Plot3D {
 			Shape3D box = new Box(10, 10, 10);
 			Instance instance = table.getInstance(i);
 			box.setUserData(instance);
+			box.setOnMouseClicked(event -> setSelectedInstance(instance));
 			points.add(box);
 		}
 

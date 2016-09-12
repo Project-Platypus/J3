@@ -7,6 +7,7 @@ import j3.EmptyAxis;
 import j3.GUI;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
+import j3.dataframe.Instance;
 import j3.widget.Widget;
 import j3.widget.impl.Colorbar;
 import j3.widget.impl.scatter.Subscene3D.MouseMode;
@@ -77,6 +78,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		ObjectProperty<Axis> sizeAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("sizeAxis");
 		ObjectProperty<Axis> visibilityAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis");
 		ObjectProperty<Colormap> colormap = (ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap");
+		ObjectProperty<Instance> selectedInstance = (ObjectProperty<Instance>)canvas.getPropertyRegistry().get("selectedInstance");
 		
 		scatter.xAxisProperty().bind(xAxis);
 		scatter.yAxisProperty().bind(yAxis);
@@ -85,6 +87,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		scatter.sizeAxisProperty().bind(sizeAxis);
 		scatter.visibilityAxisProperty().bind(visibilityAxis);
 		scatter.colormapProperty().bind(colormap);
+		scatter.selectedInstanceProperty().bindBidirectional(selectedInstance);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -382,6 +385,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		scatter.sizeAxisProperty().unbind();
 		scatter.visibilityAxisProperty().unbind();
 		scatter.colormapProperty().unbind();
+		scatter.selectedInstanceProperty().unbind();
 	}
 	
 	public void update() {
