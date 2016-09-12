@@ -156,8 +156,8 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 			setLayoutX(canvas.getSelectionBox().getX());
 			setLayoutY(canvas.getSelectionBox().getY());
 			
-			pane.setPrefWidth(canvas.getSelectionBox().getWidth());
-			pane.setPrefHeight(canvas.getSelectionBox().getHeight());
+			pane.setPrefWidth(Math.max(300, canvas.getSelectionBox().getWidth()));
+			pane.setPrefHeight(Math.max(200, canvas.getSelectionBox().getHeight()));
 
 			canvas.add(this);
 

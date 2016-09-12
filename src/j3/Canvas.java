@@ -18,9 +18,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -67,6 +71,17 @@ public class Canvas extends SubScene {
 			}
 		});
 		
+		// register key listener to unset special canvas mouse event handlers
+		sceneProperty().addListener((observable, oldValue, newValue) -> {
+			newValue.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+				if (event.getCode().equals(KeyCode.ESCAPE)) {
+					setSingleClickHandler(null);
+					setBoxSelectionHandler(null);
+					root.getChildren().remove(selectionBox);
+				}
+			});
+		});
+		
 		setOnMouseClicked(event -> {
 			if (boxSelectionHandler == null) {
 				invokeSingleClickHandler(event);
@@ -84,6 +99,8 @@ public class Canvas extends SubScene {
 				
 				selectionBox.setX(mouseStart.getX());
 				selectionBox.setY(mouseStart.getY());
+				selectionBox.setWidth(0.0);
+				selectionBox.setHeight(0.0);
 				root.getChildren().add(selectionBox);
 				
 				event.consume();
@@ -125,10 +142,14 @@ public class Canvas extends SubScene {
 	public void setBoxSelectionHandler(EventHandler<MouseEvent> boxSelectionHandler) {
 		this.boxSelectionHandler = boxSelectionHandler;
 		
-		Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(true));
-		
-		if (this.boxSelectionHandler != null) {
-			setCursor(Cursor.CROSSHAIR);
+		if (this.boxSelectionHandler == null) {
+			Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(false));
+			setCursor(null);
+		} else {
+			Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(true));
+			
+			Image image = new Image(GUI.class.getResourceAsStream("/j3/icons/rectangle_cursor.png"));
+			setCursor(new ImageCursor(image, image.getWidth()*8.0/24.0, image.getHeight()*8.0/24.0));
 		}
 	}
 	
@@ -144,7 +165,9 @@ public class Canvas extends SubScene {
 	public void setSingleClickHandler(EventHandler<MouseEvent> singleClickHandler) {
 		this.singleClickHandler = singleClickHandler;
 		
-		if (this.singleClickHandler != null) {
+		if (this.singleClickHandler == null) {
+			setCursor(null);
+		} else {
 			setCursor(Cursor.CROSSHAIR);
 		}
 	}
