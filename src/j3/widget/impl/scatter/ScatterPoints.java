@@ -4,6 +4,7 @@ import j3.Axis;
 import j3.colormap.Colormap;
 import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
+import j3.dataframe.Instance;
 import j3.transition.DiffuseColorTransition;
 
 import java.util.ArrayList;
@@ -282,7 +283,8 @@ public class ScatterPoints extends Region implements Plot3D {
 
 		for (int i = 0; i < table.instanceCount(); i++) {
 			Shape3D box = new Box(10, 10, 10);
-			box.setUserData(table.getInstance(i));
+			Instance instance = table.getInstance(i);
+			box.setUserData(instance);
 			points.add(box);
 		}
 

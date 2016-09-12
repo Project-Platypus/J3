@@ -111,12 +111,22 @@ public class Subscene3D extends SubScene {
 				break;
 			case ROTATE:
 				setOnMousePressed(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
+					System.out.println("Subscene pressed");
+					
 					mouseOldX = me.getSceneX();
 					mouseOldY = me.getSceneY();
 				});
 
 
 				setOnMouseDragged(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
 					mousePosX = me.getSceneX();
 					mousePosY = me.getSceneY();
 					rotateX.setAngle(rotateX.getAngle() - (mousePosY - mouseOldY));
@@ -128,12 +138,20 @@ public class Subscene3D extends SubScene {
 				break;
 			case TRANSLATE:
 				setOnMousePressed(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
 					mouseOldX = me.getSceneX();
 					mouseOldY = me.getSceneY();
 				});
 
 
 				setOnMouseDragged(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
 					mousePosX = me.getSceneX();
 					mousePosY = me.getSceneY();
 					translate.setX(translate.getX() + (mousePosX - mouseOldX));
@@ -145,12 +163,20 @@ public class Subscene3D extends SubScene {
 				break;
 			case SCALE:
 				setOnMousePressed(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
 					mouseOldY = me.getSceneY();
 					scaleOld = scale.getX();
 				});
 
 
 				setOnMouseDragged(me -> {
+					if (me.isConsumed()) {
+						return;
+					}
+					
 					mousePosY = me.getSceneY();
 					
 					double diff = mouseOldY - mousePosY;

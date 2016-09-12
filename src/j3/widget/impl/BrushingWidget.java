@@ -15,6 +15,7 @@ import j3.Selector;
 import j3.dataframe.BooleanAttribute;
 import j3.dataframe.DataFrame;
 import j3.widget.TitledWidget;
+import j3.widget.impl.parallel.ParallelCoordinates;
 import j3.widget.impl.scatter.ScatterPoints;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -76,6 +77,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 				});
 				
 				Selector.on(canvas).get(ScatterPoints.class).forEach(node -> node.update());
+				Selector.on(canvas).get(ParallelCoordinates.class).forEach(node -> node.update());
 			};
 			
 			// call change listener to initialize the attribute values before setting the visibility axis

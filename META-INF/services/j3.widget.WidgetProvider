@@ -1,3 +1,4 @@
 j3.widget.impl.TextWidgetProvider
 j3.widget.impl.AnnotationProvider
 j3.widget.impl.BrushingWidgetProvider
+j3.widget.impl.parallel.ParallelCoordinatesProvider
