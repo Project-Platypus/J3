@@ -40,3 +40,19 @@
   -fx-border-insets: -2 -2 -2 -2;
   visibililty: hidden;
 }
+
+.j3-parallel-line {
+  -fx-stroke-width: 4;
+}
+
+.j3-parallel-label {
+
+}
+
+.j3-parallel-tick-line {
+  -fx-stroke-width: 2;
+}
+
+.j3-parallel-tick-label {
+  
+}

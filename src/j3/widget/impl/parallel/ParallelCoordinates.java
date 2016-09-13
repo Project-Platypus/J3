@@ -2,11 +2,18 @@ package j3.widget.impl.parallel;
 
 import j3.Axis;
 import j3.Canvas;
+import j3.EmptyAxis;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.widget.TitledWidget;
+import j3.widget.Widget;
 import j3.widget.impl.scatter.Axis3D;
+import j3.widget.impl.scatter.PlottingOptions;
+
+
+
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,22 +21,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+
+
+
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
+
+
+
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.text.Text;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
+	
+	public static final double DEFAULT_LINE_THICKNESS = 1.5;
 
 	private final List<VerticalAxis> verticalAxes = new ArrayList<>();
 
@@ -175,6 +203,8 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 	private Point2D initPoint;
 
 	private Point2D anchorPoint;
+	
+	private Button toolbarButton;
 
 	public ParallelCoordinates() {
 		super();
@@ -478,11 +508,101 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 	}
 
 	@Override
+	public void onAdd(Canvas canvas) {
+		toolbarButton = new Button();
+		toolbarButton.setGraphic(new ImageView(new ParallelCoordinatesProvider().getIcon()));
+		toolbarButton.setTooltip(new Tooltip("Options for the parallel coordinates plot"));
+		
+		toolbarButton.setOnAction(event -> {
+			PopOver popover = new PopOver();
+			popover.setTitle("Parallel Coordinates Plot Options");
+			popover.setAutoHide(true);
+			popover.setAutoFix(true);
+			popover.setArrowLocation(ArrowLocation.TOP_CENTER);
+			
+			GridPane content = new GridPane();
+			content.setHgap(5);
+			content.setVgap(5);
+			content.setPadding(new Insets(5, 5, 5, 5));
+
+			ColumnConstraints column1 = new ColumnConstraints();
+			column1.setHgrow(Priority.NEVER);
+
+			ColumnConstraints column2 = new ColumnConstraints();
+			column2.setHgrow(Priority.ALWAYS);
+			column2.setFillWidth(true);
+
+			content.getColumnConstraints().addAll(column1, column2);
+			
+			content.add(new Text("Line Thickness:"), 0, 0);
+			
+			Slider thicknessSlider = new Slider();
+			thicknessSlider.setMin(0.1);
+			thicknessSlider.setMax(5.0);
+			thicknessSlider.setValue(2.0);
+			thicknessSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+				table.getInstances().forEach(instance -> {
+					lineMap.get(instance).forEach(line -> line.setStrokeWidth(newValue.doubleValue()));
+				});
+			});			
+			content.add(thicknessSlider, 1, 0);
+
+			content.add(new Text("Line Transparency:"), 0, 1);
+			
+			Slider transparencySlider = new Slider();
+			transparencySlider.setMin(0.0);
+			transparencySlider.setMax(1.0);
+			transparencySlider.setValue(1.0);
+			transparencySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+				table.getInstances().forEach(instance -> {
+					lineMap.get(instance).forEach(line -> line.setOpacity(newValue.doubleValue()));
+				});
+			});
+			content.add(transparencySlider, 1, 1);
+			
+			content.add(new Text("Z Order:"), 0, 2);
+			
+			List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get());
+			
+			EmptyAxis empty = new EmptyAxis();
+			options.add(0, empty);
+			
+			ComboBox<Axis> combobox = new ComboBox<>();
+			combobox.getItems().addAll(options);
+			combobox.setMaxWidth(Double.POSITIVE_INFINITY);
+			combobox.setOnAction(e -> {
+				Axis axis = combobox.getValue();
+				List<Instance> instances = table.getInstances();
+				
+				instances.sort((i1, i2) -> {
+					double v1 = axis.map(i1.get(axis.getColumn()));
+					double v2 = axis.map(i2.get(axis.getColumn()));
+					return Double.compare(v1, v2);
+				});
+				
+				instances.forEach(instance -> {
+					lineMap.get(instance).forEach(line -> line.toFront());
+				});
+			});
+			content.add(combobox, 1, 2);
+			
+			popover.setContentNode(content);
+
+			Bounds bounds = toolbarButton.localToScreen(toolbarButton.getBoundsInLocal());
+			popover.show(canvas, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+		});
+		
+		canvas.getToolBar().getItems().add(toolbarButton);
+	}
+
+	@Override
 	public void onRemove(Canvas canvas) {
 		colormap.unbind();
 		colorAxis.unbind();
 		visibilityAxis.unbind();
 		selectedInstance.unbind();
+		
+		canvas.getToolBar().getItems().remove(toolbarButton);
 	}
 
 }

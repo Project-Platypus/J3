@@ -35,16 +35,20 @@ public class VerticalAxis extends Region {
 		tickTexts = new ArrayList<>();
 		
 		line = new Line(HALF_WIDTH, 0, HALF_WIDTH, 100);
+		line.getStyleClass().add("j3-parallel-line");
 		
 		label = new Text(axis.getLabel());
+		label.getStyleClass().add("j3-parallel-label");
 		
 		tickPositions = axis.getTickPositions();
 		String[] tickLabels = axis.getTickLabels();
 		
 		for (int i = 0; i < tickPositions.length; i++) {
 			Line tickLine = new Line(0, 0, 2*HALF_WIDTH, 0);
+			tickLine.getStyleClass().add("j3-parallel-tick-line");
 			
 			Text tickLabel = new Text(tickLabels[i]);
+			tickLabel.getStyleClass().add("j3-parallel-tick-label");
 			tickLabel.setLayoutX(-tickLabel.prefWidth(30));
 			
 			tickLines.add(tickLine);
