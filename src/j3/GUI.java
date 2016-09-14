@@ -5,6 +5,7 @@ import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.io.DataFrameReader;
 import j3.io.DataFrameReaderFactory;
+import j3.widget.impl.intro.IntroWidget;
 import j3.widget.impl.scatter.ScatterPlot;
 
 import java.io.File;
@@ -54,7 +55,6 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane root = new BorderPane();
-		root.setPrefSize(800, 600);
 
 		toolbar = new ToolBar();
 		
@@ -256,11 +256,12 @@ public class GUI extends Application {
 		root.setTop(toolbar);
 		root.setCenter(pane);
 		
-		Scene scene = new Scene(root);
+		Scene scene = new Scene(root, 800, 600);
 
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Java High Dimensional Visualization");
 		primaryStage.getIcons().add(new Image(GUI.class.getResourceAsStream("/j3/icons/appicon.png")));
+		primaryStage.setMaximized(true);
 		primaryStage.show();
 		
 		canvas.widthProperty().bind(pane.widthProperty());
@@ -268,6 +269,11 @@ public class GUI extends Application {
 		
 		scene.getStylesheets().add(
 				GUI.class.getResource("j3.css").toExternalForm());
+		
+		// display the intro widget if this is the first time
+		if (IntroWidget.shouldShow()) {
+			canvas.add(new IntroWidget());
+		}
 	}
 
 }

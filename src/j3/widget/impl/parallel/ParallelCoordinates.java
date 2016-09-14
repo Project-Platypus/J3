@@ -7,13 +7,7 @@ import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.widget.TitledWidget;
-import j3.widget.Widget;
 import j3.widget.impl.scatter.Axis3D;
-import j3.widget.impl.scatter.PlottingOptions;
-
-
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -21,14 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-
-
-
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
-
-
-
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
