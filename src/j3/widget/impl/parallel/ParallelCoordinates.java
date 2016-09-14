@@ -172,8 +172,12 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 				lineMap.get(oldInstance).forEach(line -> line.setStrokeWidth(1.0));
 			}
 			
-			lineMap.get(selectedInstance.get()).forEach(line -> line.setStrokeWidth(4.0));
-			oldInstance = selectedInstance.get();
+			if (lineMap.isEmpty()) {
+				oldInstance = null;
+			} else {
+				lineMap.get(selectedInstance.get()).forEach(line -> line.setStrokeWidth(4.0));
+				oldInstance = selectedInstance.get();
+			}
 		}
 
 		@Override

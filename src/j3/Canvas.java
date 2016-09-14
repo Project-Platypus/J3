@@ -141,6 +141,8 @@ public class Canvas extends SubScene {
 	}
 	
 	public void setBoxSelectionHandler(EventHandler<MouseEvent> boxSelectionHandler) {
+		setSingleClickHandler(null);
+		
 		this.boxSelectionHandler = boxSelectionHandler;
 		
 		if (this.boxSelectionHandler == null) {
@@ -164,6 +166,8 @@ public class Canvas extends SubScene {
 	}
 	
 	public void setSingleClickHandler(EventHandler<MouseEvent> singleClickHandler) {
+		setBoxSelectionHandler(null);
+		
 		this.singleClickHandler = singleClickHandler;
 		
 		if (this.singleClickHandler == null) {
