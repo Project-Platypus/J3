@@ -1,5 +1,7 @@
 package j3.widget.impl.intro;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.image.Image;
@@ -7,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 
 public class FrameView extends GridPane {
 	
@@ -19,9 +22,40 @@ public class FrameView extends GridPane {
 				title.setText("");
 				body.setText("");
 			} else {
-				imageView.setImage(frame.get().getImage());
-				title.setText(frame.get().getTitle());
-				body.setText(frame.get().getBody());
+				ParallelTransition pt = new ParallelTransition();
+				
+				FadeTransition ft1 = new FadeTransition(new Duration(250), imageView);
+				ft1.setFromValue(1.0);
+				ft1.setToValue(0.0);
+				ft1.setOnFinished(e -> imageView.setImage(frame.get().getImage()));
+				
+				FadeTransition ft2 = new FadeTransition(new Duration(250), imageView);
+				ft2.setFromValue(0.0);
+				ft2.setToValue(1.0);
+				ft2.setDelay(new Duration(250));
+				
+				FadeTransition ft3 = new FadeTransition(new Duration(250), title);
+				ft3.setFromValue(1.0);
+				ft3.setToValue(0.0);
+				ft3.setOnFinished(e -> title.setText(frame.get().getTitle()));
+				
+				FadeTransition ft4 = new FadeTransition(new Duration(250), title);
+				ft4.setFromValue(0.0);
+				ft4.setToValue(1.0);
+				ft4.setDelay(new Duration(250));
+				
+				FadeTransition ft5 = new FadeTransition(new Duration(250), body);
+				ft5.setFromValue(1.0);
+				ft5.setToValue(0.0);
+				ft5.setOnFinished(e -> body.setText(frame.get().getBody()));
+				
+				FadeTransition ft6 = new FadeTransition(new Duration(250), body);
+				ft6.setFromValue(0.0);
+				ft6.setToValue(1.0);
+				ft6.setDelay(new Duration(250));
+
+				pt.getChildren().addAll(ft1, ft2, ft3, ft4, ft5, ft6);
+				pt.play();
 			}
 		}
 
