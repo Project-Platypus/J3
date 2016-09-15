@@ -11,8 +11,8 @@ public class IntroWidget extends TitledWidget<IntroWidget> {
 	public IntroWidget() {
 		super();
 		setTitle("Welcome to J3");
-		pane.setPrefWidth(630);
-		pane.setPrefHeight(560);
+		pane.setPrefWidth(645);
+		pane.setPrefHeight(570);
 	}
 	
 	public static boolean shouldShow() {
