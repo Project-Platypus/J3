@@ -65,7 +65,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 					
 					for (RangeSlider slider : sliderMap.keySet()) {
 						Axis axis = sliderMap.get(slider);
-						Double value = (Double)instance.get(axis.getColumn());
+						Double value = (Double)instance.get(axis.getAttribute());
 						
 						if (value < slider.getLowValue() || value > slider.getHighValue()) {
 							isWithinBounds = false;

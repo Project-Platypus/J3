@@ -8,6 +8,7 @@ import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.widget.TitledWidget;
 import j3.widget.impl.scatter.Axis3D;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -407,9 +408,9 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 			table.getInstances().forEach(instance -> {
 				List<Line> lines = new ArrayList<>();
 
-				IntStream.range(0, ncol).forEach(i -> {
+				IntStream.range(0, ncol-1).forEach(i -> {
 					Line line = new Line();
-					line.setStroke(colormap.map(colorAxis.map(instance.get(colorAxis.getColumn()))));
+					line.setStroke(colormap.map(colorAxis.map(instance)));
 					line.setStrokeWidth(2.0);
 					line.setUserData(instance);
 					line.setManaged(false);
@@ -428,8 +429,8 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 			IntStream.range(0, ncol-1).forEach(i -> {
 				VerticalAxis axis1 = verticalAxes.get(permutation.get(i));
 				VerticalAxis axis2 = verticalAxes.get(permutation.get(i+1));
-				double value1 = axis1.getAxis().map(instance.get(axis1.getAxis().getColumn()));
-				double value2 = axis2.getAxis().map(instance.get(axis2.getAxis().getColumn()));
+				double value1 = axis1.getAxis().map(instance);
+				double value2 = axis2.getAxis().map(instance);
 				
 				Line line = lines.get(i);
 				line.setStartX(axis1.getLayoutX() + axis1.getTranslateX() + VerticalAxis.HALF_WIDTH);
@@ -459,7 +460,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 				Instance instance = table.getInstance(i);
 				
 				start[i] = (Color)lineMap.get(instance).get(0).getStroke();
-				end[i] = colormap.map(colorAxis == null ? 0.0 : colorAxis.map(instance.get(colorAxis.getColumn())));
+				end[i] = colormap.map(colorAxis == null ? 0.0 : colorAxis.map(instance));
 			}
 		}
 
@@ -491,7 +492,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		
 		IntStream.range(0, table.instanceCount()).forEach(i -> {
 			Instance instance = table.getInstance(i);
-			lineMap.get(instance).forEach(line -> line.setVisible(visibilityAxis == null ? true : visibilityAxis.map(instance.get(visibilityAxis.getColumn())) > 0.5));
+			lineMap.get(instance).forEach(line -> line.setVisible(visibilityAxis == null ? true : visibilityAxis.map(instance) > 0.5));
 		});
 	}
 	
@@ -499,6 +500,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		updateVisibilityAxis();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onAdd(Canvas canvas) {
 		toolbarButton = new Button();
@@ -567,8 +569,8 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 				List<Instance> instances = table.getInstances();
 				
 				instances.sort((i1, i2) -> {
-					double v1 = axis.map(i1.get(axis.getColumn()));
-					double v2 = axis.map(i2.get(axis.getColumn()));
+					double v1 = axis.map(i1);
+					double v2 = axis.map(i2);
 					return Double.compare(v1, v2);
 				});
 				

@@ -2,7 +2,6 @@ package j3.widget.impl.scatter;
 
 import j3.Axis;
 import j3.colormap.Colormap;
-import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.transition.DiffuseColorTransition;
@@ -382,9 +381,9 @@ public class ScatterPoints extends Region implements Plot3D {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
 
-				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, xAxis.getColumn(), i)) - 0.5);
-				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, yAxis.getColumn(), i)));
-				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, zAxis.getColumn(), i)) - 0.5);
+				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, i)) - 0.5);
+				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, i)));
+				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, i)) - 0.5);
 				
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);
 				box.setTranslateY(startY[i] + (endY - startY[i]) * frac);
@@ -394,8 +393,8 @@ public class ScatterPoints extends Region implements Plot3D {
 		
 	}
 	
-	private double map(Axis axis, Attribute<?> column, int row) {
-		return axis.map(table.getInstance(row).get(column));
+	private double map(Axis axis, int row) {
+		return axis.map(table.getInstance(row));
 	}
 	
 	private class ColorTransition extends Transition {
@@ -414,7 +413,7 @@ public class ScatterPoints extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, colorAxis.getColumn(), i)));
+				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, i)));
 				
 				if (startIndex < 0) {
 					startIndex = 0;
@@ -451,7 +450,7 @@ public class ScatterPoints extends Region implements Plot3D {
 			
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
-				end[i] = (sizeAxis == null ? 0.8 : map(sizeAxis, sizeAxis.getColumn(), i)) + 0.2;
+				end[i] = (sizeAxis == null ? 0.8 : map(sizeAxis, i)) + 0.2;
 			}
 		}
 
@@ -502,7 +501,7 @@ public class ScatterPoints extends Region implements Plot3D {
 		Axis visibilityAxis = getVisibilityAxis();
 		
 		for (int i = 0; i < points.size(); i++) {
-			points.get(i).setVisible(visibilityAxis == null ? true : map(visibilityAxis, visibilityAxis.getColumn(), i) > 0.5);
+			points.get(i).setVisible(visibilityAxis == null ? true : map(visibilityAxis, i) > 0.5);
 		}
 	}
 
