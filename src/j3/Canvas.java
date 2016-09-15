@@ -1,13 +1,14 @@
 package j3;
 
+import j3.widget.Widget;
+import j3.widget.impl.scatter.Subscene3D;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import j3.widget.Widget;
-import j3.widget.impl.scatter.Subscene3D;
 import javafx.animation.Animation.Status;
 import javafx.animation.FadeTransition;
 import javafx.animation.Transition;
@@ -17,7 +18,6 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
@@ -26,13 +26,14 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class Canvas extends SubScene {
 	
-	private final Group root;
+	private final Pane root;
 
 	private final ObservableList<Widget<? extends Node>> widgets;
 	
@@ -51,10 +52,12 @@ public class Canvas extends SubScene {
 	private EventHandler<MouseEvent> boxSelectionHandler;
 
 	public Canvas(double width, double height, ToolBar toolBar) {
-		super(new Group(), width, height);
+		super(new Pane(), width, height);
 		this.toolBar = toolBar;
 		
-		root = (Group)getRoot();
+		root = (Pane)getRoot();
+		root.getStyleClass().add("j3-canvas");
+		
 		propertyRegistry = new PropertyRegistry();
 		widgets = FXCollections.observableArrayList();
 		transitions = new HashMap<>();

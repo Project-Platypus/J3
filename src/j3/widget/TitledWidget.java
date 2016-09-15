@@ -61,15 +61,14 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 	private Translate translate = new Translate();
 
 	public TitledWidget() {
-		getStyleClass().add("j3-titled-widget");
-		
 		pane = new BorderPane();
-		pane.setStyle("-fx-background-radius: 5; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 5; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);");
+		pane.getStyleClass().add("j3-titled-widget");
 		pane.setPrefWidth(300);
 		pane.setPadding(new Insets(5, 5, 5, 5));
 		
 		titleText = new Text();
 		titleText.setText(getTitle());
+		titleText.getStyleClass().add("j3-titled-widget-title");
 		
 		closeButton = new Button();
 		closeButton.setGraphic(new ImageView(new Image(TitledWidget.class.getResourceAsStream("/j3/icons/close_1x_nopadding.png"))));

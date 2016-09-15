@@ -59,7 +59,6 @@ public class GUI extends Application {
 		toolbar = new ToolBar();
 		
 		canvas = new Canvas(400, 400, toolbar);
-		canvas.setFill(Color.WHITE);
 		
 		canvas.getPropertyRegistry().put("data", null);
 		canvas.getPropertyRegistry().put("axes", null);
@@ -268,7 +267,7 @@ public class GUI extends Application {
 		canvas.heightProperty().bind(pane.heightProperty());
 		
 		scene.getStylesheets().add(
-				GUI.class.getResource("j3.css").toExternalForm());
+				GUI.class.getResource("j3-dark.css").toExternalForm());
 		
 		// display the intro widget if this is the first time
 		if (IntroWidget.shouldShow()) {

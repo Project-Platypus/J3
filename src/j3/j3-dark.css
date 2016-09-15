@@ -1,6 +1,11 @@
+.j3-canvas {
+  -fx-background-color: #2B2C2D;
+  -fx-fill: #AAAAAA;
+}
+
 .j3-axis-side {
   -fx-fill: transparent;
-  -fx-stroke: black;
+  -fx-stroke: white;
   -fx-stroke-width: 3;
 }
 
@@ -12,10 +17,11 @@
 .j3-axis-label {
   -fx-font-weight: bold;
   -fx-font-size: 16;
+  -fx-fill: white;
 }
 
 .j3-tick-label {
-
+  -fx-fill: gray;
 }
 
 .j3-internal-tick-label-line {
@@ -36,31 +42,38 @@
 
 .j3-colorbar {
   -fx-border-width: 2;
-  -fx-border-color: black;
+  -fx-border-color: gray;
   -fx-border-insets: -2 -2 -2 -2;
 }
 
 .j3-parallel-line {
   -fx-stroke-width: 4;
+  -fx-stroke: white;
 }
 
 .j3-parallel-label {
-
+  -fx-fill: white;
 }
 
 .j3-parallel-tick-line {
   -fx-stroke-width: 2;
+  -fx-stroke: white;
 }
 
 .j3-parallel-tick-label {
-  
+  -fx-fill: white;
 }
 
-.j3-titled-widget{
+.j3-titled-widget {
   -fx-background-radius: 5;
-  -fx-background-color: white;
-  -fx-border-color: black;
+  -fx-background-color: #2B2C2D;
+  -fx-border-color: white;
   -fx-border-radius: 5;
   -fx-border-width: 2;
   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);
+}
+
+.j3-titled-widget-title {
+  -fx-fill: white;
+  -fx-font-weight: bold;
 }

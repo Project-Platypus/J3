@@ -4,7 +4,6 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -51,8 +50,6 @@ public class Subscene3D extends SubScene {
 
 	public Subscene3D(int size) {
 		super(new Group(), size, size, true, SceneAntialiasing.BALANCED);
-		
-		setFill(Color.WHITE);
 		
 		// initialize the camera
 		setCamera(new PerspectiveCamera());
