@@ -308,6 +308,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 
 			rotateLeft.setOnAction(event -> {
 				if (rotateLeft.isSelected()) {
+					rotateRightTransition.stop();
 					rotateLeftTransition.play();
 				} else {
 					rotateLeftTransition.stop();
@@ -316,6 +317,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 
 			rotateRight.setOnAction(event -> {
 				if (rotateRight.isSelected()) {
+					rotateLeftTransition.stop();
 					rotateRightTransition.play();
 				} else {
 					rotateRightTransition.stop();
