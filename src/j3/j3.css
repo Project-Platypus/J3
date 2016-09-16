@@ -1,3 +1,7 @@
+.j3-canvas {
+  -fx-background-color: white;
+}
+
 .j3-axis-side {
   -fx-fill: transparent;
   -fx-stroke: black;

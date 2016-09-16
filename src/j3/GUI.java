@@ -267,7 +267,7 @@ public class GUI extends Application {
 		canvas.heightProperty().bind(pane.heightProperty());
 		
 		scene.getStylesheets().add(
-				GUI.class.getResource("j3-dark.css").toExternalForm());
+				GUI.class.getResource("j3.css").toExternalForm());
 		
 		// display the intro widget if this is the first time
 		if (IntroWidget.shouldShow()) {

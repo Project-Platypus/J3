@@ -81,6 +81,8 @@ public class Canvas extends SubScene {
 					setSingleClickHandler(null);
 					setBoxSelectionHandler(null);
 					root.getChildren().remove(selectionBox);
+					
+					propertyRegistry.get("selectedInstance").set(null);
 				}
 			});
 		});
@@ -150,12 +152,12 @@ public class Canvas extends SubScene {
 		
 		if (this.boxSelectionHandler == null) {
 			Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(false));
-			setCursor(null);
+			root.setCursor(null);
 		} else {
 			Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(true));
 			
 			Image image = new Image(GUI.class.getResourceAsStream("/j3/icons/rectangle_cursor.png"));
-			setCursor(new ImageCursor(image, image.getWidth()*8.0/24.0, image.getHeight()*8.0/24.0));
+			root.setCursor(new ImageCursor(image, image.getWidth()*8.0/24.0, image.getHeight()*8.0/24.0));
 		}
 	}
 	
@@ -164,7 +166,7 @@ public class Canvas extends SubScene {
 			boxSelectionHandler.handle(event);
 			boxSelectionHandler = null;
 			Selector.on(root).get(Subscene3D.class).forEach(n -> n.setMouseTransparent(false));
-			setCursor(null);
+			root.setCursor(null);
 		}
 	}
 	
@@ -174,9 +176,9 @@ public class Canvas extends SubScene {
 		this.singleClickHandler = singleClickHandler;
 		
 		if (this.singleClickHandler == null) {
-			setCursor(null);
+			root.setCursor(null);
 		} else {
-			setCursor(Cursor.CROSSHAIR);
+			root.setCursor(Cursor.CROSSHAIR);
 		}
 	}
 	
@@ -184,7 +186,7 @@ public class Canvas extends SubScene {
 		if (singleClickHandler != null) {
 			singleClickHandler.handle(event);
 			singleClickHandler = null;
-			setCursor(null);
+			root.setCursor(null);
 		}
 	}
 	
