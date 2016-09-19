@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.application.Application;
-import javafx.beans.property.Property;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.ParallelCamera;
@@ -30,7 +29,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -51,10 +49,10 @@ public class GUI extends Application {
 	
 	private Canvas canvas;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane root = new BorderPane();
+		Scene scene = new Scene(root, 800, 600);
 
 		toolbar = new ToolBar();
 		
@@ -70,6 +68,7 @@ public class GUI extends Application {
 		canvas.getPropertyRegistry().put("sizeAxis", null, "Size");
 		canvas.getPropertyRegistry().put("visibilityAxis", null, "Visibility");
 		canvas.getPropertyRegistry().put("selectedInstance", null);
+		canvas.getPropertyRegistry().put("theme", null);
 		
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));
@@ -117,12 +116,12 @@ public class GUI extends Application {
 
 					DataFrame table = selectedReader.load(selectedFile);
 					
-					((Property<Axis>)canvas.getPropertyRegistry().get("xAxis")).setValue(null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("yAxis")).setValue(null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("zAxis")).setValue(null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("colorAxis")).setValue(null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("sizeAxis")).setValue(null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("visibilityAxis")).setValue(null);
+					canvas.getPropertyRegistry().get("xAxis").setValue(null);
+					canvas.getPropertyRegistry().get("yAxis").setValue(null);
+					canvas.getPropertyRegistry().get("zAxis").setValue(null);
+					canvas.getPropertyRegistry().get("colorAxis").setValue(null);
+					canvas.getPropertyRegistry().get("sizeAxis").setValue(null);
+					canvas.getPropertyRegistry().get("visibilityAxis").setValue(null);
 					
 					List<Axis> axes = new ArrayList<Axis>();
 					
@@ -142,14 +141,14 @@ public class GUI extends Application {
 						}
 					}
 					
-					((Property<DataFrame>)canvas.getPropertyRegistry().get("data")).setValue(table);
-					((Property<Axis>)canvas.getPropertyRegistry().get("xAxis")).setValue(axes.size() > 0 ? axes.get(0) : null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("yAxis")).setValue(axes.size() > 1 ? axes.get(1) : null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("zAxis")).setValue(axes.size() > 2 ? axes.get(2) : null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("colorAxis")).setValue(axes.size() > 3 ? axes.get(3) : null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("sizeAxis")).setValue(axes.size() > 4 ? axes.get(4) : null);
-					((Property<Axis>)canvas.getPropertyRegistry().get("visibilityAxis")).setValue(null);
-					((Property<List<Axis>>)canvas.getPropertyRegistry().get("axes")).setValue(axes);
+					canvas.getPropertyRegistry().get("data").setValue(table);
+					canvas.getPropertyRegistry().get("xAxis").setValue(axes.size() > 0 ? axes.get(0) : null);
+					canvas.getPropertyRegistry().get("yAxis").setValue(axes.size() > 1 ? axes.get(1) : null);
+					canvas.getPropertyRegistry().get("zAxis").setValue(axes.size() > 2 ? axes.get(2) : null);
+					canvas.getPropertyRegistry().get("colorAxis").setValue(axes.size() > 3 ? axes.get(3) : null);
+					canvas.getPropertyRegistry().get("sizeAxis").setValue(axes.size() > 4 ? axes.get(4) : null);
+					canvas.getPropertyRegistry().get("visibilityAxis").setValue(null);
+					canvas.getPropertyRegistry().get("axes").setValue(axes);
 					
 					canvas.add(new ScatterPlot());
 				} catch (IOException e) {
@@ -254,8 +253,6 @@ public class GUI extends Application {
 
 		root.setTop(toolbar);
 		root.setCenter(pane);
-		
-		Scene scene = new Scene(root, 800, 600);
 
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Java High Dimensional Visualization");
@@ -266,8 +263,13 @@ public class GUI extends Application {
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());
 		
-		scene.getStylesheets().add(
-				GUI.class.getResource("j3.css").toExternalForm());
+		canvas.getPropertyRegistry().get("theme").addListener((observable, oldValue, newValue) -> {
+			scene.getStylesheets().setAll(newValue == null || ((String)newValue).equalsIgnoreCase("Light") ?
+					GUI.class.getResource("j3.css").toExternalForm() :
+					GUI.class.getResource("j3-dark.css").toExternalForm());
+		});
+		
+		canvas.getPropertyRegistry().get("theme").set("Light");
 		
 		// display the intro widget if this is the first time
 		if (IntroWidget.shouldShow()) {

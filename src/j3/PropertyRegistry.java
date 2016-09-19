@@ -7,7 +7,7 @@ import javafx.collections.ObservableMap;
 
 public class PropertyRegistry {
 	
-	private ObservableMap<String, ObjectProperty<?>> properties;
+	private ObservableMap<String, ObjectProperty<Object>> properties;
 	
 	public PropertyRegistry() {
 		super();
@@ -15,18 +15,18 @@ public class PropertyRegistry {
 		properties = FXCollections.observableHashMap();
 	}
 	
-	public <T extends Object> ObjectProperty<T> put(String key, T value) {
+	public <T> ObjectProperty<T> put(String key, T value) {
 		return put(key, value, key);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends Object> ObjectProperty<T> put(String key, T value, String propertyName) {
-		ObjectProperty<T> property = null;
+	public <T> ObjectProperty<T> put(String key, T value, String propertyName) {
+		ObjectProperty<Object> property = null;
 		
 		if (value instanceof ObjectProperty) {
-			property = (ObjectProperty<T>)value;
+			property = (ObjectProperty<Object>)value;
 		} else {
-			property = new ObjectPropertyBase<T>(value) {
+			property = new ObjectPropertyBase<Object>(value) {
 
 				@Override
 				public Object getBean() {
@@ -42,11 +42,41 @@ public class PropertyRegistry {
 		}
 		
 		properties.put(key, property);
-		return property;
+		
+		return (ObjectProperty<T>)property;
 	}
 	
-	public ObjectProperty<? extends Object> get(String key) {
-		return properties.get(key);
+	public <T> ObjectProperty<T> get(String key) {
+		return get(key, null);
+	}
+	
+	public <T> ObjectProperty<T> get(String key, T defaultValue) {
+		return get(key, defaultValue, key);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> ObjectProperty<T> get(String key, T defaultValue, String propertyName) {
+		ObjectProperty<Object> result = properties.get(key);
+		
+		if (result == null) {
+			result = new ObjectPropertyBase<Object>(defaultValue) {
+
+				@Override
+				public Object getBean() {
+					return PropertyRegistry.this;
+				}
+
+				@Override
+				public String getName() {
+					return propertyName;
+				}
+				
+			};
+			
+			properties.put(key, result);
+		}
+		
+		return (ObjectProperty<T>)result;
 	}
 	
 	public boolean contains(String key) {

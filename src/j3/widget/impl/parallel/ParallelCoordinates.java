@@ -235,12 +235,12 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		container.setPrefHeight(300);
 
 		table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
-		colormap.bind((ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap"));
-		colorAxis.bind((ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis"));
-		visibilityAxis.bind((ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis"));
-		selectedInstance.bindBidirectional((ObjectProperty<Instance>)canvas.getPropertyRegistry().get("selectedInstance"));
+		colormap.bind(canvas.getPropertyRegistry().get("colormap"));
+		colorAxis.bind(canvas.getPropertyRegistry().get("colorAxis"));
+		visibilityAxis.bind(canvas.getPropertyRegistry().get("visibilityAxis"));
+		selectedInstance.bindBidirectional(canvas.getPropertyRegistry().get("selectedInstance"));
 		
-		List<Axis> options = ((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get();
+		List<Axis> options = (List<Axis>)canvas.getPropertyRegistry().get("axes").getValue();
 
 		for (Axis axis : options) {
 			VerticalAxis verticalAxis = new VerticalAxis(axis);
@@ -556,7 +556,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 			
 			content.add(new Text("Z Order:"), 0, 2);
 			
-			List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get());
+			List<Axis> options = new ArrayList<Axis>((List<Axis>)canvas.getPropertyRegistry().get("axes").getValue());
 			
 			EmptyAxis empty = new EmptyAxis();
 			options.add(0, empty);

@@ -3,7 +3,6 @@ package j3.widget.impl.scatter;
 import j3.Axis;
 import j3.Canvas;
 import j3.EmptyAxis;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +13,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -26,7 +26,7 @@ public class PlottingOptions extends Pane {
 	public PlottingOptions(Canvas canvas) {
 		super();
 		
-		List<Axis> options = new ArrayList<Axis>(((ObjectProperty<List<Axis>>)canvas.getPropertyRegistry().get("axes")).get());
+		List<Axis> options = new ArrayList<Axis>((List<Axis>)canvas.getPropertyRegistry().get("axes").getValue());
 		
 		EmptyAxis empty = new EmptyAxis();
 		options.add(0, empty);
@@ -50,11 +50,11 @@ public class PlottingOptions extends Pane {
 		int count = 0;
 		
 		List<ObjectProperty<Axis>> axisProperties = Arrays.asList(
-				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("xAxis"),
-				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("yAxis"),
-				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("zAxis"),
-				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis"),
-				(ObjectProperty<Axis>)canvas.getPropertyRegistry().get("sizeAxis"));
+				canvas.getPropertyRegistry().get("xAxis"),
+				canvas.getPropertyRegistry().get("yAxis"),
+				canvas.getPropertyRegistry().get("zAxis"),
+				canvas.getPropertyRegistry().get("colorAxis"),
+				canvas.getPropertyRegistry().get("sizeAxis"));
 
 		for (ObjectProperty<Axis> axisProperty : axisProperties) {
 			Label label = new Label(StringUtils.capitalize(axisProperty.getName()) + ":");
@@ -82,8 +82,21 @@ public class PlottingOptions extends Pane {
 
 			root.add(label, 0, count);
 			root.add(combobox, 1, count);
+			
 			count++;
 		}
+		
+		root.add(new Separator(), 0, count++, 2, 1);
+		
+		ComboBox<String> themeSelection = new ComboBox<>();
+		themeSelection.getItems().addAll("Light", "Dark");
+		themeSelection.getSelectionModel().select((String)canvas.getPropertyRegistry().get("theme").getValue());
+		themeSelection.setOnAction(event -> {
+			canvas.getPropertyRegistry().get("theme").set(themeSelection.getSelectionModel().getSelectedItem());
+		});
+		
+		root.add(new Label("Theme:"), 0, count);
+		root.add(themeSelection, 1, count++);
 
 		TitledPane pane = new TitledPane();
 		pane.setText("Axes");

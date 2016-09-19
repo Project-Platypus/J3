@@ -63,7 +63,6 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		return plot;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(Canvas canvas) {
 		DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
@@ -71,14 +70,14 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		plot = new Subscene3D(400);
 		scatter = new ScatterPoints(plot.getAxis3D(), table);
 		
-		ObjectProperty<Axis> xAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("xAxis");
-		ObjectProperty<Axis> yAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("yAxis");
-		ObjectProperty<Axis> zAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("zAxis");
-		ObjectProperty<Axis> colorAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("colorAxis");
-		ObjectProperty<Axis> sizeAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("sizeAxis");
-		ObjectProperty<Axis> visibilityAxis = (ObjectProperty<Axis>)canvas.getPropertyRegistry().get("visibilityAxis");
-		ObjectProperty<Colormap> colormap = (ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap");
-		ObjectProperty<Instance> selectedInstance = (ObjectProperty<Instance>)canvas.getPropertyRegistry().get("selectedInstance");
+		ObjectProperty<Axis> xAxis = canvas.getPropertyRegistry().get("xAxis");
+		ObjectProperty<Axis> yAxis = canvas.getPropertyRegistry().get("yAxis");
+		ObjectProperty<Axis> zAxis = canvas.getPropertyRegistry().get("zAxis");
+		ObjectProperty<Axis> colorAxis = canvas.getPropertyRegistry().get("colorAxis");
+		ObjectProperty<Axis> sizeAxis = canvas.getPropertyRegistry().get("sizeAxis");
+		ObjectProperty<Axis> visibilityAxis = canvas.getPropertyRegistry().get("visibilityAxis");
+		ObjectProperty<Colormap> colormap = canvas.getPropertyRegistry().get("colormap");
+		ObjectProperty<Instance> selectedInstance = canvas.getPropertyRegistry().get("selectedInstance");
 		
 		scatter.xAxisProperty().bind(xAxis);
 		scatter.yAxisProperty().bind(yAxis);
@@ -90,7 +89,6 @@ public class ScatterPlot implements Widget<Subscene3D> {
 		scatter.selectedInstanceProperty().bindBidirectional(selectedInstance);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onAdd(Canvas canvas) {
 		plot.widthProperty().bind(canvas.widthProperty());
@@ -335,7 +333,7 @@ public class ScatterPlot implements Widget<Subscene3D> {
 				popover.setContentNode(colormapSelector);
 				
 				colormapSelector.colormapProperty().addListener((observable, oldValue, newValue) -> {
-					((ObjectProperty<Colormap>)canvas.getPropertyRegistry().get("colormap")).set(newValue);;
+					canvas.getPropertyRegistry().get("colormap").setValue(newValue);;
 					popover.hide();
 				});
 				
