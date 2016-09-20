@@ -196,7 +196,7 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 	public void setContent(Node node) {
 		pane.setCenter(node);
 		
-		node.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+		node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 			pane.setCursor(null);
 		});
 	}
