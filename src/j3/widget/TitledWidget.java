@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
@@ -194,6 +195,10 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 	
 	public void setContent(Node node) {
 		pane.setCenter(node);
+		
+		node.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+			pane.setCursor(null);
+		});
 	}
 
 }
