@@ -8,8 +8,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -72,8 +70,7 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 		titleText.getStyleClass().add("j3-titled-widget-title");
 		
 		closeButton = new Button();
-		closeButton.setGraphic(new ImageView(new Image(TitledWidget.class.getResourceAsStream("/j3/icons/close_1x_nopadding.png"))));
-		closeButton.setStyle("-fx-background-color: transparent;");
+		closeButton.getStyleClass().add("j3-close-button");
 		
 		BorderPane title = new BorderPane();
 		title.setCenter(titleText);

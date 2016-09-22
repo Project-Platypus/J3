@@ -60,11 +60,21 @@
   
 }
 
-.j3-titled-widget{
+.j3-titled-widget {
   -fx-background-radius: 5;
   -fx-background-color: white;
   -fx-border-color: black;
   -fx-border-radius: 5;
   -fx-border-width: 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);
+}
+
+.j3-close-button {
+  -fx-graphic: url(/j3/icons/close_1x_nopadding.png);
+  -fx-background-color: transparent;
+}
+
+.j3-annotation-arrow {
+  -fx-stroke-width: 2;
   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);
 }

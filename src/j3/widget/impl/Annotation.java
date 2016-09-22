@@ -37,21 +37,36 @@ public class Annotation extends TitledWidget<Annotation> {
 		
 		target = node;
 		
-		arrow = new Line(200, 100, 300, 300);
-		arrow.setStrokeWidth(2.0);
-		arrow.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);");
+		arrow = new Line(0, 0, 0, 0);
+		arrow.getStyleClass().add("j3-annotation-arrow");
 		getChildren().add(arrow);
 		arrow.toBack();
 		
 		changeListener = (observable, oldValue, newValue) -> {
-			Bounds bounds = node.localToScreen(node.getBoundsInLocal());
-			Point2D point = new Point2D((bounds.getMinX()+bounds.getMaxX())/2.0, (bounds.getMinY()+bounds.getMaxY())/2.0);
+			Bounds startBounds = pane.localToScreen(pane.getBoundsInLocal());
 			
-			point = screenToLocal(point);
+			if (startBounds != null) {
+				Point2D startPoint = new Point2D((startBounds.getMinX()+startBounds.getMaxX())/2.0, (startBounds.getMinY()+startBounds.getMaxY())/2.0);
+				
+				startPoint = screenToLocal(startPoint);
+				
+				if (startPoint != null) {
+					arrow.setStartX(startPoint.getX());
+					arrow.setStartY(startPoint.getY());
+				}
+			}
 			
-			if (point != null) {
-				arrow.setEndX(point.getX());
-				arrow.setEndY(point.getY());
+			Bounds endBounds = node.localToScreen(node.getBoundsInLocal());
+			
+			if (endBounds != null) {
+				Point2D endPoint = new Point2D((endBounds.getMinX()+endBounds.getMaxX())/2.0, (endBounds.getMinY()+endBounds.getMaxY())/2.0);
+				
+				endPoint = screenToLocal(endPoint);
+				
+				if (endPoint != null) {
+					arrow.setEndX(endPoint.getX());
+					arrow.setEndY(endPoint.getY());
+				}
 			}
 		};
 		
