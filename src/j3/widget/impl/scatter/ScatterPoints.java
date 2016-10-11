@@ -16,7 +16,6 @@ import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.Group;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Shape3D;
@@ -257,28 +256,30 @@ public class ScatterPoints extends Region implements Plot3D {
 	
 	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
 		
-		private Instance oldInstance = null;
-		
-		private Material oldMaterial = null;
-		
-		private final Material selectedMaterial = new PhongMaterial(Color.WHITE);
+//		private Instance oldInstance = null;
+//		
+//		private Material oldMaterial = null;
+//		
+//		private final Material selectedMaterial = new PhongMaterial(Color.WHITE);
 
 		@Override
 		protected void invalidated() {
-			for (Shape3D shape : points) {
-				if (shape.getUserData() == oldInstance) {
-					shape.setMaterial(oldMaterial);
-				}
-			}
+//			for (Shape3D shape : points) {
+//				if (shape.getUserData() == oldInstance) {
+//					shape.setMaterial(oldMaterial);
+//				}
+//			}
+//			
+//			for (Shape3D shape : points) {
+//				if (shape.getUserData() == selectedInstance.get()) {
+//					oldMaterial = shape.getMaterial();
+//					shape.setMaterial(selectedMaterial);
+//				}
+//			}
+//			
+//			oldInstance = selectedInstance.get();
 			
-			for (Shape3D shape : points) {
-				if (shape.getUserData() == selectedInstance.get()) {
-					oldMaterial = shape.getMaterial();
-					shape.setMaterial(selectedMaterial);
-				}
-			}
-			
-			oldInstance = selectedInstance.get();
+			updateColorAxis();
 		}
 
 		@Override
@@ -397,11 +398,11 @@ public class ScatterPoints extends Region implements Plot3D {
 		return axis.map(table.getInstance(row));
 	}
 	
+	private int[] start;
+	
+	private int[] end;
+	
 	private class ColorTransition extends Transition {
-		
-		private int[] start = new int[points.size()];
-		
-		private int[] end = new int[points.size()];
 		
 		public ColorTransition() {
 			super();
@@ -410,13 +411,31 @@ public class ScatterPoints extends Region implements Plot3D {
 			setCycleCount(1);
 			
 			Axis colorAxis = getColorAxis();
+		
+			if (start == null) {
+				start = new int[points.size()];
+				end = new int[points.size()];
+				
+				for (int i = 0; i < points.size(); i++) {
+					int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
+				
+					if (startIndex < 0) {
+						startIndex = 0;
+					}
+					
+					start[i] = startIndex;
+					end[i] = startIndex;
+				}
+			}
 			
 			for (int i = 0; i < points.size(); i++) {
-				int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
+				int startIndex = end[i];
 				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, i)));
 				
-				if (startIndex < 0) {
-					startIndex = 0;
+				if (selectedInstance.get() != null) {
+					if (points.get(i).getUserData() != selectedInstance.get()) {
+						endIndex = -1; 
+					}
 				}
 				
 				start[i] = startIndex;
@@ -428,7 +447,19 @@ public class ScatterPoints extends Region implements Plot3D {
 		protected void interpolate(double frac) {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
-				box.setMaterial(materials.get(start[i] + (int)((end[i] - start[i]) * frac)));
+				
+				if (frac == 0.0) {
+					box.setMaterial(start[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(start[i]));
+				} else if (frac == 1.0) {
+					box.setMaterial(end[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(end[i]));
+				} else {
+					Color originalColor = start[i] == -1 ? Color.GRAY : materials.get(start[i]).getDiffuseColor(); 
+					Color newColor = originalColor.interpolate(
+							end[i] == -1 ? Color.GRAY : materials.get(end[i]).getDiffuseColor(),
+							frac);
+							
+					box.setMaterial(new PhongMaterial(newColor));
+				}
 			}
 		}
 		

@@ -18,9 +18,12 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SubScene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -54,7 +57,7 @@ public class Canvas extends SubScene {
 	public Canvas(double width, double height, ToolBar toolBar) {
 		super(new Pane(), width, height);
 		this.toolBar = toolBar;
-		
+
 		root = (Pane)getRoot();
 		root.getStyleClass().add("j3-canvas");
 		

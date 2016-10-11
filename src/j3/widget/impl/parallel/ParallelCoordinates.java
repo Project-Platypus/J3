@@ -153,20 +153,9 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 	
 	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
 		
-		private Instance oldInstance = null;
-
 		@Override
 		protected void invalidated() {
-			if (oldInstance != null) {
-				lineMap.get(oldInstance).forEach(line -> line.setStrokeWidth(1.0));
-			}
-			
-			if (lineMap.isEmpty()) {
-				oldInstance = null;
-			} else {
-				lineMap.get(selectedInstance.get()).forEach(line -> line.setStrokeWidth(4.0));
-				oldInstance = selectedInstance.get();
-			}
+			updateColorAxis();
 		}
 
 		@Override
@@ -460,7 +449,16 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 				Instance instance = table.getInstance(i);
 				
 				start[i] = (Color)lineMap.get(instance).get(0).getStroke();
-				end[i] = colormap.map(colorAxis == null ? 0.0 : colorAxis.map(instance));
+				
+				if (selectedInstance.get() == null) {
+					end[i] = colormap.map(colorAxis == null ? 0.0 : colorAxis.map(instance));
+				} else {
+					if (instance == selectedInstance.get()) {
+						end[i] = colormap.map(colorAxis == null ? 0.0 : colorAxis.map(instance));
+					} else {
+						end[i] = Color.GRAY;
+					}
+				}
 			}
 		}
 
@@ -469,6 +467,10 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 			IntStream.range(0, table.instanceCount()).forEach(i -> {
 				Instance instance = table.getInstance(i);
 				lineMap.get(instance).forEach(line -> line.setStroke(start[i].interpolate(end[i], frac)));
+				
+				if (selectedInstance.get() != null && instance == selectedInstance.get()) {
+					lineMap.get(instance).forEach(line -> line.toFront());
+				}
 			});
 		}
 		
