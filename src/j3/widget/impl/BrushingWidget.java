@@ -21,6 +21,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -32,11 +33,14 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 	public static final BooleanAttribute BRUSHING_ATTRIBUTE = new BooleanAttribute("J3_BRUSHING");
 	
 	private final Map<RangeSlider, Axis> sliderMap;
+	
+	private final Map<CheckBox, Axis> checkBoxMap;
 
 	public BrushingWidget() {
 		super();
 		
 		sliderMap = new HashMap<>();
+		checkBoxMap = new HashMap<>();
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 			CategoryAxis brushingAxis = new CategoryAxis(BRUSHING_ATTRIBUTE);
 			brushingAxis.scale(Arrays.asList(false, true));
 			
-			ChangeListener<Number> changeListener = (observable, oldValue, newValue) -> {
+			ChangeListener<? super Object> changeListener = (observable, oldValue, newValue) -> {
 				table.getInstances().forEach(instance -> {
 					boolean isWithinBounds = true;
 					
@@ -70,6 +74,18 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 						if (value < slider.getLowValue() || value > slider.getHighValue()) {
 							isWithinBounds = false;
 							break;
+						}
+					}
+
+					if (isWithinBounds) {
+						for (CheckBox checkbox : checkBoxMap.keySet()) {
+							Axis axis = checkBoxMap.get(checkbox);
+							Object value = instance.get(axis.getAttribute());
+
+							if (!checkbox.isSelected() && value.equals(checkbox.getUserData())) {
+								isWithinBounds = false;
+								break;
+							}
 						}
 					}
 					
@@ -100,6 +116,25 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 					VBox.setMargin(label, new Insets(5, 0, 0, 0));
 					
 					container.getChildren().addAll(label, slider);
+				} else if (axis instanceof CategoryAxis) {
+					CategoryAxis categoryAxis = (CategoryAxis)axis;
+					VBox buttonContainer = new VBox();
+					buttonContainer.setPadding(new Insets(0, 0, 0, 25));
+					
+					for (Object category : categoryAxis.getCategories()) {
+						CheckBox checkbox = new CheckBox();
+						checkbox.setText(category.toString());
+						checkbox.setSelected(true);
+						checkbox.setUserData(category);
+						checkbox.selectedProperty().addListener(changeListener);
+						buttonContainer.getChildren().add(checkbox);
+						checkBoxMap.put(checkbox, categoryAxis);
+					}
+					
+					Text label = new Text(axis.getLabel());
+					VBox.setMargin(label, new Insets(5, 0, 0, 0));
+					
+					container.getChildren().addAll(label, buttonContainer);
 				}
 			}
 			
@@ -111,6 +146,10 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 				for (RangeSlider slider : sliderMap.keySet()) {
 					slider.setLowValue(slider.getMin());
 					slider.setHighValue(slider.getMax());
+				}
+				
+				for (CheckBox checkbox : checkBoxMap.keySet()) {
+					checkbox.setSelected(true);
 				}
 			});
 			
@@ -137,6 +176,10 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 		for (RangeSlider slider : sliderMap.keySet()) {
 			slider.setLowValue(slider.getMin());
 			slider.setHighValue(slider.getMax());
+		}
+		
+		for (CheckBox checkbox : checkBoxMap.keySet()) {
+			checkbox.setSelected(true);
 		}
 	}
 	

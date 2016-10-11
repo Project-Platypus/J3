@@ -26,6 +26,10 @@ public class CategoryAxis extends Axis {
 		computeTicks();
 	}
 
+	public Set<Object> getCategories() {
+		return categories;
+	}
+
 	@Override
 	public String[] getTickLabels() {
 		return tickLabels;
