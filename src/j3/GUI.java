@@ -129,7 +129,7 @@ public class GUI extends Application {
 						Attribute<?> attribute = table.getAttribute(i);
 
 						if (!attribute.getName().isEmpty()) {
-							if (Double.class.isAssignableFrom(attribute.getType())) {
+							if (Number.class.isAssignableFrom(attribute.getType())) {
 								RealAxis axis = new RealAxis(attribute);
 								axis.scale(table.getValues(i));
 								axes.add(axis);
