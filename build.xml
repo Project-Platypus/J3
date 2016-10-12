@@ -98,7 +98,7 @@
 	
 	<taskdef name="launch4j"
 	    classname="net.sf.launch4j.ant.Launch4jTask"
-	    classpath="deploy/win/launch4j.jar:deploy/win/lib/xstream.jar" />
+	    classpath="deploy/win/launch4j/launch4j.jar:deploy/win/launch4j/lib/xstream.jar" />
 
 	<target name="-build-win-launch4j" depends="build-jar-full">
 		<launch4j configFile="deploy/win/launch4j.xml" />
