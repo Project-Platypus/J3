@@ -4,25 +4,42 @@
 
 	<!-- Loads properties from environment -->
 	<property environment="env" />
-	
+
 	<!-- Properties used by these Ant targets -->
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
 	<property name="version" value="0.1" />
 	<property name="name" value="J3" />
-	
+	<property name="ant.build.javac.source" value="1.8"/>
+	<property name="ant.build.javac.target" value="1.8"/>
+
 	<property name="java_home" value="C:\Program Files\Java\jdk1.8.0_60" />
 	<property name="jdk" value="${java_home}\bin\javac.exe" />
 	<property name="jre" value="${java_home}\jre" />
-	
+
+	<!--<property name="java_home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home" />
+	<property name="jdk" value="${java_home}\bin\javac" />
+	<property name="jre" value="${java_home}\jre" />-->
+
 	<!-- Classpath of third-party libraries used by J3 -->
 	<path id="classpath">
 		<fileset dir="lib" includes="*.jar" />
 	</path>
 	
+	<target name="setup">
+		<condition property="java_home_set" else="false">
+			<isset property="env.JAVA_HOME" />
+		</condition>
+		
+		<echo message="${java_home_set}" />
+		<echo message="${ant.java.version}" />
+		<echo message="${java.version}" />
+		<echo message="${java.home}" />
+	</target>
+
 	<!-- ============================== -->
 	<!-- Targets for creating JAR files -->
-    <!-- ============================== -->
+	<!-- ============================== -->
 
 	<target name="build-jar">
 		<delete dir="${build}" />
@@ -32,11 +49,10 @@
 		<javac destdir="${build}" srcdir="src" debug="${java.debug}"
 				excludes="**/package-info.java"
 				includeantruntime="false"
-				encoding="UTF-8"
-				executable="${jdk}" fork="yes">
+				encoding="UTF-8">
 			<classpath refid="classpath" />
 		</javac>
-		
+
 		<manifest file="${build}/META-INF/MANIFEST.MF">
 			<section name="j3/">
 				<attribute name="Specification-Title" value="${name}" />
@@ -47,7 +63,7 @@
 				<attribute name="Implementation-Vendor" value="http://www.j3.org" />
 			</section>
 		</manifest>
-		
+
 		<copy todir="${build}/META-INF">
 			<fileset dir="META-INF" />
 		</copy>
@@ -59,43 +75,43 @@
 		<jar basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"
 				jarfile="${dist}/${name}.jar" />
 	</target>
-	
+
 	<target name="build-jar-full" depends="build-jar">
 		<delete dir="${build}" />
 		<mkdir dir="${build}" />
-		
+
 		<unjar dest="${build}" src="lib/commons-csv-1.4.jar" />
 		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-CSV-NOTICE.txt" />
 		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-CSV-LICENSE.txt" />
-		
+
 		<unjar dest="${build}" src="lib/commons-io-2.5.jar" />
 		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-IO-NOTICE.txt" />
 		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-IO-LICENSE.txt" />
-		
+
 		<unjar dest="${build}" src="lib/commons-lang3-3.4.jar" />
 		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-LANG3-NOTICE.txt" />
 		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-LANG3-LICENSE.txt" />
-		
+
 		<unjar dest="${build}" src="lib/controlsfx-8.40.11.jar" />
-		
+
 		<delete dir="${build}/META-INF/maven" />
 		<delete file="${build}/META-INF/MANIFEST.mf" />
-		
+
 		<unjar dest="${build}" src="${dist}/${name}.jar" />
-		
+
 		<manifest mode="update" file="${build}/META-INF/MANIFEST.mf">
 			<attribute name="Main-Class" value="j3.GUI" />
 			<attribute name="Class-Path" value="." />
 		</manifest>
-		
+
 		<jar destfile="${dist}/${name}-Full.jar"
 			basedir="${build}" manifest="${build}/META-INF/MANIFEST.mf" />
 	</target>
-	
+
 	<!-- ======================================== -->
 	<!-- Targets for building Windows executables -->
-    <!-- ======================================== -->
-	
+	<!-- ======================================== -->
+
 	<taskdef name="launch4j"
 	    classname="net.sf.launch4j.ant.Launch4jTask"
 	    classpath="deploy/win/launch4j/launch4j.jar:deploy/win/launch4j/lib/xstream.jar" />
@@ -103,31 +119,86 @@
 	<target name="-build-win-launch4j" depends="build-jar-full">
 		<launch4j configFile="deploy/win/launch4j.xml" />
 	</target>
-	
+
 	<target name="-build-win-package" depends="-build-win-launch4j">
 		<delete dir="${build}" />
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/J3" />
-		
+
 		<copy todir="${build}/J3/data">
 			<fileset dir="data" />
 		</copy>
-		
-		<copy todir="${build}/J3" file="${dist}/J3.exe" />	
+
+		<copy todir="${build}/J3" file="${dist}/J3.exe" />
 	</target>
-	
+
 	<target name="-build-win-no-jre" depends="-build-win-package">
 		<zip destfile="${dist}/J3-Win.zip" basedir="${build}" />
 	</target>
-	
+
 	<target name="-build-win-jre" depends="-build-win-package">
 		<copy todir="${build}/J3/runtime">
 			<fileset dir="${jre}" />
 		</copy>
-		
+
 		<zip destfile="${dist}/J3-Win-JRE.zip" basedir="${build}" />
 	</target>
-	
+
 	<target name="build-win" depends="-build-win-no-jre, -build-win-jre" />
-	
+
+	<!-- ===================================== -->
+	<!-- Targets for building Mac applications -->
+	<!-- ===================================== -->
+
+	<taskdef name="bundleapp"
+             classname="com.oracle.appbundler.AppBundlerTask"   
+             classpath="deploy/mac/lib/appbundler-1.0.jar" />
+
+	<target name="-build-mac-package" depends="build-jar">
+		<delete dir="${build}" />
+		<mkdir dir="${build}" />
+		<mkdir dir="${build}/J3" />
+
+		<copy todir="${build}/J3/data">
+			<fileset dir="data" />
+		</copy>
+	</target>
+
+	<target name="-build-mac-no-jre" depends="-build-mac-package">
+		<bundleapp outputdirectory="${build}/J3"
+            	name="J3"
+            	displayname="J3"
+            	identifier="j3.GUI"
+            	mainclassname="j3.GUI"
+            	icon="deploy/mac/appicon.icns">
+			<classpath file="${dist}/J3.jar" />
+			<classpath dir="lib" />
+		</bundleapp>
+
+		<zip destfile="${dist}/J3-Mac.zip">
+			<zipfileset filemode="755" dir="${build}" includes="J3/J3.app/**/*" />
+			<zipfileset dir="${build}" includes="J3/data/*" />
+		</zip>
+	</target>
+
+	<target name="-build-mac-jre" depends="-build-mac-package">
+		<bundleapp outputdirectory="${build}/J3"
+            	name="J3"
+            	displayname="J3"
+            	identifier="j3.GUI"
+            	mainclassname="j3.GUI"
+            	icon="deploy/mac/appicon.icns">
+			<classpath file="${dist}/J3.jar" />
+			<classpath dir="lib" />
+			<runtime dir="${java_home}" />
+		</bundleapp>
+
+		<zip destfile="${dist}/J3-Mac-JRE.zip">
+			<zipfileset filemode="755" dir="${build}" includes="J3/J3.app/**/*" />
+			<zipfileset dir="${build}" includes="J3/data/*" />
+		</zip>
+	</target>
+
+	<target name="build-mac" depends="-build-mac-no-jre, -build-mac-jre" />
+
 </project>
