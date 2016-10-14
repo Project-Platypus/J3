@@ -12,36 +12,31 @@
 	<property name="name" value="J3" />
 	<property name="ant.build.javac.source" value="1.8"/>
 	<property name="ant.build.javac.target" value="1.8"/>
-
-	<property name="java_home" value="C:\Program Files\Java\jdk1.8.0_60" />
-	<property name="jdk" value="${java_home}\bin\javac.exe" />
-	<property name="jre" value="${java_home}\jre" />
-
-	<!--<property name="java_home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home" />
+	
+	<property name="java_home" value="${env.JAVA_HOME}" />
 	<property name="jdk" value="${java_home}\bin\javac" />
-	<property name="jre" value="${java_home}\jre" />-->
+	<property name="jre" value="${java_home}\jre" />
 
 	<!-- Classpath of third-party libraries used by J3 -->
 	<path id="classpath">
 		<fileset dir="lib" includes="*.jar" />
 	</path>
 	
-	<target name="setup">
-		<condition property="java_home_set" else="false">
-			<isset property="env.JAVA_HOME" />
-		</condition>
-		
-		<echo message="${java_home_set}" />
-		<echo message="${ant.java.version}" />
-		<echo message="${java.version}" />
-		<echo message="${java.home}" />
+	<target name="-setup">
+		<fail message="JAVA_HOME environment variable not set.  Please set to JDK 1.8 or later.">
+			<condition>
+				<not>
+					<isset property="env.JAVA_HOME"/>
+				</not>
+			</condition>
+		</fail>
 	</target>
 
 	<!-- ============================== -->
 	<!-- Targets for creating JAR files -->
 	<!-- ============================== -->
 
-	<target name="build-jar">
+	<target name="build-jar" depends="-setup" description="Compiles the J3 JAR">
 		<delete dir="${build}" />
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/META-INF" />
@@ -49,7 +44,9 @@
 		<javac destdir="${build}" srcdir="src" debug="${java.debug}"
 				excludes="**/package-info.java"
 				includeantruntime="false"
-				encoding="UTF-8">
+				encoding="UTF-8"
+				executable="${jdk}"
+				fork="yes">
 			<classpath refid="classpath" />
 		</javac>
 
@@ -76,7 +73,7 @@
 				jarfile="${dist}/${name}.jar" />
 	</target>
 
-	<target name="build-jar-full" depends="build-jar">
+	<target name="build-jar-full" depends="build-jar" description="Compiles the J3 JAR including all dependencies">
 		<delete dir="${build}" />
 		<mkdir dir="${build}" />
 
@@ -144,7 +141,8 @@
 		<zip destfile="${dist}/J3-Win-JRE.zip" basedir="${build}" />
 	</target>
 
-	<target name="build-win" depends="-build-win-no-jre, -build-win-jre" />
+	<target name="build-win" depends="-build-win-no-jre, -build-win-jre"
+		description="Creates Windows builds of J3" />
 
 	<!-- ===================================== -->
 	<!-- Targets for building Mac applications -->
@@ -199,6 +197,7 @@
 		</zip>
 	</target>
 
-	<target name="build-mac" depends="-build-mac-no-jre, -build-mac-jre" />
+	<target name="build-mac" depends="-build-mac-no-jre, -build-mac-jre"
+		description="Create Mac builds of J3" />
 
 </project>
