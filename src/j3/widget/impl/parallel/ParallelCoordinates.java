@@ -399,7 +399,11 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 
 				IntStream.range(0, ncol-1).forEach(i -> {
 					Line line = new Line();
-					line.setStroke(colormap.map(colorAxis.map(instance)));
+					
+					if (colorAxis != null && colormap != null) {
+						line.setStroke(colormap.map(colorAxis.map(instance)));
+					}
+					
 					line.setStrokeWidth(2.0);
 					line.setUserData(instance);
 					line.setManaged(false);
