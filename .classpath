@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-csv-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-2.0.0-RC1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

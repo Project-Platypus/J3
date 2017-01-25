@@ -1,18 +1,18 @@
 package j3.io;
 
-import j3.dataframe.DataFrame;
+import j3.Canvas;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public abstract class AbstractDataFrameReader implements DataFrameReader {
+public abstract class AbstractCanvasReader implements CanvasReader {
 
 	@Override
-	public DataFrame load(File file) throws IOException {
+	public void load(File file, Canvas canvas) throws IOException {
 		try (InputStream is = new FileInputStream(file)) {
-			return load(is);
+			load(is, canvas);
 		}
 	}
 	

@@ -206,6 +206,8 @@ public class DataTableWidget extends TitledWidget<DataTableWidget> {
 
 	@Override
 	public void onAdd(Canvas canvas) {
+		super.onAdd(canvas);
+		
 		selectedInstance.bindBidirectional(canvas.getPropertyRegistry().get("selectedInstance"));
 	}
 

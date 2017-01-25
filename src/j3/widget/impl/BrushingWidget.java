@@ -52,8 +52,6 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivate(Canvas canvas) {
-		super.onActivate(canvas);
-		
 		canvas.setSingleClickHandler(event -> {
 			VBox container = new VBox();
 			container.setPadding(new Insets(5, 5, 5, 5));

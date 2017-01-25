@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -77,6 +78,16 @@ public class DataFrame {
 	
 	public Instance getInstance(int index) {
 		return instances.get(index);
+	}
+	
+	public Instance getInstance(UUID id) {
+		for (Instance instance : instances) {
+			if (instance.getId().equals(id)) {
+				return instance;
+			}
+		}
+		
+		return null;
 	}
 	
 	public List<Attribute<?>> getAttributes() {

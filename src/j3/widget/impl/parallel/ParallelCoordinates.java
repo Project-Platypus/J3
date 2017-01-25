@@ -6,6 +6,7 @@ import j3.EmptyAxis;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.SerializableWidget;
 import j3.widget.TitledWidget;
 import j3.widget.impl.scatter.Axis3D;
 
@@ -18,6 +19,8 @@ import java.util.stream.IntStream;
 
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -44,7 +47,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
-public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
+public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> implements SerializableWidget  {
 	
 	public static final double DEFAULT_LINE_THICKNESS = 1.5;
 
@@ -509,6 +512,8 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onAdd(Canvas canvas) {
+		super.onAdd(canvas);
+		
 		toolbarButton = new Button();
 		toolbarButton.setGraphic(new ImageView(new ParallelCoordinatesProvider().getIcon()));
 		toolbarButton.setTooltip(new Tooltip("Options for the parallel coordinates plot"));
@@ -603,6 +608,38 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates>  {
 		selectedInstance.unbind();
 		
 		canvas.getToolBar().getItems().remove(toolbarButton);
+	}
+	
+	@Override
+	public Element saveState(Canvas canvas) {
+		Element element = DocumentHelper.createElement("parallelCoordinates");
+		
+		saveStateInternal(element);
+		
+		// save the ordering of the vertical axes
+		Element permutationElement = element.addElement("permutation");
+		
+		for (Integer index : permutation) {
+			permutationElement.addElement("value").setText(Integer.toString(index));
+		}
+		
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		restoreStateInternal(element);
+		
+		// restore the ordering of the vertical axes
+		Element permutationElement = element.element("permutation");
+		permutation.clear();
+		
+		for (Object obj : permutationElement.elements("value")) {
+			Element value = (Element)obj;
+			permutation.add(Integer.parseInt(value.getText()));
+		}
+		
+		relayoutLines();
 	}
 
 }

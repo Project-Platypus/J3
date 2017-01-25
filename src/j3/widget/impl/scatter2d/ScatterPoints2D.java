@@ -9,6 +9,7 @@ import j3.transition.DiffuseColorTransition;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
@@ -305,10 +306,13 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 		});
 
 		for (int i = 0; i < table.instanceCount(); i++) {
-			Shape3D box = new Box(10, 10, 10);
 			Instance instance = table.getInstance(i);
+			
+			Shape3D box = new Box(10, 10, 10);
+			box.setId(UUID.randomUUID().toString());
 			box.setUserData(instance);
 			box.setOnMouseClicked(event -> setSelectedInstance(instance));
+			
 			points.add(box);
 		}
 

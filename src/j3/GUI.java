@@ -1,17 +1,14 @@
 package j3;
 
 import j3.colormap.impl.HSVColormap;
-import j3.dataframe.Attribute;
-import j3.dataframe.DataFrame;
-import j3.io.DataFrameReader;
-import j3.io.DataFrameReaderFactory;
+import j3.io.CanvasReaderFactory;
+import j3.io.CanvasReader;
+import j3.io.impl.J3Writer;
 import j3.widget.impl.intro.IntroWidget;
-import j3.widget.impl.scatter.ScatterPlot;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,12 +68,17 @@ public class GUI extends Application {
 		canvas.getPropertyRegistry().put("theme", null);
 		
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
-		Image fileImage = new Image(GUI.class.getResourceAsStream("/j3/icons/file_1x.png"));
+		Image openImage = new Image(GUI.class.getResourceAsStream("/j3/icons/open_1x.png"));
+		Image saveImage = new Image(GUI.class.getResourceAsStream("/j3/icons/save_1x.png"));
 		Image widgetImage = new Image(GUI.class.getResourceAsStream("/j3/icons/widgets_1x.png"));
 
 		Button fileOpen = new Button();
-		fileOpen.setGraphic(new ImageView(fileImage));
+		fileOpen.setGraphic(new ImageView(openImage));
 		fileOpen.setTooltip(new Tooltip("Open a file"));
+		
+		Button fileSave = new Button();
+		fileSave.setGraphic(new ImageView(saveImage));
+		fileSave.setTooltip(new Tooltip("Save this J3 visualization"));
 		
 		Button camera = new Button();
 		camera.setGraphic(new ImageView(cameraImage));
@@ -86,7 +88,7 @@ public class GUI extends Application {
 		widgets.setGraphic(new ImageView(widgetImage));
 		widgets.setTooltip(new Tooltip("Add widgets to the plot"));
 
-		toolbar.getItems().addAll(fileOpen, camera, widgets);
+		toolbar.getItems().addAll(fileOpen, fileSave, camera, widgets);
 		
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
@@ -97,9 +99,9 @@ public class GUI extends Application {
 				fileChooser.setInitialDirectory(new File("data/"));
 			}
 			
-			List<DataFrameReader> readers = DataFrameReaderFactory.getInstance().getProviders();
+			List<CanvasReader> readers = CanvasReaderFactory.getInstance().getProviders();
 			
-			for (DataFrameReader reader : readers) {
+			for (CanvasReader reader : readers) {
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
 						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
 				fileChooser.getExtensionFilters().add(filter);
@@ -111,46 +113,35 @@ public class GUI extends Application {
 				try {
 					canvas.removeAll();
 					
-					DataFrameReader selectedReader = readers.get(fileChooser.getExtensionFilters().indexOf(
+					CanvasReader selectedReader = readers.get(fileChooser.getExtensionFilters().indexOf(
 							fileChooser.getSelectedExtensionFilter()));
+					
+					selectedReader.load(selectedFile, canvas);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		fileSave.setOnAction(event -> {
+			FileChooser fileChooser = new FileChooser();
+			
+			File initialFile = new File("data/");
+			
+			if (initialFile.exists() && initialFile.isDirectory()) {
+				fileChooser.setInitialDirectory(new File("data/"));
+			}
+			
+			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
+					"J3 Export",
+					Arrays.asList("*.j3"));
+			fileChooser.getExtensionFilters().add(filter);
 
-					DataFrame table = selectedReader.load(selectedFile);
-					
-					canvas.getPropertyRegistry().get("xAxis").setValue(null);
-					canvas.getPropertyRegistry().get("yAxis").setValue(null);
-					canvas.getPropertyRegistry().get("zAxis").setValue(null);
-					canvas.getPropertyRegistry().get("colorAxis").setValue(null);
-					canvas.getPropertyRegistry().get("sizeAxis").setValue(null);
-					canvas.getPropertyRegistry().get("visibilityAxis").setValue(null);
-					
-					List<Axis> axes = new ArrayList<Axis>();
-					
-					for (int i = 0; i < table.attributeCount(); i++) {
-						Attribute<?> attribute = table.getAttribute(i);
-
-						if (!attribute.getName().isEmpty()) {
-							if (Number.class.isAssignableFrom(attribute.getType())) {
-								RealAxis axis = new RealAxis(attribute);
-								axis.scale(table.getValues(i));
-								axes.add(axis);
-							} else if (String.class.isAssignableFrom(attribute.getType())) {
-								CategoryAxis axis = new CategoryAxis(attribute);
-								axis.scale(table.getValues(i));
-								axes.add(axis);
-							}
-						}
-					}
-					
-					canvas.getPropertyRegistry().get("data").setValue(table);
-					canvas.getPropertyRegistry().get("xAxis").setValue(axes.size() > 0 ? axes.get(0) : null);
-					canvas.getPropertyRegistry().get("yAxis").setValue(axes.size() > 1 ? axes.get(1) : null);
-					canvas.getPropertyRegistry().get("zAxis").setValue(axes.size() > 2 ? axes.get(2) : null);
-					canvas.getPropertyRegistry().get("colorAxis").setValue(axes.size() > 3 ? axes.get(3) : null);
-					canvas.getPropertyRegistry().get("sizeAxis").setValue(axes.size() > 4 ? axes.get(4) : null);
-					canvas.getPropertyRegistry().get("visibilityAxis").setValue(null);
-					canvas.getPropertyRegistry().get("axes").setValue(axes);
-					
-					canvas.add(new ScatterPlot());
+			File selectedFile = fileChooser.showSaveDialog(primaryStage);
+			
+			if (selectedFile != null) {
+				try {
+					new J3Writer().save(selectedFile, canvas);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

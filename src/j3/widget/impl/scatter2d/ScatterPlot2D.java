@@ -5,12 +5,22 @@ import j3.Canvas;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.SerializableWidget;
 import j3.widget.TitledWidget;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
-public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> {
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> implements SerializableWidget {
 
 	private Axis2D plot;
 	
@@ -76,11 +86,6 @@ public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> {
 	}
 
 	@Override
-	public void onAdd(Canvas canvas) {
-		
-	}
-
-	@Override
 	public void onRemove(Canvas canvas) {
 		scatter.xAxisProperty().unbind();
 		scatter.yAxisProperty().unbind();
@@ -93,6 +98,46 @@ public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> {
 	
 	public void update() {
 		scatter.update();
+	}
+
+	@Override
+	public Element saveState(Canvas canvas) {
+		Element element = DocumentHelper.createElement("scatter2d");
+		
+		saveStateInternal(element);
+		
+		// store the node ids
+		Element mapping = element.addElement("mapping");
+		
+		for (Node node : scatter.getPoints()) {
+			Instance instance = (Instance)node.getUserData();
+			
+			Element map = mapping.addElement("map");
+			map.addAttribute("instanceId", instance.getId().toString());
+			map.addAttribute("nodeId", node.getId());
+		}
+		
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		restoreStateInternal(element);
+		
+		// update the node ids
+		Map<UUID, UUID> cache = new HashMap<UUID, UUID>();
+		Element mapping = element.element("mapping");
+		
+		for (Object obj : mapping.elements("map")) {
+			Element map = (Element)obj;
+			cache.put(UUID.fromString(map.attributeValue("instanceId")),
+					UUID.fromString(map.attributeValue("nodeId")));
+		}
+		
+		for (Node node : scatter.getPoints()) {
+			Instance instance = (Instance)node.getUserData();
+			node.setId(cache.get(instance.getId()).toString());
+		}
 	}
 
 }

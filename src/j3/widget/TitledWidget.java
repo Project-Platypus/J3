@@ -1,8 +1,11 @@
 package j3.widget;
 
+import org.dom4j.Element;
+
 import j3.Canvas;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.StringPropertyBase;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -184,7 +187,7 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 	}
 
 	@Override
-	public void onActivate(Canvas canvas) {
+	public void onAdd(Canvas canvas) {
 		closeButton.setOnAction(e -> {
 			canvas.remove(this);
 		});
@@ -196,6 +199,30 @@ public abstract class TitledWidget<T> extends Region implements Widget<TitledWid
 		node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 			pane.setCursor(null);
 		});
+	}
+	
+	protected void saveStateInternal(Element element) {
+		Element width = element.addElement("width");
+		width.setText(Double.toString(pane.getWidth()));
+		
+		Element height = element.addElement("height");
+		height.setText(Double.toString(pane.getHeight()));
+		
+		Bounds bounds = pane.getBoundsInLocal();
+		bounds = pane.getLocalToSceneTransform().transform(bounds);
+		
+		Element x = element.addElement("posX");
+		x.setText(Double.toString(bounds.getMinX()));
+		
+		Element y = element.addElement("posY");
+		y.setText(Double.toString(bounds.getMinY()));
+	}
+	
+	protected void restoreStateInternal(Element element) {
+		pane.setLayoutX(Double.parseDouble(element.elementText("posX")));
+		pane.setLayoutY(Double.parseDouble(element.elementText("posY")));
+		pane.setPrefWidth(Double.parseDouble(element.elementText("width")));
+		pane.setPrefHeight(Double.parseDouble(element.elementText("height")));
 	}
 
 }

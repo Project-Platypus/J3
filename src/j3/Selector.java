@@ -120,7 +120,7 @@ public class Selector {
 			} else if (key.startsWith(".")) {
 				return node.getStyleClass().contains(key.substring(1));
 			} else if (key.startsWith("#")) {
-				return node.getId().equals(key.substring(1));
+				return node.getId() != null && node.getId().equals(key.substring(1));
 			} else {
 				return key.getClass().getSimpleName().equals(key);
 			}

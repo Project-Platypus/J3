@@ -1,6 +1,11 @@
 package j3.io.impl;
 
-import java.io.File;
+import j3.dataframe.DataFrame;
+import j3.dataframe.DoubleAttribute;
+import j3.dataframe.Instance;
+import j3.dataframe.StringAttribute;
+import j3.io.AbstractDataFrameReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,12 +14,6 @@ import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import j3.dataframe.DataFrame;
-import j3.dataframe.DoubleAttribute;
-import j3.dataframe.Instance;
-import j3.dataframe.StringAttribute;
-import j3.io.AbstractDataFrameReader;
 
 public class ARFFReader extends AbstractDataFrameReader {
 
@@ -147,11 +146,6 @@ public class ARFFReader extends AbstractDataFrameReader {
 		sb.append(String.format(format, values));
 		
 		throw new IOException(sb.toString());
-	}
-	
-	public static void main(String[] args) throws IOException {
-		ARFFReader reader = new ARFFReader();
-		reader.load(new File("iris.arff"));
 	}
 
 }

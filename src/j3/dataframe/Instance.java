@@ -4,14 +4,26 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class Instance {
 	
 	private final Map<Attribute<?>, Object> values;
 	
+	private UUID id;
+	
 	public Instance() {
 		super();
 		values = new HashMap<>();
+		id = UUID.randomUUID();
+	}
+	
+	public UUID getId() {
+		return id;
+	}
+	
+	public void setId(UUID id) {
+		this.id = id;
 	}
 	
 	public Set<Attribute<?>> getAttributes() {

@@ -1,7 +1,12 @@
 package j3.widget.impl;
 
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import j3.Canvas;
+import j3.Selector;
 import j3.dataframe.Instance;
+import j3.widget.SerializableWidget;
 import j3.widget.Widget;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
@@ -24,7 +29,7 @@ import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 
-public class Tag extends Group implements Widget<Tag> {
+public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 	
 	private Node target;
 
@@ -36,15 +41,6 @@ public class Tag extends Group implements Widget<Tag> {
 
 	public Tag() {
 		super();
-	}
-	
-	public void target(Node node) {
-		if (shape != null) {
-			getChildren().remove(shape);
-			target.localToSceneTransformProperty().removeListener(changeListener);
-		}
-		
-		target = node;
 		
 		shape = new Circle(0, 0, 20);
 		shape.getStyleClass().add("j3-tag");
@@ -52,6 +48,18 @@ public class Tag extends Group implements Widget<Tag> {
 		shape.setStroke(color);
 		shape.setStrokeWidth(4.0);
 		shape.setPickOnBounds(false);
+		
+		setPickOnBounds(false);
+	}
+	
+	public void target(Node node) {
+		if (target != null) {
+			getChildren().remove(shape);
+			target.localToSceneTransformProperty().removeListener(changeListener);
+		}
+		
+		target = node;
+		
 		getChildren().add(shape);
 		shape.toBack();
 		
@@ -71,8 +79,6 @@ public class Tag extends Group implements Widget<Tag> {
 		
 		node.localToSceneTransformProperty().addListener(changeListener);
 		changeListener.changed(null, null, null);
-		
-		setPickOnBounds(false);
 	}
 
 	@Override
@@ -84,7 +90,8 @@ public class Tag extends Group implements Widget<Tag> {
 	public void onActivate(Canvas canvas) {
 		canvas.setSingleClickHandler(event -> {
 			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
+					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance) &&
+					(event.getPickResult().getIntersectedNode().getId() != null)) {
 				target(event.getPickResult().getIntersectedNode());
 				canvas.add(this);
 			}
@@ -160,6 +167,44 @@ public class Tag extends Group implements Widget<Tag> {
 		if (target != null) {
 			target.localToSceneTransformProperty().removeListener(changeListener);
 		}
+	}
+
+	@Override
+	public Element saveState(Canvas canvas) {
+		Element element = DocumentHelper.createElement("tag");
+
+		Element targetElement = element.addElement("target");
+		targetElement.setText(target.getId());
+		
+		Element colorElement = element.addElement("color");
+		colorElement.addAttribute("r", Double.toString(color.getRed()));
+		colorElement.addAttribute("g", Double.toString(color.getGreen()));
+		colorElement.addAttribute("b", Double.toString(color.getBlue()));
+		colorElement.addAttribute("a", Double.toString(color.getOpacity()));
+		
+		Element sizeElement = element.addElement("size");
+		sizeElement.setText(Double.toString(shape.getRadius()));
+		
+		Element thicknessElement = element.addElement("thickness");
+		thicknessElement.setText(Double.toString(shape.getStrokeWidth()));
+		
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		String id = element.elementText("target");
+		target(Selector.on(canvas).select("#" + id).getFirst());
+		
+		Element colorElement = element.element("color");
+		color = Color.color(Double.parseDouble(colorElement.attributeValue("r")),
+				Double.parseDouble(colorElement.attributeValue("g")),
+				Double.parseDouble(colorElement.attributeValue("b")),
+				Double.parseDouble(colorElement.attributeValue("a")));
+		
+		shape.setStroke(color);
+		shape.setRadius(Double.parseDouble(element.elementText("size")));
+		shape.setStrokeWidth(Double.parseDouble(element.elementText("thickness")));
 	}
 
 }

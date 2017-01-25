@@ -1,9 +1,12 @@
 package j3.widget.impl;
 
 import j3.Canvas;
+import j3.widget.SerializableWidget;
 import j3.widget.Widget;
 
 import org.controlsfx.control.SegmentedButton;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
@@ -28,7 +31,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.converter.IntegerStringConverter;
 
-public class TextWidget extends Pane implements Widget<TextWidget> {
+public class TextWidget extends Pane implements Widget<TextWidget>, SerializableWidget {
 	
 	private Text text;
 	
@@ -121,8 +124,7 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 			event.consume();
 		});
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public void onAdd(Canvas canvas) {
 		text.setOnMouseClicked(event -> {
@@ -147,30 +149,15 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 				group.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
 				group.setToggleGroup(null);
 				
-				// interestingly, the Font class has no methods to access certain font
-				// properties; thus, we scan through the CSS properties
-				for (CssMetaData<? extends Styleable, ?> data : text.getCssMetaData()) {
-					if (data.getProperty().equals("-fx-underline")) {
-						CssMetaData<Text, Boolean> metadata = (CssMetaData<Text, Boolean>)data;
-						StyleableProperty<Boolean> property = metadata.getStyleableProperty(text);
-						Boolean value = null;
-						
-						if (property == null) {
-							value = metadata.getInitialValue(text);
-						} else {
-							value = property.getValue();
-						}
-						
-						underline.setSelected(value);
-					}
-				}
-				
 				// another weird thing...the font subproperties (size, weight, ...)
 				// all have null values
 				fontFamily.setValue(text.getFont().getFamily());
 				fontSize.setValue((int)text.getFont().getSize());
 				bold.setSelected(text.getFont().getStyle().contains("Bold"));
 				italic.setSelected(text.getFont().getStyle().contains("Italic"));
+				
+				// special call to determine if text is underlined
+				underline.setSelected(isUnderline());
 				
 				pane = new BorderPane();
 				
@@ -240,6 +227,77 @@ public class TextWidget extends Pane implements Widget<TextWidget> {
 				menu.show(this, event.getScreenX(), event.getScreenY());
 			}
 		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean isUnderline() {
+		// interestingly, the Font class has no methods to access certain font
+		// properties; thus, we scan through the CSS properties
+		for (CssMetaData<? extends Styleable, ?> data : text.getCssMetaData()) {
+			if (data.getProperty().equals("-fx-underline")) {
+				CssMetaData<Text, Boolean> metadata = (CssMetaData<Text, Boolean>)data;
+				StyleableProperty<Boolean> property = metadata.getStyleableProperty(text);
+				Boolean value = null;
+				
+				if (property == null) {
+					value = metadata.getInitialValue(text);
+				} else {
+					value = property.getValue();
+				}
+				
+				return value;
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public Element saveState(Canvas canvas) {
+		Bounds bounds = text.getBoundsInLocal();
+		bounds = text.getLocalToSceneTransform().transform(bounds);
+		
+		Element element = DocumentHelper.createElement("textWidget");
+		element.addElement("text").setText(text.getText());
+		element.addElement("posX").setText(Double.toString(bounds.getMinX()));
+		element.addElement("posY").setText(Double.toString(bounds.getMaxY()));
+		element.addElement("fontFamily").setText(text.getFont().getFamily());
+		element.addElement("fontSize").setText(Integer.toString((int)text.getFont().getSize()));
+		element.addElement("isBold").setText(Boolean.toString(text.getFont().getStyle().contains("Bold")));
+		element.addElement("isItalic").setText(Boolean.toString(text.getFont().getStyle().contains("Italic")));
+		element.addElement("isUnderline").setText(Boolean.toString(isUnderline()));
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		// set position
+		text.setLayoutX(Double.parseDouble(element.elementText("posX")));
+		text.setLayoutY(Double.parseDouble(element.elementText("posY")));
+
+		// set style using CSS
+		StringBuilder style = new StringBuilder();
+		style.append("-fx-font-size: ");
+		style.append(Integer.parseInt(element.elementText("fontSize")));
+		style.append(";");
+		style.append("-fx-font-family: '");
+		style.append(element.elementText("fontFamily"));
+		style.append("';");
+		
+		if (Boolean.parseBoolean(element.elementText("isBold"))) {
+			style.append("-fx-font-weight: bold;");
+		}
+		
+		if (Boolean.parseBoolean(element.elementText("isItalic"))) {
+			style.append("-fx-font-style: italic;");
+		}
+		
+		if (Boolean.parseBoolean(element.elementText("isUnderline"))) {
+			style.append("-fx-underline: true;");
+		}
+		
+		text.setStyle(style.toString());
+		text.setText(element.elementText("text"));
 	}
 
 }

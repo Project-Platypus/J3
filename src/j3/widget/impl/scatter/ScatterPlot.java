@@ -8,12 +8,16 @@ import j3.GUI;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.SerializableWidget;
 import j3.widget.Widget;
 import j3.widget.impl.Colorbar;
 import j3.widget.impl.scatter.Subscene3D.MouseMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -22,6 +26,7 @@ import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.ParallelCamera;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
@@ -37,8 +42,10 @@ import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.SegmentedButton;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
-public class ScatterPlot implements Widget<Subscene3D> {
+public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 	
 	private Subscene3D plot;
 	
@@ -390,6 +397,73 @@ public class ScatterPlot implements Widget<Subscene3D> {
 	
 	public void update() {
 		((ScatterPoints)plot.getAxis3D().getPlotContents()).update();
+	}
+
+	@Override
+	public Element saveState(Canvas canvas) {
+		Element element = DocumentHelper.createElement("scatter3d");
+		
+		Element scale = element.addElement("scale");
+		scale.addAttribute("x", Double.toString(plot.scale.getX()));
+		scale.addAttribute("y", Double.toString(plot.scale.getY()));
+		scale.addAttribute("z", Double.toString(plot.scale.getZ()));
+		
+		Element translate = element.addElement("translate");
+		translate.addAttribute("x", Double.toString(plot.translate.getX()));
+		translate.addAttribute("y", Double.toString(plot.translate.getY()));
+		translate.addAttribute("z", Double.toString(plot.translate.getZ()));
+		
+		Element rotate = element.addElement("rotate");
+		rotate.addAttribute("x", Double.toString(plot.rotateX.getAngle()));
+		rotate.addAttribute("y", Double.toString(plot.rotateY.getAngle()));
+		
+		// store the node ids
+		ScatterPoints points = (ScatterPoints)plot.getAxis3D().getPlotContents();
+		Element mapping = element.addElement("mapping");
+		
+		for (Node node : points.getPoints()) {
+			Instance instance = (Instance)node.getUserData();
+			
+			Element map = mapping.addElement("map");
+			map.addAttribute("instanceId", instance.getId().toString());
+			map.addAttribute("nodeId", node.getId());
+		}
+		
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		Element scale = element.element("scale");
+		plot.scale.setX(Double.parseDouble(scale.attributeValue("x")));
+		plot.scale.setY(Double.parseDouble(scale.attributeValue("y")));
+		plot.scale.setZ(Double.parseDouble(scale.attributeValue("z")));
+		
+		Element translate = element.element("translate");
+		plot.translate.setX(Double.parseDouble(translate.attributeValue("x")));
+		plot.translate.setY(Double.parseDouble(translate.attributeValue("y")));
+		plot.translate.setZ(Double.parseDouble(translate.attributeValue("z")));
+		
+		Element rotate = element.element("rotate");
+		plot.rotateX.setAngle(Double.parseDouble(rotate.attributeValue("x")));
+		plot.rotateY.setAngle(Double.parseDouble(rotate.attributeValue("y")));
+		
+		// update the node ids
+		Map<UUID, UUID> cache = new HashMap<UUID, UUID>();
+		Element mapping = element.element("mapping");
+		
+		for (Object obj : mapping.elements("map")) {
+			Element map = (Element)obj;
+			cache.put(UUID.fromString(map.attributeValue("instanceId")),
+					UUID.fromString(map.attributeValue("nodeId")));
+		}
+		
+		ScatterPoints points = (ScatterPoints)plot.getAxis3D().getPlotContents();
+
+		for (Node node : points.getPoints()) {
+			Instance instance = (Instance)node.getUserData();
+			node.setId(cache.get(instance.getId()).toString());
+		}
 	}
 
 }

@@ -1,6 +1,6 @@
 package j3.io;
 
-import j3.dataframe.DataFrame;
+import j3.Canvas;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,36 +12,37 @@ import java.util.ServiceLoader;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class DataFrameReaderFactory {
+public class CanvasReaderFactory {
 	
-	private static DataFrameReaderFactory INSTANCE;
+	private static CanvasReaderFactory INSTANCE;
 	
-	private final ServiceLoader<DataFrameReader> loader;
+	private final ServiceLoader<CanvasReader> loader;
 	
-	private DataFrameReaderFactory() {
+	private CanvasReaderFactory() {
 		super();
 		
-		loader = ServiceLoader.load(DataFrameReader.class);
+		loader = ServiceLoader.load(CanvasReader.class);
 	}
 	
-	public static DataFrameReaderFactory getInstance() {
+	public static CanvasReaderFactory getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new DataFrameReaderFactory();
+			INSTANCE = new CanvasReaderFactory();
 		}
 		
 		return INSTANCE;
 	}
 	
-	public List<DataFrameReader> getProviders() {
-		List<DataFrameReader> providers = new ArrayList<>();
+	public List<CanvasReader> getProviders() {
+		List<CanvasReader> providers = new ArrayList<>();
+		DataFrameReaderFactory.getInstance().getProviders().forEach(provider -> providers.add(new DataFrameToCanvasReader(provider)));
 		loader.forEach(provider -> providers.add(provider));
 		return providers;
 	}
 	
-	public DataFrameReader getReader(File file) {
+	public CanvasReader getReader(File file) {
 		String extension = FilenameUtils.getExtension(file.getName());
-
-		for (DataFrameReader reader : getProviders()) {
+		
+		for (CanvasReader reader : getProviders()) {
 			for (String ext : reader.getFileExtensions()) {
 				if (StringUtils.equalsIgnoreCase(ext, extension)) {
 					return reader;
@@ -52,8 +53,8 @@ public class DataFrameReaderFactory {
 		throw new ProviderNotFoundException("no reader for file extension '" + extension + "' found");
 	}
 	
-	public DataFrame load(File file) throws IOException {
-		return getReader(file).load(file);
+	public void load(File file, Canvas canvas) throws IOException {
+		getReader(file).load(file, canvas);
 	}
 
 }
