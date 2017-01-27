@@ -8,6 +8,8 @@ import javafx.scene.paint.Color;
  */
 public interface Colormap {
 	
+	public String getName();
+	
 	public Color map(double value);
 
 }

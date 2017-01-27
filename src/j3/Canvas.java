@@ -1,5 +1,6 @@
 package j3;
 
+import j3.widget.TargetableWidget;
 import j3.widget.Widget;
 import j3.widget.impl.scatter.Subscene3D;
 
@@ -200,6 +201,16 @@ public class Canvas extends SubScene {
 		return result;
 	}
 	
+	public Widget<? extends Node> findWidgetContaining(Node node) {
+		for (Widget<? extends Node> widget : widgets) {
+			if (Selector.on(widget.getNode()).contains(node)) {
+				return widget;
+			}
+		}
+		
+		return null;
+	}
+	
 	public ObservableList<Widget<?>> getWidgets() {
 		return widgets;
 	}
@@ -257,6 +268,13 @@ public class Canvas extends SubScene {
 			widgets.remove(widget);
 		});
 		newTransition.play();
+		
+		// call remove on any dependent widgets
+		if (widget instanceof TargetableWidget) {
+			((TargetableWidget)widget).getDependencies().forEach(dependentWidget -> {
+				remove(dependentWidget);
+			});
+		}
 	}
 	
 	public void removeAll() {

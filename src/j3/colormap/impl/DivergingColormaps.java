@@ -27,6 +27,7 @@ public class DivergingColormaps implements ColormapProvider {
 		switch (name) {
 		case "RdBu":
 			return new LinearSequentialColormap(
+					name,
 					new double[][] {
 						{0.40392156862745099,  0.0                ,  0.12156862745098039},
 						{0.69803921568627447,  0.09411764705882353,  0.16862745098039217},
@@ -41,6 +42,7 @@ public class DivergingColormaps implements ColormapProvider {
 						{0.0196078431372549 ,  0.18823529411764706,  0.38039215686274508}});
 		case "RdGy":
 			return new LinearSequentialColormap(
+					name,
 					new double[][] {
 						{0.40392156862745099,  0.0                ,  0.12156862745098039},
 						{0.69803921568627447,  0.09411764705882353,  0.16862745098039217},

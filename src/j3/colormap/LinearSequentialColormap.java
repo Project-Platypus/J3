@@ -2,14 +2,17 @@ package j3.colormap;
 
 public class LinearSequentialColormap extends AbstractListColormap {
 	
+	private String name;
+	
 	private double[][] red;
 	
 	private double[][] green;
 	
 	private double[][] blue;
 	
-	public LinearSequentialColormap(double[][] values) {
+	public LinearSequentialColormap(String name, double[][] values) {
 		super();
+		this.name = name;
 		
 		red = new double[values.length][3];
 		green = new double[values.length][3];
@@ -27,8 +30,9 @@ public class LinearSequentialColormap extends AbstractListColormap {
 		}
 	}
 	
-	public LinearSequentialColormap(double[][] red, double[][] green, double[][] blue) {
+	public LinearSequentialColormap(String name, double[][] red, double[][] green, double[][] blue) {
 		super();
+		this.name = name;
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
@@ -84,6 +88,11 @@ public class LinearSequentialColormap extends AbstractListColormap {
 		}
 		
 		return colorList;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

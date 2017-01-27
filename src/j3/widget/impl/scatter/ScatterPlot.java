@@ -3,14 +3,13 @@ package j3.widget.impl.scatter;
 import j3.Axis;
 import j3.Canvas;
 import j3.ColormapSelector;
-import j3.EmptyAxis;
 import j3.GUI;
 import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.TargetableWidget;
 import j3.widget.SerializableWidget;
 import j3.widget.Widget;
-import j3.widget.impl.Colorbar;
 import j3.widget.impl.scatter.Subscene3D.MouseMode;
 
 import java.util.ArrayList;
@@ -24,8 +23,9 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.ParallelCamera;
 import javafx.scene.SnapshotParameters;
@@ -45,7 +45,7 @@ import org.controlsfx.control.SegmentedButton;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
+public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, TargetableWidget {
 	
 	private Subscene3D plot;
 	
@@ -60,6 +60,8 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 	private Button plotOptions;
 	
 	private Button changeColor;
+	
+	private ObservableList<Widget<?>> dependencies = FXCollections.observableArrayList();
 	
 	public ScatterPlot() {
 		super();
@@ -109,7 +111,6 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 			Image scaleImage = new Image(GUI.class.getResourceAsStream("/j3/icons/scale_1x.png"));
 			Image splitImage = new Image(GUI.class.getResourceAsStream("/j3/icons/split_1x.png"));
 			Image projectImage = new Image(GUI.class.getResourceAsStream("/j3/icons/project_1x.png"));
-			Image legendImage = new Image(GUI.class.getResourceAsStream("/j3/icons/legend_1x.png"));
 			Image rotateLeftImage = new Image(GUI.class.getResourceAsStream("/j3/icons/rotate_left_1x.png"));
 			Image rotateRightImage = new Image(GUI.class.getResourceAsStream("/j3/icons/rotate_right_1x.png"));
 			Image plotOptionsImage = new Image(GUI.class.getResourceAsStream("/j3/icons/settings_1x.png"));
@@ -135,10 +136,6 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 			ToggleButton project = new ToggleButton();
 			project.setGraphic(new ImageView(projectImage));
 			project.setTooltip(new Tooltip("Project the 3D view onto the 2D axes"));
-			
-			ToggleButton toggleLegend = new ToggleButton();
-			toggleLegend.setGraphic(new ImageView(legendImage));
-			toggleLegend.setTooltip(new Tooltip("Toggle legends"));
 			
 			ToggleButton rotateLeft = new ToggleButton();
 			rotateLeft.setGraphic(new ImageView(rotateLeftImage));
@@ -240,16 +237,6 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 					});
 
 					pt.play();
-				}
-			});
-			
-			Colorbar colorbar = new Colorbar(500, 40, Orientation.HORIZONTAL, new EmptyAxis());
-
-			toggleLegend.setOnAction(event -> {
-				if (toggleLegend.isSelected()) {				
-					canvas.add(colorbar);
-				} else {
-					canvas.remove(colorbar);
 				}
 			});
 			
@@ -365,7 +352,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 			mouseControls = new SegmentedButton(rotate, translate, scale);  
 			mouseControls.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
 			
-			axisControls = new SegmentedButton(split, project, toggleLegend);
+			axisControls = new SegmentedButton(split, project);
 			axisControls.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
 			axisControls.setToggleGroup(null);
 			
@@ -464,6 +451,11 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget {
 			Instance instance = (Instance)node.getUserData();
 			node.setId(cache.get(instance.getId()).toString());
 		}
+	}
+
+	@Override
+	public ObservableList<Widget<?>> getDependencies() {
+		return dependencies;
 	}
 
 }

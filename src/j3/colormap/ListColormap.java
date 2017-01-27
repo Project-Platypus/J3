@@ -10,15 +10,19 @@ import java.util.List;
 
 public class ListColormap extends AbstractListColormap {
 	
+	private final String name;
+	
 	private final double[][] internalColorList;
 	
-	public ListColormap(double[][] colors) {
+	public ListColormap(String name, double[][] colors) {
 		super();
+		this.name = name;
 		this.internalColorList = colors;
 	}
 	
-	public ListColormap(InputStream stream) throws IOException {
+	public ListColormap(String name, InputStream stream) throws IOException {
 		super();
+		this.name = name;
 		this.internalColorList = loadColormap(stream);
 	}
 	
@@ -50,6 +54,11 @@ public class ListColormap extends AbstractListColormap {
 	
 	public double[][] getColorList() {
 		return internalColorList;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

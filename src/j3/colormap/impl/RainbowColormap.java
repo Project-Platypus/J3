@@ -18,4 +18,9 @@ public class RainbowColormap implements Colormap {
 		return Color.rgb((int)(red*255), (int)(green*255), (int)(blue*255));
 	}
 
+	@Override
+	public String getName() {
+		return "rainbow";
+	}
+
 }

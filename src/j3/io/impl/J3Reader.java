@@ -4,6 +4,7 @@ import j3.Axis;
 import j3.Canvas;
 import j3.CategoryAxis;
 import j3.RealAxis;
+import j3.colormap.ColormapFactory;
 import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
@@ -77,6 +78,12 @@ public class J3Reader extends AbstractCanvasReader {
 			
 			canvas.getPropertyRegistry().put("data", table);
 			
+			// parse the colormap
+			if (root.element("colormap") != null) {
+			canvas.getPropertyRegistry().put("colormap", ColormapFactory.getInstance().getColormap(
+					root.elementText("colormap")));
+			}
+			
 			// parse the selected axes
 			canvas.getPropertyRegistry().get("xAxis").setValue(null);
 			canvas.getPropertyRegistry().get("yAxis").setValue(null);
@@ -131,7 +138,11 @@ public class J3Reader extends AbstractCanvasReader {
 			}
 			
 			if (root.element("visibilityAxis") != null) {
-				canvas.getPropertyRegistry().get("visibilityAxis").setValue(axes.get(Integer.parseInt(root.elementText("visibilityAxis"))));
+				int index = Integer.parseInt(root.elementText("visibilityAxis"));
+				
+				if (index >= 0 && index < axes.size()) {
+						canvas.getPropertyRegistry().get("visibilityAxis").setValue(axes.get(index));
+				}
 			}
 			
 			// parse the widgets

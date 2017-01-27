@@ -57,8 +57,9 @@ properties may not exist, but some widgets will create and use them.
 * sizeAxis - The selected size axis
 * visibilityAxis - Axis used by brushing to control the visibility of data points
 * axes - A list of all available axes
-* colormap - The selected colormap
+* colormap - The name of the selected colormap
 * selectedInstance - The selected data point (each point is called an "instance" in J3)
+* theme - The name of the selected theme (e.g., light or dark)
 
 J3 also mandates some standards to aid in cooperation.  Widgets wishing to interface
 with existing functionality should follow these standards.
@@ -87,6 +88,11 @@ with existing functionality should follow these standards.
   pick any file.  The file extension is still used to determine the appropriate reader.  If no
   suitable reader is found or multiple readers match the same extension, the user is prompted
   to select the appropriate reader.
+  
+* Widgets that supports targeting (e.g., a scatter plot that supports tagging or annotations)
+  should implements the `TargetableWidget` interface.  The canvas will automatically
+  remove dependencies when the widget is removed.  The tags or annotation should register
+  themselves as dependencies of the widget.
 
 ## Extensibility ##
 

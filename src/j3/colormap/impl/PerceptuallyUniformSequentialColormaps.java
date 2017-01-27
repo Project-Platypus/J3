@@ -38,16 +38,24 @@ public class PerceptuallyUniformSequentialColormaps implements ColormapProvider 
 		try {
 			switch (name) {
 			case "viridis":
-				colormap = new ListColormap(PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("viridis.cmap"));
+				colormap = new ListColormap(
+						name,
+						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("viridis.cmap"));
 				break;
 			case "inferno":
-				colormap = new ListColormap(PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("inferno.cmap"));
+				colormap = new ListColormap(
+						name,
+						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("inferno.cmap"));
 				break;
 			case "plasma":
-				colormap = new ListColormap(PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("plasma.cmap"));
+				colormap = new ListColormap(
+						name,
+						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("plasma.cmap"));
 				break;
 			case "magma":
-				colormap = new ListColormap(PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("magma.cmap"));
+				colormap = new ListColormap(
+						name,
+						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("magma.cmap"));
 				break;
 			default:
 				throw new IllegalArgumentException(getClass().getName() + " does not support colormap '" + name + "'");

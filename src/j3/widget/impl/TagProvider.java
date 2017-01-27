@@ -10,7 +10,7 @@ public class TagProvider implements WidgetProvider {
 
 	@Override
 	public String getCategory() {
-		return "Standard";
+		return "Tagging / Annotations";
 	}
 
 	@Override

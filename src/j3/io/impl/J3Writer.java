@@ -2,6 +2,7 @@ package j3.io.impl;
 
 import j3.Axis;
 import j3.Canvas;
+import j3.colormap.Colormap;
 import j3.dataframe.Attribute;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
@@ -51,6 +52,13 @@ public class J3Writer {
 				Element valueElement = instanceElement.addElement("value");
 				valueElement.setText(instance.get(attribute).toString());
 			}
+		}
+		
+		// save the colormap
+		Colormap colormap = (Colormap)canvas.getPropertyRegistry().get("colormap").getValue();
+		
+		if (colormap != null) {
+			root.addElement("colormap").setText(colormap.getName());
 		}
 		
 		// save the selected axes

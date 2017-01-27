@@ -26,6 +26,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.animation.Transition;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.geometry.Bounds;
@@ -60,6 +62,76 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 	private final Group lineGroup = new Group();
 
 	private DataFrame table;
+	
+	private DoubleProperty thickness = new DoublePropertyBase(DEFAULT_LINE_THICKNESS) {
+
+		@Override
+		protected void invalidated() {
+			double value = get();
+			
+			table.getInstances().forEach(instance -> {
+				lineMap.get(instance).forEach(line -> line.setStrokeWidth(value));
+			});
+		}
+		
+		@Override
+		public Object getBean() {
+			return ParallelCoordinates.this;
+		}
+
+		@Override
+		public String getName() {
+			return "thickness";
+		}
+		
+	};
+	
+	public void setThickness(double thickness) {
+		this.thickness.set(thickness);
+	}
+
+	public double getThickness() {
+		return thickness.get();
+	}
+
+	public DoubleProperty thicknessProperty() {
+		return thickness;
+	}
+	
+	private DoubleProperty transparency = new DoublePropertyBase(1.0) {
+
+		@Override
+		protected void invalidated() {
+			double value = get();
+			
+			table.getInstances().forEach(instance -> {
+				lineMap.get(instance).forEach(line -> line.setOpacity(value));
+			});
+		}
+		
+		@Override
+		public Object getBean() {
+			return ParallelCoordinates.this;
+		}
+
+		@Override
+		public String getName() {
+			return "transparency";
+		}
+		
+	};
+	
+	public void setTransparency(double transparency) {
+		this.transparency.set(transparency);
+	}
+
+	public double getTransparency() {
+		return transparency.get();
+	}
+
+	public DoubleProperty transparencyProperty() {
+		return transparency;
+	}
 	
 	private ObjectProperty<Colormap> colormap = new ObjectPropertyBase<Colormap>() {
 
@@ -407,7 +479,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 						line.setStroke(colormap.map(colorAxis.map(instance)));
 					}
 					
-					line.setStrokeWidth(2.0);
+					line.setStrokeWidth(thickness.get());
 					line.setUserData(instance);
 					line.setManaged(false);
 					line.setOnMouseClicked(event -> selectedInstance.set(instance));
@@ -546,9 +618,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 			thicknessSlider.setMax(5.0);
 			thicknessSlider.setValue(2.0);
 			thicknessSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-				table.getInstances().forEach(instance -> {
-					lineMap.get(instance).forEach(line -> line.setStrokeWidth(newValue.doubleValue()));
-				});
+				thickness.set(thicknessSlider.getValue());
 			});			
 			content.add(thicknessSlider, 1, 0);
 
@@ -559,9 +629,7 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 			transparencySlider.setMax(1.0);
 			transparencySlider.setValue(1.0);
 			transparencySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-				table.getInstances().forEach(instance -> {
-					lineMap.get(instance).forEach(line -> line.setOpacity(newValue.doubleValue()));
-				});
+				transparency.set(transparencySlider.getValue());
 			});
 			content.add(transparencySlider, 1, 1);
 			
@@ -623,6 +691,13 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 			permutationElement.addElement("value").setText(Integer.toString(index));
 		}
 		
+		// save other settings
+		Element thickness = element.addElement("thickness");
+		thickness.setText(Double.toString(getThickness()));
+		
+		Element transparency = element.addElement("transparency");
+		transparency.setText(Double.toString(getTransparency()));
+		
 		return element;
 	}
 
@@ -638,6 +713,10 @@ public class ParallelCoordinates extends TitledWidget<ParallelCoordinates> imple
 			Element value = (Element)obj;
 			permutation.add(Integer.parseInt(value.getText()));
 		}
+		
+		// restore other settings
+		setThickness(Double.parseDouble(element.elementText("thickness")));
+		setTransparency(Double.parseDouble(element.elementText("transparency")));
 		
 		relayoutLines();
 	}

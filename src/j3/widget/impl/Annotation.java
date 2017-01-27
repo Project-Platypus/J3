@@ -4,9 +4,12 @@ import j3.Canvas;
 import j3.Selector;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
+import j3.widget.TargetableWidget;
+import j3.widget.Widget;
 import j3.widget.SerializableWidget;
 import j3.widget.TitledWidget;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -28,16 +31,25 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 	private Line arrow;
 
 	private ChangeListener<? super Transform> changeListener;
+	
+	private ListChangeListener<? super Widget<?>> widgetChangeListener;
 
 	public Annotation() {
 		super();
 	}
 	
-	public void target(Node node) {
+	public void target(Node node, Canvas canvas) {
 		if (target != null) {
 			getChildren().remove(arrow);
 			target.localToSceneTransformProperty().removeListener(changeListener);
 			pane.localToSceneTransformProperty().removeListener(changeListener);
+			
+			// remove this annotation as a dependency of the old target widget
+			Widget<?> widget = canvas.findWidgetContaining(target);
+						
+			if (widget != null && widget instanceof TargetableWidget) {
+				((TargetableWidget)widget).getDependencies().remove(this);
+			}
 		}
 		
 		target = node;
@@ -81,6 +93,13 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 		
 		node.localToSceneTransformProperty().addListener(changeListener);
 		pane.localToSceneTransformProperty().addListener(changeListener);
+		
+		// add this annotation as a dependency of the target widget
+		Widget<?> widget = canvas.findWidgetContaining(target);
+				
+		if (widget != null && widget instanceof TargetableWidget) {
+			((TargetableWidget)widget).getDependencies().add(this);
+		}
 	}
 
 	@Override
@@ -102,7 +121,7 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 				DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
 				
 				setContent(createContent(instance, table));
-				target(event.getPickResult().getIntersectedNode());
+				target(event.getPickResult().getIntersectedNode(), canvas);
 				
 				canvas.add(this);
 			}
@@ -112,7 +131,7 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected TableView createContent(Instance instance, DataFrame table) {
+	protected Node createContent(Instance instance, DataFrame table) {
 		TableView tableView = new TableView();
 		tableView.setEditable(false);
 		tableView.setFocusTraversable(false);
@@ -135,10 +154,19 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 	}
 
 	@Override
+	public void onAdd(Canvas canvas) {
+		super.onAdd(canvas);
+	}
+
+	@Override
 	public void onRemove(Canvas canvas) {
 		if (target != null) {
 			target.localToSceneTransformProperty().removeListener(changeListener);
 			pane.localToSceneTransformProperty().removeListener(changeListener);
+		}
+		
+		if (widgetChangeListener != null) {
+			canvas.getWidgets().removeListener(widgetChangeListener);
 		}
 	}
 	
@@ -163,7 +191,7 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 		
 		// retarget the node
 		String id = element.elementText("target");
-		target(Selector.on(canvas).select("#" + id).getFirst());
+		target(Selector.on(canvas).select("#" + id).getFirst(), canvas);
 		
 		// update the data table
 		Instance instance = (Instance)target.getUserData();

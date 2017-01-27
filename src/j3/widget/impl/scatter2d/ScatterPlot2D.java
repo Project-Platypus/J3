@@ -6,13 +6,17 @@ import j3.colormap.Colormap;
 import j3.dataframe.DataFrame;
 import j3.dataframe.Instance;
 import j3.widget.SerializableWidget;
+import j3.widget.TargetableWidget;
 import j3.widget.TitledWidget;
+import j3.widget.Widget;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -20,11 +24,13 @@ import javafx.scene.layout.Pane;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> implements SerializableWidget {
+public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> implements SerializableWidget, TargetableWidget {
 
 	private Axis2D plot;
 	
 	private ScatterPoints2D scatter;
+	
+	private ObservableList<Widget<?>> dependencies = FXCollections.observableArrayList();
 	
 	public ScatterPlot2D() {
 		super();
@@ -138,6 +144,11 @@ public class ScatterPlot2D extends TitledWidget<ScatterPlot2D> implements Serial
 			Instance instance = (Instance)node.getUserData();
 			node.setId(cache.get(instance.getId()).toString());
 		}
+	}
+	
+	@Override
+	public ObservableList<Widget<?>> getDependencies() {
+		return dependencies;
 	}
 
 }

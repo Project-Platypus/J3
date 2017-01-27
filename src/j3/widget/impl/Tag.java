@@ -1,12 +1,10 @@
 package j3.widget.impl;
 
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-
 import j3.Canvas;
 import j3.Selector;
 import j3.dataframe.Instance;
 import j3.widget.SerializableWidget;
+import j3.widget.TargetableWidget;
 import j3.widget.Widget;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
@@ -15,12 +13,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -28,6 +26,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 	
@@ -52,10 +53,17 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 		setPickOnBounds(false);
 	}
 	
-	public void target(Node node) {
+	public void target(Node node, Canvas canvas) {
 		if (target != null) {
 			getChildren().remove(shape);
 			target.localToSceneTransformProperty().removeListener(changeListener);
+			
+			// remove this tag as a dependency of the old target widget
+			Widget<?> widget = canvas.findWidgetContaining(target);
+			
+			if (widget != null && widget instanceof TargetableWidget) {
+				((TargetableWidget)widget).getDependencies().remove(this);
+			}
 		}
 		
 		target = node;
@@ -79,6 +87,13 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 		
 		node.localToSceneTransformProperty().addListener(changeListener);
 		changeListener.changed(null, null, null);
+		
+		// add this tag as a dependency of the target widget
+		Widget<?> widget = canvas.findWidgetContaining(target);
+		
+		if (widget != null && widget instanceof TargetableWidget) {
+			((TargetableWidget)widget).getDependencies().add(this);
+		}
 	}
 
 	@Override
@@ -92,7 +107,7 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
 					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance) &&
 					(event.getPickResult().getIntersectedNode().getId() != null)) {
-				target(event.getPickResult().getIntersectedNode());
+				target(event.getPickResult().getIntersectedNode(), canvas);
 				canvas.add(this);
 			}
 			
@@ -160,6 +175,8 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 				menu.show(this, event.getScreenX(), event.getScreenY());
 			}
 		});
+		
+		
 	}
 
 	@Override
@@ -194,7 +211,7 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 	@Override
 	public void restoreState(Element element, Canvas canvas) {
 		String id = element.elementText("target");
-		target(Selector.on(canvas).select("#" + id).getFirst());
+		target(Selector.on(canvas).select("#" + id).getFirst(), canvas);
 		
 		Element colorElement = element.element("color");
 		color = Color.color(Double.parseDouble(colorElement.attributeValue("r")),

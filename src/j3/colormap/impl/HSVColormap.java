@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 
 public class HSVColormap implements Colormap {
 	
+	private final String name;
+	
 	private double beginAngle;
 	
 	private double endAngle;
@@ -14,11 +16,12 @@ public class HSVColormap implements Colormap {
 	private double brightness = 0.8;
 	
 	public HSVColormap() {
-		this(0.0, 360.0);
+		this("hsv", 0.0, 360.0);
 	}
 	
-	public HSVColormap(double beginAngle, double endAngle) {
+	public HSVColormap(String name, double beginAngle, double endAngle) {
 		super();
+		this.name = name;
 		this.beginAngle = beginAngle;
 		this.endAngle = endAngle;
 	}
@@ -26,6 +29,11 @@ public class HSVColormap implements Colormap {
 	@Override
 	public Color map(double value) {
 		return Color.hsb(beginAngle + (endAngle-beginAngle)*value, saturation, brightness);
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

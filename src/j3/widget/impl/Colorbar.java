@@ -2,19 +2,26 @@ package j3.widget.impl;
 
 import j3.Axis;
 import j3.Canvas;
+import j3.EmptyAxis;
 import j3.colormap.Colormap;
 import j3.colormap.impl.RainbowColormap;
 import j3.transition.ImageTransition;
+import j3.widget.SerializableWidget;
 import j3.widget.Widget;
 import j3.widget.impl.scatter.Axis3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Region;
@@ -24,7 +31,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
-public class Colorbar extends Region implements Widget<Colorbar> {
+public class Colorbar extends Region implements Widget<Colorbar>, SerializableWidget {
 	
 	private static final int TICK_LENGTH = 5;
 
@@ -106,6 +113,10 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 	private double mousePosX, mousePosY, mouseOldX, mouseOldY;
 	
 	private ChangeListener<? super Number> widthListener, heightListener;
+	
+	public Colorbar() {
+		this(500, 40, Orientation.HORIZONTAL, new EmptyAxis());
+	}
 	
 	public Colorbar(int width, int height, Orientation orientation, Axis axis) {
 		super();
@@ -272,6 +283,21 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 		this.colormap.bind(colormap);
 		this.colorAxis.bind(colorAxis);
 	}
+	
+	@Override
+	public void onActivate(Canvas canvas) {
+		canvas.setSingleClickHandler(event -> {
+			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
+			point = canvas.screenToLocal(point);
+			
+			location.setX(point.getX());
+			location.setY(point.getY());
+			
+			canvas.add(this);
+			
+			event.consume();
+		});
+	}
 
 	@Override
 	public void onAdd(Canvas canvas) {
@@ -305,6 +331,25 @@ public class Colorbar extends Region implements Widget<Colorbar> {
 	public void onRemove(Canvas canvas) {
 		canvas.widthProperty().removeListener(widthListener);
 		canvas.heightProperty().removeListener(heightListener);
+	}
+
+	@Override
+	public Element saveState(Canvas canvas) {
+		Element element = DocumentHelper.createElement("colorbar");
+		
+		Bounds bounds = getBoundsInLocal();
+		bounds = getLocalToSceneTransform().transform(bounds);
+		
+		element.addElement("posX").setText(Double.toString(bounds.getMinX()));
+		element.addElement("posY").setText(Double.toString(bounds.getMinY()));
+		
+		return element;
+	}
+
+	@Override
+	public void restoreState(Element element, Canvas canvas) {
+		location.setX(Double.parseDouble(element.elementText("posX")));
+		location.setY(Double.parseDouble(element.elementText("posY")));
 	}
 	
 }

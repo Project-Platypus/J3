@@ -77,6 +77,30 @@ public class Selector {
 		return result;
 	}
 	
+	public boolean contains(Node findNode) {
+		return contains(onNode, findNode);
+	}
+	
+	private boolean contains(Node currentNode, Node findNode) {
+		if (currentNode == findNode) {
+			return true;
+		}
+		
+		if (currentNode instanceof Parent) {
+			for (Node child : ((Parent)currentNode).getChildrenUnmodifiable()) {
+				if (contains(child, findNode)) {
+					return true;
+				}
+			}
+		} else if (currentNode instanceof SubScene) {
+			if (contains(((SubScene)currentNode).getRoot(), findNode)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public Node getFirst() {
 		return getFirst(Node.class);
 	}
