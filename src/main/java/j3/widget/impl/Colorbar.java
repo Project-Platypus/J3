@@ -19,15 +19,19 @@ import org.dom4j.Element;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.value.ChangeListener;
-import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
@@ -110,6 +114,8 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 	
 	private Translate location = new Translate(Integer.MIN_VALUE, 0);
 	
+	private Rotate rotate = new Rotate();
+	
 	private double mousePosX, mousePosY, mouseOldX, mouseOldY;
 	
 	private ChangeListener<? super Number> widthListener, heightListener;
@@ -134,7 +140,11 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 		getChildren().addAll(imageView, axisLabel);
 		getStyleClass().add("j3-colorbar");
 		
-		getTransforms().addAll(location);
+		rotate.setAngle(0);
+		rotate.setPivotX(width/2);
+		rotate.setPivotY(height/2);
+		
+		getTransforms().addAll(location, rotate);
 		
 		setOnMousePressed(event -> {
 			mouseOldX = event.getSceneX();
@@ -290,8 +300,8 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
 			point = canvas.screenToLocal(point);
 			
-			location.setX(point.getX());
-			location.setY(point.getY());
+			location.setX(point.getX() - getPrefWidth()/2);
+			location.setY(point.getY() - getPrefHeight()/2);
 			
 			canvas.add(this);
 			
@@ -325,6 +335,36 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 			location.setX((canvas.getWidth() - getPrefWidth()) / 2.0);
 			location.setY(canvas.getHeight() - getPrefHeight() - 50);
 		}
+		
+		setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.SECONDARY) {
+				ContextMenu menu = new ContextMenu();
+				
+				// delete menu item
+				MenuItem delete = new MenuItem("Delete");
+				delete.setOnAction(e -> {
+					canvas.remove(this);
+				});
+				
+				// create custom menu item for controls
+				MenuItem rotateClockwise = new MenuItem("Rotate 90 clockwise");
+				rotateClockwise.setOnAction(e -> {
+					rotate.setAngle(this.rotate.getAngle()+90);
+				});
+				
+				MenuItem rotateCounterClockwise = new MenuItem("Rotate 90 counterclockwise");
+				rotateCounterClockwise.setOnAction(e -> {
+					rotate.setAngle(this.rotate.getAngle()-90);
+				});
+
+				// create the menu
+				menu.getItems().addAll(delete, new SeparatorMenuItem(), rotateClockwise, rotateCounterClockwise);
+	
+				// display the menu
+				menu.show(this, event.getScreenX(), event.getScreenY());
+			}
+		});
+
 	}
 	
 	@Override
@@ -337,11 +377,14 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 	public Element saveState(Canvas canvas) {
 		Element element = DocumentHelper.createElement("colorbar");
 		
-		Bounds bounds = getBoundsInLocal();
-		bounds = getLocalToSceneTransform().transform(bounds);
-		
-		element.addElement("posX").setText(Double.toString(bounds.getMinX()));
-		element.addElement("posY").setText(Double.toString(bounds.getMinY()));
+//		Bounds bounds = getBoundsInLocal();
+//		bounds = getLocalToSceneTransform().transform(bounds);
+//		
+//		element.addElement("posX").setText(Double.toString(bounds.getMinX()));
+//		element.addElement("posY").setText(Double.toString(bounds.getMinY()));
+		element.addElement("posX").setText(Double.toString(location.getX()));
+		element.addElement("posY").setText(Double.toString(location.getY()));
+		element.addElement("rotation").setText(Double.toString(rotate.getAngle()));
 		
 		return element;
 	}
@@ -350,6 +393,7 @@ public class Colorbar extends Region implements Widget<Colorbar>, SerializableWi
 	public void restoreState(Element element, Canvas canvas) {
 		location.setX(Double.parseDouble(element.elementText("posX")));
 		location.setY(Double.parseDouble(element.elementText("posY")));
+		rotate.setAngle(Double.parseDouble(element.elementText("rotation")));
 	}
 	
 }

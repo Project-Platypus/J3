@@ -174,9 +174,7 @@ public class Tag extends Group implements Widget<Tag>, SerializableWidget {
 				// display the menu
 				menu.show(this, event.getScreenX(), event.getScreenY());
 			}
-		});
-		
-		
+		});		
 	}
 
 	@Override

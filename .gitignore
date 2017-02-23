@@ -1,0 +1,5 @@
+/release/
+/.settings/
+/target/
+*.csv
+*.arff

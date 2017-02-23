@@ -4,7 +4,9 @@ import j3.colormap.impl.HSVColormap;
 import j3.io.CanvasReaderFactory;
 import j3.io.CanvasReader;
 import j3.io.impl.J3Writer;
+import j3.io.impl.SmartReader;
 import j3.widget.impl.intro.IntroWidget;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -262,8 +264,13 @@ public class GUI extends Application {
 		
 		canvas.getPropertyRegistry().get("theme").set("Light");
 		
-		// display the intro widget if this is the first time
-		if (IntroWidget.shouldShow()) {
+		// initialize the canvas
+		Parameters parameters = getParameters();
+		
+		if (!parameters.getRaw().isEmpty()) {
+			File file = new File(parameters.getRaw().get(0));
+			new SmartReader().load(file, canvas);
+		} else if (IntroWidget.shouldShow()) {
 			canvas.add(new IntroWidget());
 		}
 	}
