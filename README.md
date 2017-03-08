@@ -2,6 +2,8 @@
 
 A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.
 
+![Screenshot](http://i.imgur.com/W2zqCTT.jpg)
+
 ## What is J3 ##
 
 J3 is an open source, cross-platform application for producing and sharing high-dimensional, interactive scientific
@@ -9,8 +11,6 @@ visualizations.  While there are high-quality JavaScript libraries for producing
 often plagued by performance issues when dealing with large data sets.  J3, on the other hand, can fluidly support
 thousands of data points by leveraging hardware accelerated graphics while simultaneously supporting animations and
 interactivity.
-
-![Screenshot](http://i.imgur.com/W2zqCTT.jpg)
 
 ## Get It ##
 
