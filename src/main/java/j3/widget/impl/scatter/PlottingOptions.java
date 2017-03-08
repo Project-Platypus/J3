@@ -3,6 +3,8 @@ package j3.widget.impl.scatter;
 import j3.Axis;
 import j3.Canvas;
 import j3.EmptyAxis;
+import j3.theme.ThemeFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,7 +91,7 @@ public class PlottingOptions extends Pane {
 		root.add(new Separator(), 0, count++, 2, 1);
 		
 		ComboBox<String> themeSelection = new ComboBox<>();
-		themeSelection.getItems().addAll("Light", "Dark");
+		themeSelection.getItems().addAll(ThemeFactory.getInstance().getNames());
 		themeSelection.getSelectionModel().select((String)canvas.getPropertyRegistry().get("theme").getValue());
 		themeSelection.setOnAction(event -> {
 			canvas.getPropertyRegistry().get("theme").set(themeSelection.getSelectionModel().getSelectedItem());

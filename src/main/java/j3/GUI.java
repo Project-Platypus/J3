@@ -5,6 +5,7 @@ import j3.io.CanvasReaderFactory;
 import j3.io.CanvasReader;
 import j3.io.impl.J3Writer;
 import j3.io.impl.SmartReader;
+import j3.theme.ThemeFactory;
 import j3.widget.impl.intro.IntroWidget;
 
 import java.io.File;
@@ -256,13 +257,12 @@ public class GUI extends Application {
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());
 		
+		// setup a listener for switching themes and set the default theme
 		canvas.getPropertyRegistry().get("theme").addListener((observable, oldValue, newValue) -> {
-			scene.getStylesheets().setAll(newValue == null || ((String)newValue).equalsIgnoreCase("Light") ?
-					GUI.class.getResource("j3.css").toExternalForm() :
-					GUI.class.getResource("j3-dark.css").toExternalForm());
+			scene.getStylesheets().setAll(ThemeFactory.getInstance().getStylesheets((String)newValue));
 		});
 		
-		canvas.getPropertyRegistry().get("theme").set("Light");
+		canvas.getPropertyRegistry().get("theme").set(ThemeFactory.DEFAULT.getName());
 		
 		// initialize the canvas
 		Parameters parameters = getParameters();
