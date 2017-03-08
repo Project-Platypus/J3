@@ -2,26 +2,22 @@
 
 A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.
 
-### What is J3 ###
+## What is J3 ##
 
 J3 is an open source, cross-platform application for producing and sharing high-dimensional, interactive scientific
 visualizations.  While there are high-quality JavaScript libraries for producing visualization on the web, they are
 often plagued by performance issues when dealing with large data sets.  J3, on the other hand, can fluidly support
-thousands of data points by leveraging hardware graphics acceleration while simultaneously supporting animations and
+thousands of data points by leveraging hardware accelerated graphics while simultaneously supporting animations and
 interactivity.
 
+![Screenshot](http://i.imgur.com/W2zqCTT.jpg)
 
-J3 is a JavaFX-based library for producing and sharing high-quality,
-interactive scientific visualizations.  J3 is centered around the idea of
-laying out graphical widgets on a canvas, and is modeled similar to how
-graphical components are rendered on a webpage.  For example, some
-widgets we have in mind include:
+## Get It ##
 
-1. 2D plots (scatter, histogram, parallel coordinates, etc.)
-2. 3D plots (scatter, surface, etc.)
-3. Annotations (text, arrows, data inspectors)
-4. Custom widgets (via a scripting language like Groovy, Jython, etc.)
-5. Animation controls (e.g., play a sequence of animations)
+### Windows ###
+
+
+
 
 ## Design ##
 

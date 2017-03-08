@@ -8,7 +8,7 @@
 	<!-- Properties used by these Ant targets -->
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
-	<property name="version" value="0.1" />
+	<property name="version" value="1.0.0" />
 	<property name="name" value="J3" />
 	<property name="ant.build.javac.source" value="1.8"/>
 	<property name="ant.build.javac.target" value="1.8"/>
@@ -16,11 +16,6 @@
 	<property name="java_home" value="${env.JAVA_HOME}" />
 	<property name="jdk" value="${java_home}\bin\javac" />
 	<property name="jre" value="${java_home}\jre" />
-
-	<!-- Classpath of third-party libraries used by J3 -->
-	<path id="classpath">
-		<fileset dir="lib" includes="*.jar" />
-	</path>
 	
 	<target name="-setup">
 		<fail message="JAVA_HOME environment variable not set.  Please set to JDK 1.8 or later.">
@@ -32,77 +27,20 @@
 		</fail>
 	</target>
 
-	<!-- ============================== -->
-	<!-- Targets for creating JAR files -->
-	<!-- ============================== -->
+	<!-- ============================================================================= -->
+	<!-- Targets for creating JAR files (now assumes these have been created by Maven) -->
+	<!-- ============================================================================= -->
 
 	<target name="build-jar" depends="-setup" description="Compiles the J3 JAR">
-		<delete dir="${build}" />
-		<mkdir dir="${build}" />
-		<mkdir dir="${build}/META-INF" />
-
-		<javac destdir="${build}" srcdir="src" debug="${java.debug}"
-				excludes="**/package-info.java"
-				includeantruntime="false"
-				encoding="UTF-8"
-				executable="${jdk}"
-				fork="yes">
-			<classpath refid="classpath" />
-		</javac>
-
-		<manifest file="${build}/META-INF/MANIFEST.MF">
-			<section name="j3/">
-				<attribute name="Specification-Title" value="${name}" />
-				<attribute name="Specification-Version" value="${version}" />
-				<attribute name="Specification-Vendor" value="http://www.j3.org" />
-				<attribute name="Implementation-Title" value="j3" />
-				<attribute name="Implementation-Version" value="${version}" />
-				<attribute name="Implementation-Vendor" value="http://www.j3.org" />
-			</section>
-		</manifest>
-
-		<copy todir="${build}/META-INF">
-			<fileset dir="META-INF" />
+		<copy tofile="${dist}/${name}.jar">
+			<fileset file="target/j3-${version}.jar" />
 		</copy>
-
-		<copy todir="${build}">
-			<fileset excludes="**/*.java,overview.html" dir="src" />
-		</copy>
-
-		<jar basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"
-				jarfile="${dist}/${name}.jar" />
 	</target>
 
 	<target name="build-jar-full" depends="build-jar" description="Compiles the J3 JAR including all dependencies">
-		<delete dir="${build}" />
-		<mkdir dir="${build}" />
-
-		<unjar dest="${build}" src="lib/commons-csv-1.4.jar" />
-		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-CSV-NOTICE.txt" />
-		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-CSV-LICENSE.txt" />
-
-		<unjar dest="${build}" src="lib/commons-io-2.5.jar" />
-		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-IO-NOTICE.txt" />
-		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-IO-LICENSE.txt" />
-
-		<unjar dest="${build}" src="lib/commons-lang3-3.4.jar" />
-		<move file="${build}/META-INF/NOTICE.txt" tofile="${build}/META-INF/COMMONS-LANG3-NOTICE.txt" />
-		<move file="${build}/META-INF/LICENSE.txt" tofile="${build}/META-INF/COMMONS-LANG3-LICENSE.txt" />
-
-		<unjar dest="${build}" src="lib/controlsfx-8.40.11.jar" />
-
-		<delete dir="${build}/META-INF/maven" />
-		<delete file="${build}/META-INF/MANIFEST.mf" />
-
-		<unjar dest="${build}" src="${dist}/${name}.jar" />
-
-		<manifest mode="update" file="${build}/META-INF/MANIFEST.mf">
-			<attribute name="Main-Class" value="j3.GUI" />
-			<attribute name="Class-Path" value="." />
-		</manifest>
-
-		<jar destfile="${dist}/${name}-Full.jar"
-			basedir="${build}" manifest="${build}/META-INF/MANIFEST.mf" />
+		<copy tofile="${dist}/${name}-Full.jar">
+			<fileset file="target/j3-${version}-jar-with-dependencies.jar" />
+		</copy>
 	</target>
 
 	<!-- ======================================== -->
@@ -124,6 +62,10 @@
 
 		<copy todir="${build}/J3/data">
 			<fileset dir="data" />
+		</copy>
+		
+		<copy todir="${build}/J3/animations">
+			<fileset dir="animations" />
 		</copy>
 
 		<copy todir="${build}/J3" file="${dist}/J3.exe" />
@@ -160,6 +102,10 @@
 		<copy todir="${build}/J3/data">
 			<fileset dir="data" />
 		</copy>
+		
+		<copy todir="${build}/J3/animations">
+			<fileset dir="animations" />
+		</copy>
 	</target>
 
 	<target name="-build-mac-no-jre" depends="-build-mac-package">
@@ -176,6 +122,7 @@
 		<zip destfile="${dist}/J3-Mac.zip">
 			<zipfileset filemode="755" dir="${build}" includes="J3/J3.app/**/*" />
 			<zipfileset dir="${build}" includes="J3/data/*" />
+			<zipfileset dir="${build}" includes="J3/animations/*" />
 		</zip>
 	</target>
 
@@ -194,6 +141,7 @@
 		<zip destfile="${dist}/J3-Mac-JRE.zip">
 			<zipfileset filemode="755" dir="${build}" includes="J3/J3.app/**/*" />
 			<zipfileset dir="${build}" includes="J3/data/*" />
+			<zipfileset dir="${build}" includes="J3/animations/*" />
 		</zip>
 	</target>
 
