@@ -35,7 +35,7 @@ Ubuntu, we need to add the following repository to satisfy this dependency:
     sudo apt-get update
 ```
 
-Finally, download and install [J3-0.1-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3_1.0-1.deb).
+Finally, download and install [J3-1.0-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3_1.0-1.deb).
 
 ## FAQ ##
 

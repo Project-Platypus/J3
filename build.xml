@@ -162,6 +162,11 @@
 			<fileset dir="deploy/debian" />
 		</copy>
 
+		<chmod perm="+x">
+			<fileset file="${build}/${name}_${debversion}/usr/local/bin/J3" />
+			<fileset file="${build}/${name}_${debversion}/usr/local/src/J3/bin/J3.sh" />
+		</chmod>
+
 		<copy todir="${build}/${name}_${debversion}/usr/local/src/J3/data">
 			<fileset dir="data" />
 		</copy>
