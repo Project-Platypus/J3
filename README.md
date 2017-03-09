@@ -24,10 +24,13 @@ already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://git
 which is bundled with the Java 8 runtime environment.  After extracting, run `J3.exe`.  You can also load a data set
 from the command line by running `J3.exe <file>`.
 
+You can also download and run [J3.exe](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3.exe) by
+itself, although you will need to provide your own data files.
+
 ### Linux (Debian, Ubuntu, etc.) ###
 
-A deb file is provided to assist installation of J3 on Linux.  This installation requires `openjdk-8-jre`.  On
-Ubuntu, we need to add the following repository to satisfy this dependency:
+A deb file is provided to assist installing J3 on Linux.  This installation requires `openjdk-8-jre`.  On
+Ubuntu, we needed to add the following repository to satisfy this dependency:
 
 ```
 
@@ -36,6 +39,14 @@ Ubuntu, we need to add the following repository to satisfy this dependency:
 ```
 
 Finally, download and install [J3-1.0-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3_1.0-1.deb).
+After installation, J3 will appear as a desktop application.  You can also launch the program by running the command
+`J3`.
+
+### Mac ###
+
+Download and extract [J3-Mac.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac.zip) if you
+already have Java 8 installed.  Otherwise, download [J3-Mac-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac-JRE.zip),
+which is bundled with the Java 8 runtime environment.  After extracting, run `J3.app`.
 
 ## FAQ ##
 
