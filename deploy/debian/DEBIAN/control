@@ -1,0 +1,10 @@
+Package: J3
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: i386
+Depends: openjdk-8-jre
+Maintainer: David Hadka <j3@moeaframework.org>
+Description: J3
+ An open source, high-dimensional visualization program.
+Installed-Size: 10240

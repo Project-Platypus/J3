@@ -9,6 +9,7 @@
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
 	<property name="version" value="1.0.0" />
+	<property name="debversion" value="1.0-1" />
 	<property name="name" value="J3" />
 	<property name="ant.build.javac.source" value="1.8"/>
 	<property name="ant.build.javac.target" value="1.8"/>
@@ -147,5 +148,39 @@
 
 	<target name="build-mac" depends="-build-mac-no-jre, -build-mac-jre"
 		description="Create Mac builds of J3" />
+
+	<!-- ======================================== -->
+	<!-- Targets for building Debian applications -->
+	<!-- ======================================== -->
+
+	<target name="-build-deb-package" depends="build-jar-full">
+		<delete dir="${build}" />
+		<mkdir dir="${build}" />
+		<mkdir dir="${build}/${name}_${debversion}" />
+
+		<copy todir="${build}/${name}_${debversion}">
+			<fileset dir="deploy/debian" />
+		</copy>
+
+		<copy todir="${build}/${name}_${debversion}/usr/local/src/J3/data">
+			<fileset dir="data" />
+		</copy>
+		
+		<copy todir="${build}/${name}_${debversion}/usr/local/src/J3/animations">
+			<fileset dir="animations" />
+		</copy>
+
+		<copy tofile="${build}/${name}_${debversion}/usr/local/src/J3/lib/${name}.jar" file="${dist}/${name}-Full.jar" />
+
+		<exec executable="dpkg-deb" dir="${build}">
+			<arg value="--build" />
+			<arg value="${name}_${debversion}/" />
+		</exec>
+
+		<copy tofile="${dist}/${name}_${debversion}.deb" file="${build}/${name}_${debversion}.deb" />
+	</target>
+
+	<target name="build-deb" depends="-build-deb-package"
+		description="Creates Debian builds of J3" />
 
 </project>

@@ -24,6 +24,19 @@ already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://git
 which is bundled with the Java 8 runtime environment.  After extracting, run `J3.exe`.  You can also load a data set
 from the command line by running `J3.exe <file>`.
 
+### Linux (Debian, Ubuntu, etc.) ###
+
+A deb file is provided to assist installation of J3 on Linux.  This installation requires `openjdk-8-jre`.  On
+Ubuntu, we need to add the following repository to satisfy this dependency:
+
+```
+
+    sudo apt-add-repository ppa:openjdk-r/ppa
+    sudo apt-get update
+```
+
+Finally, download and install [J3-0.1-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-0.1-1.deb).
+
 ## FAQ ##
 
 1. **What does J3 stand for?**  The name J3 is derived from the use of Java technologies and its design being influenced
@@ -50,4 +63,8 @@ bundles, call the appropriate Ant task.  For example:
     mvn package
     ant build-win
     ant build-mac
+
+    # Requires running on Linux (Debian, Ubuntu, etc.) with openjdk-8-jdk installed
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-i386/
+    ant build-deb
 ```
