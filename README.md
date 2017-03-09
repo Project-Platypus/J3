@@ -63,6 +63,25 @@ which is bundled with the Java 8 runtime environment.  After extracting, run `J3
 3. **How can I contribute to J3?**  J3 is designed to be extensible.  Everything from themes, color maps, widgets, and
    supported file types is extensible.  Clone this repository and give it a shot.  If you have questions, please create
    an issue on Github.
+   
+4. **How can I use J3 in my application?**  J3 can be used by any program to view high-dimensional data sets.  There are
+   several options.  If using Java, you can launch the GUI directly:
+   
+   ```java
+   
+       GUI.main(new String[] { "input.csv" });
+   ```
+   
+   From other programming languages, run the `J3` program as a separate process.  For example, with Python we can run:
+   
+   ```python
+   
+        import os
+
+        os.environ['PATH'] += os.pathsep + r"C:\Users\J3Dev\Desktop\J3"
+        os.system("J3.exe input.csv")
+   ```
+   
 
 ## Building ##
 
