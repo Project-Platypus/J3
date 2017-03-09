@@ -35,17 +35,17 @@ data.
 J3's property registry currently stores the following properties.  Note that these
 properties may not exist at the start as some widgets will create and use them.
 
-* data - The "data frame" storing the loaded multivariate data
-* xAxis - The selected x-axis
-* yAxis - The selected y-axis
-* zAxis - The selected z-axis
-* colorAxis - The selected color axis
-* sizeAxis - The selected size axis
-* visibilityAxis - Axis used by brushing to control the visibility of data points
-* axes - A list of all available axes
-* colormap - The name of the selected colormap
-* selectedInstance - The selected data point (each point is called an "instance" in J3)
-* theme - The name of the selected theme (e.g., light or dark)
+* `data` - The "data frame" storing the loaded multivariate data
+* `xAxis` - The selected x-axis
+* `yAxis` - The selected y-axis
+* `zAxis` - The selected z-axis
+* `colorAxis` - The selected color axis
+* `sizeAxis` - The selected size axis
+* `visibilityAxis` - Axis used by brushing to control the visibility of data points
+* `axes` - A list of all available axes
+* `colormap` - The name of the selected colormap
+* `selectedInstance` - The selected data point (each point is called an "instance" in J3)
+* `theme` - The name of the selected theme (e.g., light or dark)
 
 J3 also mandates some standards to aid in cooperation.  Widgets wishing to interface
 with existing functionality should follow these standards.
@@ -69,14 +69,14 @@ with existing functionality should follow these standards.
   (e.g., selected from the widget menu), it can register a callback with the canvas to be
   notified when the user has positioned the widget on the canvas.
 
-* Input readers, including the DataFrameReader and CanvasReader, recognize files by their file
-  extension.  A special "All Files (*.*)" reader is provided for convenience that lets the user
+* Input readers, including the `DataFrameReader` and `CanvasReader`, recognize files by their file
+  extension.  A special `"All Files (*.*)"` reader is provided for convenience that lets the user
   pick any file.  The file extension is still used to determine the appropriate reader.  If no
   suitable reader is found or multiple readers match the same extension, the user is prompted
   to select the appropriate reader.
   
 * Widgets that supports targeting (e.g., a scatter plot that supports tagging or annotations)
-  should implements the `TargetableWidget` interface.  The canvas will automatically
+  should implement the `TargetableWidget` interface.  The canvas will automatically
   remove dependencies when the widget is removed.  The tags or annotation should register
   themselves as dependencies of the widget.
 
@@ -85,16 +85,16 @@ with existing functionality should follow these standards.
 J3 uses Java's service provider interface to support extensibility.  Currently, four extension
 points are provided.
 
-1. WidgetProvider - SPI for adding new widgets.  Widgets must follow the defined lifecycle for
+1. `WidgetProvider` - SPI for adding new widgets.  Widgets must follow the defined lifecycle for
    activating, initializing, adding, and removing widgets.
 
-2. DataFrameReader - SPI for defining new input file formats.  The DataFrameReader only supports
+2. `DataFrameReader` - SPI for defining new input file formats.  The DataFrameReader only supports
    loading data frames (e.g., CSV, Excel, or other tabular data files).
 
-3. CanvasReader - SPI for advanced input file formats.  The CanvasReader allows full customization
+3. `CanvasReader` - SPI for advanced input file formats.  The CanvasReader allows full customization
    of the loading process and can access the canvas directly when loading the file.
 
-4. ColormapProvider - SPI for defining new colormaps.
+4. `ColormapProvider` - SPI for defining new colormaps.
 
 Extensions should be packated in a JAR file with the appropriate `META-INF/services` file(s).
 If distributing J3 as an executable, J3 will scan for the `plugins/` folder for any JARs.

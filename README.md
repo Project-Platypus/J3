@@ -40,3 +40,14 @@ from the command line by running `J3.exe <file>`.
    supported file types is extensible.  Clone this repository and give it a shot.  If you have questions, please create
    an issue on Github.
 
+## Building ##
+
+J3 uses Maven to manage dependencies.  Use `mvn package` to compile the J3 JAR file.  To create platform-specific
+bundles, call the appropriate Ant task.  For example:
+
+```
+
+    mvn package
+    ant build-win
+    ant build-mac
+```
