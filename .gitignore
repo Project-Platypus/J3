@@ -1,5 +1,7 @@
 /release/
 /.settings/
 /target/
+/dist/
+/build/
 *.csv
 *.arff
