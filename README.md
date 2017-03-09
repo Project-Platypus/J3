@@ -14,7 +14,7 @@ interactivity.
 
 ## Get It ##
 
-Pre-packaged distributions are available for Windows.  Distributions for Linux and Mac will be made available shortly.
+Pre-packaged distributions are available for Windows and Linux.  Distributions for Mac will be made available shortly.
 All distributions include sample data files you can test.
 
 ### Windows ###
