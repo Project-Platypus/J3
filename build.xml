@@ -95,7 +95,7 @@
              classname="com.oracle.appbundler.AppBundlerTask"   
              classpath="deploy/mac/lib/appbundler-1.0.jar" />
 
-	<target name="-build-mac-package" depends="build-jar">
+	<target name="-build-mac-package" depends="build-jar-full">
 		<delete dir="${build}" />
 		<mkdir dir="${build}" />
 		<mkdir dir="${build}/J3" />
@@ -116,8 +116,7 @@
             	identifier="j3.GUI"
             	mainclassname="j3.GUI"
             	icon="deploy/mac/appicon.icns">
-			<classpath file="${dist}/J3.jar" />
-			<classpath dir="lib" />
+			<classpath file="${dist}/J3-Full.jar" />
 		</bundleapp>
 
 		<zip destfile="${dist}/J3-Mac.zip">
@@ -134,8 +133,7 @@
             	identifier="j3.GUI"
             	mainclassname="j3.GUI"
             	icon="deploy/mac/appicon.icns">
-			<classpath file="${dist}/J3.jar" />
-			<classpath dir="lib" />
+			<classpath file="${dist}/J3-Full.jar" />
 			<runtime dir="${java_home}" />
 		</bundleapp>
 
