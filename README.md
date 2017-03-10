@@ -1,6 +1,6 @@
 # J3 #
 
-A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.
+**A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.**
 
 ![Screenshot](http://i.imgur.com/W2zqCTT.jpg)
 
