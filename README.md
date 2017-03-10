@@ -12,12 +12,20 @@ often plagued by performance issues when dealing with large data sets.  J3, on t
 thousands of data points by leveraging hardware accelerated graphics while simultaneously supporting animations and
 interactivity.
 
+## Key Features ##
+
+1. Interactive 2D and 3D plots (scatter, parallel axis, etc.)
+2. Various annotations and data callouts
+3. Ability to save, share, and re-load visualizations
+4. Create scripted animations (experimental)
+5. Extensible design allows adding new widgets
+
 ## Get It ##
 
 Pre-packaged distributions are available for Windows and Linux.  Distributions for Mac will be made available shortly.
 All distributions include sample data files you can test.
 
-### Windows ###
+#### Windows ####
 
 Download and extract [J3-Win.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Win.zip) if you
 already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Win-JRE.zip),
@@ -27,13 +35,12 @@ from the command line by running `J3.exe <file>`.
 You can also download and run [J3.exe](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3.exe) by
 itself, although you will need to provide your own data files.
 
-### Linux (Debian, Ubuntu, etc.) ###
+#### Linux (Debian, Ubuntu, etc.) ####
 
 A deb file is provided to assist installing J3 on Linux.  This installation requires `openjdk-8-jre`.  On
 Ubuntu, we needed to add the following repository to satisfy this dependency:
 
 ```
-
     sudo apt-add-repository ppa:openjdk-r/ppa
     sudo apt-get update
 ```
@@ -42,7 +49,7 @@ Finally, download and install [J3-1.0-1.deb](https://github.com/MOEAFramework/J3
 After installation, J3 will appear as a desktop application.  You can also launch the program by running the command
 `J3`.
 
-### Mac ###
+#### Mac ####
 
 Download and extract [J3-Mac.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac.zip) if you
 already have Java 8 installed.  Otherwise, download [J3-Mac-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac-JRE.zip),
@@ -89,7 +96,6 @@ J3 uses Maven to manage dependencies.  Use `mvn package` to compile the J3 JAR f
 bundles, call the appropriate Ant task.  For example:
 
 ```
-
     mvn package
     ant build-win
     ant build-mac
