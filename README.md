@@ -16,14 +16,13 @@ interactivity.
 
 1. Interactive 2D and 3D plots (scatter, parallel axis, etc.)
 2. Various annotations and data callouts
-3. Ability to save, share, and re-load visualizations
+3. Ability to save, share, and load visualizations
 4. Create scripted animations (experimental)
 5. Extensible design allows adding new widgets
 
 ## Get It ##
 
-Pre-packaged distributions are available for Windows and Linux.  Distributions for Mac will be made available shortly.
-All distributions include sample data files you can test.
+Pre-packaged distributions are available for Windows, Linux, and Mac.  All distributions include sample data files you can test.
 
 #### Windows ####
 
