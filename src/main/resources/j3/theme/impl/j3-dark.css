@@ -2,6 +2,10 @@
   -fx-background-color: #2B2C2D;
 }
 
+.j3-text-widget{
+  -fx-fill: white;
+}
+
 .j3-axis-side {
   -fx-fill: transparent;
   -fx-stroke: white;
@@ -9,7 +13,7 @@
 }
 
 .j3-tick-line {
-  -fx-stroke: gray;
+  -fx-stroke: white;
   -fx-stroke-width: 1;
 }
 
@@ -20,7 +24,7 @@
 }
 
 .j3-tick-label {
-  -fx-fill: gray;
+  -fx-fill: white;
 }
 
 .j3-internal-tick-label-line {
@@ -61,6 +65,15 @@
 
 .j3-parallel-tick-label {
   -fx-fill: white;
+}
+
+.j3-box-widget {
+  -fx-background-radius: 5;
+  -fx-background-color: #2B2C2D;
+  -fx-border-color: white;
+  -fx-border-radius: 5;
+  -fx-border-width: 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);
 }
 
 .j3-titled-widget {

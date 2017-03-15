@@ -2,6 +2,10 @@
   -fx-background-color: white;
 }
 
+.j3-text-widget{
+  -fx-fill: black;
+}
+
 .j3-axis-side {
   -fx-fill: transparent;
   -fx-stroke: black;
@@ -58,6 +62,15 @@
 
 .j3-parallel-tick-label {
   
+}
+
+.j3-box-widget {
+  -fx-background-radius: 5;
+  -fx-background-color: white;
+  -fx-border-color: black;
+  -fx-border-radius: 5;
+  -fx-border-width: 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 5, 0.0, 0, 1);
 }
 
 .j3-titled-widget {

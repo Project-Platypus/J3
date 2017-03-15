@@ -57,6 +57,7 @@ public class TextWidget extends Pane implements Widget<TextWidget>, Serializable
 		super();
 
 		text = new Text("Text Widget");
+		text.getStyleClass().add("j3-text-widget");
 		
 		text.setOnMousePressed(me -> {
 			mouseOldX = me.getScreenX();

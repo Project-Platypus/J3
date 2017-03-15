@@ -6,7 +6,7 @@ import j3.widget.Widget;
 import j3.widget.WidgetProvider;
 import javafx.scene.image.Image;
 
-public class AnnotationProvider implements WidgetProvider {
+public class TextAnnotationProvider implements WidgetProvider {
 
 	@Override
 	public String getCategory() {
@@ -20,22 +20,22 @@ public class AnnotationProvider implements WidgetProvider {
 
 	@Override
 	public String getName() {
-		return "Annotation";
+		return "Text Annotation";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Display details about a selected data point";
+		return "Annotate a data point with text";
 	}
 
 	@Override
 	public Image getIcon() {
-		return new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/tableAnnotation_1x.png"));
+		return new Image(WidgetOptions.class.getResourceAsStream("/j3/icons/textAnnotation_1x.png"));
 	}
 
 	@Override
 	public Widget<?> createInstance() {
-		return new Annotation();
+		return new TextAnnotation();
 	}
 
 }

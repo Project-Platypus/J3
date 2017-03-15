@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -112,9 +111,16 @@ public class Axis2D extends Pane {
 		yTickLines = new ArrayList<>();
 		
 		xLine = new Line();
+		xLine.getStyleClass().add("j3-axis-side");
+		
 		yLine = new Line();
+		yLine.getStyleClass().add("j3-axis-side");
+		
 		xLabel = new Text();
+		xLabel.getStyleClass().add("j3-axis-label");
+		
 		yLabel = new Text();
+		yLabel.getStyleClass().add("j3-axis-label");
 		
 		getChildren().addAll(xLine, yLine, xLabel, yLabel);
 		
@@ -180,8 +186,6 @@ public class Axis2D extends Pane {
 			for (String tickLabel : getXAxis().getTickLabels()) {
 				Line line = new Line(0, 0, 0, 4);
 				line.getStyleClass().add("j3-tick-line");
-				line.setStroke(Color.BLACK);
-				line.setFill(Color.BLACK);
 				xTickLines.add(line);
 				
 				Text text = new Text(tickLabel);
@@ -196,8 +200,6 @@ public class Axis2D extends Pane {
 			for (String tickLabel : getYAxis().getTickLabels()) {
 				Line line = new Line(0, 0, -4, 0);
 				line.getStyleClass().add("j3-tick-line");
-				line.setStroke(Color.BLACK);
-				line.setFill(Color.BLACK);
 				yTickLines.add(line);
 				
 				Text text = new Text(tickLabel);
