@@ -8,8 +8,8 @@
 	<!-- Properties used by these Ant targets -->
 	<property name="build" value="build" />
 	<property name="dist" value="dist" />
-	<property name="version" value="1.0.0" />
-	<property name="debversion" value="1.0-1" />
+	<property name="version" value="1.0.1" />
+	<property name="debversion" value="1.0.1-1" />
 	<property name="name" value="J3" />
 	<property name="ant.build.javac.source" value="1.8"/>
 	<property name="ant.build.javac.target" value="1.8"/>

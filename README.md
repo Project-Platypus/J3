@@ -26,12 +26,12 @@ Pre-packaged distributions are available for Windows, Linux, and Mac.  All distr
 
 #### Windows ####
 
-Download and extract [J3-Win.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Win.zip) if you
-already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Win-JRE.zip),
+Download and extract [J3-Win.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3-Win.zip) if you
+already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3-Win-JRE.zip),
 which is bundled with the Java 8 runtime environment.  After extracting, run `J3.exe`.  You can also load a data set
 from the command line by running `J3.exe <file>`.
 
-You can also download and run [J3.exe](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3.exe) by
+You can also download and run [J3.exe](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3.exe) by
 itself, although you will need to provide your own data files.
 
 #### Linux (Debian, Ubuntu, etc.) ####

@@ -22,9 +22,14 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.ParallelCamera;
@@ -35,6 +40,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
@@ -60,6 +67,58 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 	private Button plotOptions;
 	
 	private Button changeColor;
+	
+	private DoubleProperty rotationSpeed = new DoublePropertyBase(2.0) {
+
+		@Override
+		public Object getBean() {
+			return ScatterPlot.class;
+		}
+
+		@Override
+		public String getName() {
+			return "rotationSpeed";
+		}
+
+	};
+
+	public void setRotationSpeed(double speed) {
+		rotationSpeed.set(speed);
+	}
+
+	public double getRotationSpeed() {
+		return rotationSpeed.get();
+	}
+
+	public DoubleProperty rotationSpeedProperty() {
+		return rotationSpeed;
+	}
+	
+	private BooleanProperty rotationAxis = new BooleanPropertyBase(false) {
+
+		@Override
+		public Object getBean() {
+			return ScatterPlot.class;
+		}
+
+		@Override
+		public String getName() {
+			return "rotationAxis";
+		}
+
+	};
+
+	public void setRotationAxis(boolean axis) {
+		rotationAxis.set(axis);
+	}
+
+	public boolean getRotationAxis() {
+		return rotationAxis.get();
+	}
+
+	public BooleanProperty rotationAxisProperty() {
+		return rotationAxis;
+	}
 	
 	private ObservableList<Widget<?>> dependencies = FXCollections.observableArrayList();
 	
@@ -242,28 +301,28 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 			
 			Transition rotateLeftTransition = new Transition() {
 
-				private double start = 0.0;
-
 				{
-					setCycleDuration(new Duration(20000));
+					setCycleDuration(new Duration(60000));
 					setCycleCount(Transition.INDEFINITE);
 					setInterpolator(Interpolator.LINEAR);
 				}
 
 				@Override
 				protected void interpolate(double frac) {
-					double value = start + 360*frac;
+					Rotate rotate = getRotationAxis() ? plot.rotateX : plot.rotateY;
+					double value = rotate.getAngle();
+					
+					value += getRotationSpeed()*360 / 2000;
 
 					if (value > 360) {
 						value -= 360;
 					}
 
-					plot.rotateY.setAngle(value);
+					rotate.setAngle(value);
 				}
 
 				@Override
 				public void play() {
-					start = plot.rotateY.getAngle();
 					super.play();
 				}
 
@@ -271,32 +330,52 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 
 			Transition rotateRightTransition = new Transition() {
 
-				private double start = 0.0;
-
 				{
-					setCycleDuration(new Duration(20000));
+					setCycleDuration(new Duration(60000));
 					setCycleCount(Transition.INDEFINITE);
 					setInterpolator(Interpolator.LINEAR);
 				}
 
 				@Override
 				protected void interpolate(double frac) {
-					double value = start - 360*frac;
+					Rotate rotate = getRotationAxis() ? plot.rotateX : plot.rotateY;
+					double value = rotate.getAngle();
+					
+					value -= getRotationSpeed()*360 / 2000;
 
 					if (value < 0) {
 						value += 360;
 					}
 
-					plot.rotateY.setAngle(value);
+					rotate.setAngle(value);
 				}
 
 				@Override
 				public void play() {
-					start = plot.rotateY.getAngle();
 					super.play();
 				}
 
 			};
+			
+			EventHandler<? super MouseEvent> rotateOptionsHandler = event -> {
+				if (event.getButton() == MouseButton.SECONDARY) {
+					PopOver popover = new PopOver();
+					popover.setTitle("Rotation Options");
+					popover.setAutoHide(true);
+					popover.setAutoFix(true);
+					popover.setArrowLocation(ArrowLocation.TOP_CENTER);
+					
+					RotationOptions rotationOptions = new RotationOptions(this);
+					popover.setContentNode(rotationOptions);
+
+					ToggleButton button = (ToggleButton)event.getSource();
+					Bounds bounds = button.localToScreen(button.getBoundsInLocal());
+					popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+				}
+			};
+			
+			rotateLeft.setOnMouseClicked(rotateOptionsHandler);
+			rotateRight.setOnMouseClicked(rotateOptionsHandler);
 
 			rotateLeft.setOnAction(event -> {
 				if (rotateLeft.isSelected()) {
