@@ -44,6 +44,8 @@ Ubuntu, we needed to add the following repository to satisfy this dependency:
     sudo apt-get update
 ```
 
+On some versions of Linux, [JavaFX may not be bundled with OpenJDK](http://stackoverflow.com/questions/34243982/why-is-javafx-is-not-included-in-openjdk-8-on-ubuntu-wily-15-10).  If this is the case, run `sudo apt-get install openjfx` to install JavaFX.
+
 Finally, download and install [J3-1.0-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3_1.0-1.deb).
 After installation, J3 will appear as a desktop application.  You can also launch the program by running the command
 `J3`.
