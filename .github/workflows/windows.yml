@@ -30,12 +30,12 @@ jobs:
       #    gluon-license: ${{ secrets.GLUON_LICENSE }}
 
       - name: Gluon Build and Package
-        run: mvn -Pdesktop gluonfx:build gluonfx:package
+        run: mvn gluonfx:build gluonfx:package
 
       - name: Copy native bundles to staging
         run: |
           cp -r target/gluonfx/x86_64-windows/j3.exe staging
-          ls -al target/gluonfx/x64_64-windows/
+          dir target/gluonfx/x64_64-windows/
           
       - name: Upload
         uses: actions/upload-artifact@v2
