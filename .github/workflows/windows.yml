@@ -2,7 +2,6 @@ name: Windows
 
 on:
   push:
-    branches: [ master ]
 
 jobs:
   build:
@@ -34,8 +33,8 @@ jobs:
 
       - name: Copy native bundles to staging
         run: |
-          cp -r target/gluonfx/x86_64-windows/j3.exe staging
-          dir target/gluonfx/x86_64-windows
+          cp target/gluonfx/x86_64-windows/j3.exe staging
+          cp target/gluonfx/x86_64-windows/j3-*.msi staging
           
       - name: Upload
         uses: actions/upload-artifact@v2
