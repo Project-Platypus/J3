@@ -35,7 +35,7 @@ jobs:
       - name: Copy native bundles to staging
         run: |
           cp -r target/gluonfx/x86_64-windows/j3.exe staging
-          dir target/gluonfx/x64_64-windows/
+          dir target/gluonfx/x86_64-windows
           
       - name: Upload
         uses: actions/upload-artifact@v2
