@@ -14,6 +14,7 @@ import j3.widget.Widget;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,47 +44,48 @@ public class J3Reader extends AbstractCanvasReader {
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(is);
 			Element root = document.getRootElement();
-			
+
 			// parse the data
 			DataFrame table = new DataFrame();
 			Element dataElement = root.element("data");
-			
+
 			Element attributesElement = dataElement.element("attributes");
-			
+
 			for (Object obj : attributesElement.elements("attribute")) {
-				Element attributeElement = (Element)obj;
+				Element attributeElement = (Element) obj;
 				Class<?> attributeClass = Class.forName(attributeElement.attributeValue("class"));
-				
-				Attribute<?> attribute = (Attribute<?>)attributeClass.getConstructor(String.class).newInstance(attributeElement.attributeValue("name"));
+
+				Attribute<?> attribute = (Attribute<?>) attributeClass.getConstructor(String.class)
+						.newInstance(attributeElement.attributeValue("name"));
 				table.addAttribute(attribute);
 			}
-			
+
 			Element instancesElement = dataElement.element("instances");
-			
+
 			for (Object obj1 : instancesElement.elements("instance")) {
-				Element instanceElement = (Element)obj1;
+				Element instanceElement = (Element) obj1;
 				Instance instance = new Instance();
 				instance.setId(UUID.fromString(instanceElement.attributeValue("id")));
-				
+
 				int index = 0;
-				
+
 				for (Object obj2 : instanceElement.elements("value")) {
-					Element valueElement = (Element)obj2;
+					Element valueElement = (Element) obj2;
 					instance.set(table.getAttribute(index), valueElement.getText());
 					index++;
 				}
-				
+
 				table.addInstance(instance);
 			}
-			
+
 			canvas.getPropertyRegistry().put("data", table);
-			
+
 			// parse the colormap
 			if (root.element("colormap") != null) {
-			canvas.getPropertyRegistry().put("colormap", ColormapFactory.getInstance().getColormap(
-					root.elementText("colormap")));
+				canvas.getPropertyRegistry().put("colormap",
+						ColormapFactory.getInstance().getColormap(root.elementText("colormap")));
 			}
-			
+
 			// parse the selected axes
 			canvas.getPropertyRegistry().get("xAxis").setValue(null);
 			canvas.getPropertyRegistry().get("yAxis").setValue(null);
@@ -91,9 +93,9 @@ public class J3Reader extends AbstractCanvasReader {
 			canvas.getPropertyRegistry().get("colorAxis").setValue(null);
 			canvas.getPropertyRegistry().get("sizeAxis").setValue(null);
 			canvas.getPropertyRegistry().get("visibilityAxis").setValue(null);
-			
+
 			List<Axis> axes = new ArrayList<Axis>();
-			
+
 			for (int i = 0; i < table.attributeCount(); i++) {
 				Attribute<?> attribute = table.getAttribute(i);
 
@@ -109,60 +111,67 @@ public class J3Reader extends AbstractCanvasReader {
 					}
 				}
 			}
-			
+
 			canvas.getPropertyRegistry().get("xAxis").setValue(axes.size() > 0 ? axes.get(0) : null);
 			canvas.getPropertyRegistry().get("yAxis").setValue(axes.size() > 1 ? axes.get(1) : null);
 			canvas.getPropertyRegistry().get("zAxis").setValue(axes.size() > 2 ? axes.get(2) : null);
 			canvas.getPropertyRegistry().get("colorAxis").setValue(axes.size() > 3 ? axes.get(3) : null);
 			canvas.getPropertyRegistry().get("sizeAxis").setValue(axes.size() > 4 ? axes.get(4) : null);
 			canvas.getPropertyRegistry().get("axes").setValue(axes);
-			
+
 			if (root.element("xAxis") != null) {
-				canvas.getPropertyRegistry().get("xAxis").setValue(axes.get(Integer.parseInt(root.elementText("xAxis"))));
+				canvas.getPropertyRegistry().get("xAxis")
+						.setValue(axes.get(Integer.parseInt(root.elementText("xAxis"))));
 			}
-			
+
 			if (root.element("yAxis") != null) {
-				canvas.getPropertyRegistry().get("yAxis").setValue(axes.get(Integer.parseInt(root.elementText("yAxis"))));
+				canvas.getPropertyRegistry().get("yAxis")
+						.setValue(axes.get(Integer.parseInt(root.elementText("yAxis"))));
 			}
-			
+
 			if (root.element("zAxis") != null) {
-				canvas.getPropertyRegistry().get("zAxis").setValue(axes.get(Integer.parseInt(root.elementText("zAxis"))));
+				canvas.getPropertyRegistry().get("zAxis")
+						.setValue(axes.get(Integer.parseInt(root.elementText("zAxis"))));
 			}
-			
+
 			if (root.element("colorAxis") != null) {
-				canvas.getPropertyRegistry().get("colorAxis").setValue(axes.get(Integer.parseInt(root.elementText("colorAxis"))));
+				canvas.getPropertyRegistry().get("colorAxis")
+						.setValue(axes.get(Integer.parseInt(root.elementText("colorAxis"))));
 			}
-			
+
 			if (root.element("sizeAxis") != null) {
-				canvas.getPropertyRegistry().get("sizeAxis").setValue(axes.get(Integer.parseInt(root.elementText("sizeAxis"))));
+				canvas.getPropertyRegistry().get("sizeAxis")
+						.setValue(axes.get(Integer.parseInt(root.elementText("sizeAxis"))));
 			}
-			
+
 			if (root.element("visibilityAxis") != null) {
 				int index = Integer.parseInt(root.elementText("visibilityAxis"));
-				
+
 				if (index >= 0 && index < axes.size()) {
-						canvas.getPropertyRegistry().get("visibilityAxis").setValue(axes.get(index));
+					canvas.getPropertyRegistry().get("visibilityAxis").setValue(axes.get(index));
 				}
 			}
-			
+
 			// parse the widgets
 			Element widgetsElement = root.element("widgets");
-			
+
 			for (Object obj : widgetsElement.elements("widget")) {
-				Element widgetElement = (Element)obj;
-				
+				Element widgetElement = (Element) obj;
+
 				Class<?> widgetClass = Class.forName(widgetElement.attributeValue("class"));
-				Object widgetInstance = widgetClass.newInstance();
-				
+				Constructor<?> widgetConstructor = widgetClass.getConstructor();
+				Object widgetInstance = widgetConstructor.newInstance();
+
 				if (widgetInstance instanceof Widget) {
-					canvas.add((Widget<?>)widgetInstance);
-					
+					canvas.add((Widget<?>) widgetInstance);
+
 					if (widgetInstance instanceof SerializableWidget) {
-						((SerializableWidget)widgetInstance).restoreState(widgetElement.elements().get(0), canvas);
+						((SerializableWidget) widgetInstance).restoreState(widgetElement.elements().get(0), canvas);
 					}
 				}
 			}
-		} catch (DocumentException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+		} catch (DocumentException | ClassNotFoundException | IllegalAccessException | InstantiationException
+				| InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();
 			throw new IOException(e);
 		}

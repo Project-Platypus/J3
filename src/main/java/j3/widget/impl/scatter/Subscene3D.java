@@ -15,9 +15,9 @@ public class Subscene3D extends SubScene {
 		NONE,
 
 		ROTATE,
-		
+
 		TRANSLATE,
-		
+
 		SCALE
 
 	}
@@ -50,18 +50,18 @@ public class Subscene3D extends SubScene {
 
 	public Subscene3D(int size) {
 		super(new Group(), size, size, true, SceneAntialiasing.BALANCED);
-		
+
 		// initialize the camera
 		setCamera(new PerspectiveCamera());
 
 		// initialize the nodes within this scene
-		root = (Group)getRoot();
+		root = (Group) getRoot();
 		textGroup = new Group();
 		axis3D = new Axis3D(size, textGroup);
 
 		// setup the transforms for the 3D axis, centering it on screen
-		translate.setX(getWidth()/2.0);
-		translate.setY(getHeight()/2.0);
+		translate.setX(getWidth() / 2.0);
+		translate.setY(getHeight() / 2.0);
 		axis3D.getTransforms().addAll(translate, rotateX, rotateY, scale);
 
 		root.getChildren().addAll(axis3D, textGroup);
@@ -72,19 +72,19 @@ public class Subscene3D extends SubScene {
 
 		// bind width and height to the
 		widthProperty().addListener((observable, oldValue, newValue) -> {
-			double fracX = (translate.getX() + axis3D.getWidth()/2.0) / oldValue.doubleValue();
-			double newX = (fracX * newValue.doubleValue()) - axis3D.getWidth()/2.0;
+			double fracX = (translate.getX() + axis3D.getWidth() / 2.0) / oldValue.doubleValue();
+			double newX = (fracX * newValue.doubleValue()) - axis3D.getWidth() / 2.0;
 
 			translate.setX(newX);
 		});
 
 		heightProperty().addListener((observable, oldValue, newValue) -> {
-			double fracY = (translate.getY() + axis3D.getHeight()/2.0) / oldValue.doubleValue();
-			double newY = (fracY * newValue.doubleValue()) - axis3D.getHeight()/2.0;
-			
+			double fracY = (translate.getY() + axis3D.getHeight() / 2.0) / oldValue.doubleValue();
+			double newY = (fracY * newValue.doubleValue()) - axis3D.getHeight() / 2.0;
+
 			translate.setY(newY);
 		});
-		
+
 		setManaged(false);
 	}
 
@@ -111,17 +111,16 @@ public class Subscene3D extends SubScene {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mouseOldX = me.getSceneX();
 					mouseOldY = me.getSceneY();
 				});
-
 
 				setOnMouseDragged(me -> {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mousePosX = me.getSceneX();
 					mousePosY = me.getSceneY();
 					rotateX.setAngle(rotateX.getAngle() - (mousePosY - mouseOldY));
@@ -136,17 +135,16 @@ public class Subscene3D extends SubScene {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mouseOldX = me.getSceneX();
 					mouseOldY = me.getSceneY();
 				});
-
 
 				setOnMouseDragged(me -> {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mousePosX = me.getSceneX();
 					mousePosY = me.getSceneY();
 					translate.setX(translate.getX() + (mousePosX - mouseOldX));
@@ -161,23 +159,22 @@ public class Subscene3D extends SubScene {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mouseOldY = me.getSceneY();
 					scaleOld = scale.getX();
 				});
-
 
 				setOnMouseDragged(me -> {
 					if (me.isConsumed()) {
 						return;
 					}
-					
+
 					mousePosY = me.getSceneY();
-					
+
 					double diff = mouseOldY - mousePosY;
 					double frac = 1.0 + diff / getHeight();
 					double scaleValue = scaleOld * frac;
-					
+
 					scale.setX(scaleValue);
 					scale.setY(scaleValue);
 					scale.setZ(scaleValue);

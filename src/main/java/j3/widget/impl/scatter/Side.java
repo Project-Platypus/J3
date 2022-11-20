@@ -19,15 +19,15 @@ import javafx.scene.shape.Rectangle;
 public class Side extends Region {
 
 	private int size;
-	
+
 	private final Dimension dimension1;
-	
+
 	public Dimension getDimension1() {
 		return dimension1;
 	}
-	
+
 	private final Dimension dimension2;
-	
+
 	public Dimension getDimension2() {
 		return dimension2;
 	}
@@ -38,19 +38,19 @@ public class Side extends Region {
 		protected void invalidated() {
 			getChildren().removeAll(tickLines1);
 			tickLines1.clear();
-			
+
 			if (getAxis1() != null) {
 				double[] tickPositions = getAxis1().getTickPositions();
-	
+
 				for (int i = 0; i < tickPositions.length; i++) {
 					Line line = new Line(0, 0, 0, size);
 					line.getStyleClass().add("j3-tick-line");
 					line.setStroke(Color.BLACK);
 					line.setFill(Color.BLACK);
-					line.setTranslateX(size*tickPositions[i]);
+					line.setTranslateX(size * tickPositions[i]);
 					tickLines1.add(line);
 				}
-				
+
 				getChildren().addAll(tickLines1);
 			}
 		}
@@ -64,44 +64,44 @@ public class Side extends Region {
 		public String getName() {
 			return "axis1";
 		}
-		
+
 	};
-	
+
 	public void setAxis1(Axis axis) {
 		axis1.set(axis);
 	}
-	
+
 	public Axis getAxis1() {
 		return axis1.get();
 	}
-	
+
 	public ObjectProperty<Axis> axis1Property() {
 		return axis1;
 	}
-	
+
 	private final ObjectProperty<Axis> axis2 = new ObjectPropertyBase<Axis>() {
 
 		@Override
 		protected void invalidated() {
 			getChildren().removeAll(tickLines2);
 			tickLines2.clear();
-			
+
 			if (getAxis2() != null) {
 				double[] tickPositions = getAxis2().getTickPositions();
-	
+
 				for (int i = 0; i < tickPositions.length; i++) {
 					Line line = new Line(0, 0, size, 0);
 					line.getStyleClass().add("j3-tick-line");
 					line.setStroke(Color.BLACK);
 					line.setFill(Color.BLACK);
-					line.setTranslateY(size*tickPositions[i]);
+					line.setTranslateY(size * tickPositions[i]);
 					tickLines2.add(line);
 				}
-				
+
 				getChildren().addAll(tickLines2);
 			}
 		}
-		
+
 		@Override
 		public Object getBean() {
 			return Side.class;
@@ -111,17 +111,17 @@ public class Side extends Region {
 		public String getName() {
 			return "axis2";
 		}
-		
+
 	};
-	
+
 	public void setAxis2(Axis axis) {
 		axis2.set(axis);
 	}
-	
+
 	public Axis getAxis2() {
 		return axis2.get();
 	}
-	
+
 	public ObjectProperty<Axis> axis2Property() {
 		return axis2;
 	}
@@ -129,24 +129,25 @@ public class Side extends Region {
 	private Rectangle side;
 
 	private final List<Line> tickLines1 = new ArrayList<Line>();
-	
+
 	private final List<Line> tickLines2 = new ArrayList<Line>();
 
 	/**
-	 * Internal structure storing lines on which the tick labels are drawn.
-	 * This is used to quickly detect which ticks are to be drawn, since JavaFX
-	 * lacks basic geometric functions.
+	 * Internal structure storing lines on which the tick labels are drawn. This is
+	 * used to quickly detect which ticks are to be drawn, since JavaFX lacks basic
+	 * geometric functions.
 	 */
 	private final List<Line> tickLabelLines = new ArrayList<Line>();;
 
 	/**
-	 * Internal structure storing lines on which the axis labels are drawn.
-	 * This is used to quickly detect which labels are to be drawn, since JavaFX
-	 * lacks basic geometric functions.
+	 * Internal structure storing lines on which the axis labels are drawn. This is
+	 * used to quickly detect which labels are to be drawn, since JavaFX lacks basic
+	 * geometric functions.
 	 */
 	private final List<Line> axisLabelLines = new ArrayList<Line>();
 
-	public Side(int size, Dimension dimension1, ObjectProperty<Axis> axis1, Dimension dimension2, ObjectProperty<Axis> axis2) {
+	public Side(int size, Dimension dimension1, ObjectProperty<Axis> axis1, Dimension dimension2,
+			ObjectProperty<Axis> axis2) {
 		super();
 		this.size = size;
 		this.dimension1 = dimension1;
@@ -220,7 +221,7 @@ public class Side extends Region {
 	public int getSize() {
 		return size;
 	}
-	
+
 	Line getInteralTickLabelLine(int index) {
 		return tickLabelLines.get(index);
 	}
@@ -228,15 +229,15 @@ public class Side extends Region {
 	Line getInternalAxisLabelLine(int index) {
 		return axisLabelLines.get(index);
 	}
-	
+
 	Axis getInternalAxis(int index) {
 		return index < 2 ? axis1.get() : axis2.get();
 	}
-	
+
 	Dimension getInternalDimension(int index) {
 		return index < 2 ? dimension1 : dimension2;
 	}
-	
+
 	List<Line> getInternalTickLabelLines() {
 		return tickLabelLines;
 	}
@@ -247,17 +248,17 @@ public class Side extends Region {
 
 	public double getCentroidZ() {
 		Bounds bounds = localToScene(getBoundsInLocal());
-		
+
 		if (bounds == null) {
 			return 0.0;
 		} else {
 			return (bounds.getMinZ() + bounds.getMaxZ()) / 2.0;
 		}
 	}
-	
+
 	public double getCentroidY() {
 		Bounds bounds = localToScene(getBoundsInLocal());
-		
+
 		if (bounds == null) {
 			return 0.0;
 		} else {

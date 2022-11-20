@@ -10,9 +10,9 @@ import org.dom4j.Element;
  * their {@code initialize()} method; then their state is restored.
  */
 public interface SerializableWidget {
-	
+
 	public Element saveState(Canvas canvas);
-	
+
 	public void restoreState(Element data, Canvas canvas);
 
 }

@@ -21,11 +21,11 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 public class AnimateWidget extends TitledWidget<AnimateWidget> implements SerializableWidget {
-	
+
 	private String name;
-	
+
 	private String script;
-	
+
 	private Label label;
 
 	@Override
@@ -36,7 +36,7 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 	@Override
 	public void initialize(Canvas canvas) {
 		setTitle("Animation Controls");
-		
+
 		GridPane pane = new GridPane();
 
 		ColumnConstraints column0 = new ColumnConstraints();
@@ -63,7 +63,7 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 
 			File selectedFile = fileChooser.showOpenDialog(canvas.getScene().getWindow());
 
-			if (selectedFile != null) {				
+			if (selectedFile != null) {
 				try {
 					script = new String(Files.readAllBytes(selectedFile.toPath()));
 					name = selectedFile.getName();
@@ -106,8 +106,8 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 
 			point = canvas.screenToLocal(point);
 
-			setLayoutX(point.getX() - prefWidth(30)/2);
-			setLayoutY(point.getY() - prefHeight(30)/2);
+			setLayoutX(point.getX() - prefWidth(30) / 2);
+			setLayoutY(point.getY() - prefHeight(30) / 2);
 
 			// add this widget to the canvas
 			canvas.add(this);
@@ -115,22 +115,22 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 			event.consume();
 		});
 	}
-	
+
 	@Override
 	public Element saveState(Canvas canvas) {
 		Element element = DocumentHelper.createElement("animate");
-		
+
 		// save the pane size
 		saveStateInternal(element);
 
 		// save the script name
 		Element nameElement = element.addElement("name");
 		nameElement.setText(name);
-		
+
 		// save the contents of the script file
 		Element scriptElement = element.addElement("script");
 		scriptElement.add(DocumentHelper.createCDATA(script));
-		
+
 		return element;
 	}
 
@@ -138,7 +138,7 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 	public void restoreState(Element element, Canvas canvas) {
 		// restore the pane size
 		restoreStateInternal(element);
-		
+
 		// restore the animation pane settings
 		name = element.elementText("name");
 		script = element.elementText("script");

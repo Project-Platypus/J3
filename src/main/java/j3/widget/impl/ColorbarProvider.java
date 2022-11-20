@@ -15,8 +15,9 @@ public class ColorbarProvider implements WidgetProvider {
 
 	@Override
 	public boolean isEnabled(Canvas canvas) {
-		return canvas.getPropertyRegistry().contains("data") && canvas.getPropertyRegistry().get("data").get() != null &&
-				canvas.getPropertyRegistry().contains("axes") && canvas.getPropertyRegistry().get("axes").get() != null;
+		return canvas.getPropertyRegistry().contains("data") && canvas.getPropertyRegistry().get("data").get() != null
+				&& canvas.getPropertyRegistry().contains("axes")
+				&& canvas.getPropertyRegistry().get("axes").get() != null;
 	}
 
 	@Override

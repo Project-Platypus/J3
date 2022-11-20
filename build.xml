@@ -11,8 +11,8 @@
 	<property name="version" value="1.0.1" />
 	<property name="debversion" value="1.0.1-1" />
 	<property name="name" value="J3" />
-	<property name="ant.build.javac.source" value="1.8"/>
-	<property name="ant.build.javac.target" value="1.8"/>
+	<property name="ant.build.javac.source" value="18"/>
+	<property name="ant.build.javac.target" value="18"/>
 	
 	<property name="java_home" value="${env.JAVA_HOME}" />
 	<property name="jdk" value="${java_home}\bin\javac" />

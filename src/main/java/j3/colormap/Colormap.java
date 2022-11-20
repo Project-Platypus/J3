@@ -7,9 +7,9 @@ import javafx.scene.paint.Color;
  * {@code [0, 1]} to a color.
  */
 public interface Colormap {
-	
+
 	public String getName();
-	
+
 	public Color map(double value);
 
 }

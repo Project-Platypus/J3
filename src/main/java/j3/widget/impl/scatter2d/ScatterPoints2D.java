@@ -59,7 +59,7 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	}
 
 	private ObjectProperty<Axis> yAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateXYAxes();
@@ -89,9 +89,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	public ObjectProperty<Axis> yAxisProperty() {
 		return yAxis;
 	}
-	
+
 	private ObjectProperty<Axis> colorAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateColorAxis();
@@ -121,9 +121,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	public ObjectProperty<Axis> colorAxisProperty() {
 		return colorAxis;
 	}
-	
+
 	private ObjectProperty<Axis> sizeAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateSizeAxis();
@@ -153,9 +153,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	public ObjectProperty<Axis> sizeAxisProperty() {
 		return sizeAxis;
 	}
-	
+
 	private ObjectProperty<Axis> visibilityAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateVisibilityAxis();
@@ -191,8 +191,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 		@Override
 		protected void invalidated() {
 			for (int i = 0; i < materials.size(); i++) {
-				Color newColor = colormap.get().map(i / (double)(materials.size()-1));
-				DiffuseColorTransition transition = new DiffuseColorTransition(new Duration(1000), materials.get(i), newColor);
+				Color newColor = colormap.get().map(i / (double) (materials.size() - 1));
+				DiffuseColorTransition transition = new DiffuseColorTransition(new Duration(1000), materials.get(i),
+						newColor);
 				transition.play();
 			}
 		}
@@ -220,9 +221,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	public ObjectProperty<Colormap> colormapProperty() {
 		return colormap;
 	}
-	
+
 	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
-		
+
 //		private Instance oldInstance = null;
 //		
 //		private Material oldMaterial = null;
@@ -245,7 +246,7 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 //			}
 //			
 //			oldInstance = selectedInstance.get();
-			
+
 			updateColorAxis();
 		}
 
@@ -282,7 +283,7 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	public ScatterPoints2D(Axis2D axisBox, DataFrame table) {
 		super();
 		this.table = table;
-		
+
 		points = new ArrayList<Shape3D>();
 
 		materials = new ArrayList<PhongMaterial>();
@@ -296,30 +297,30 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 
 		axisBox.xAxisProperty().bind(xAxisProperty());
 		axisBox.yAxisProperty().bind(yAxisProperty());
-		
+
 		widthProperty().addListener((observable, oldValue, newValue) -> {
 			onResize();
 		});
-		
+
 		heightProperty().addListener((observable, oldValue, newValue) -> {
 			onResize();
 		});
 
 		for (int i = 0; i < table.instanceCount(); i++) {
 			Instance instance = table.getInstance(i);
-			
+
 			Shape3D box = new Box(10, 10, 10);
 			box.setId(UUID.randomUUID().toString());
 			box.setUserData(instance);
 			box.setOnMouseClicked(event -> setSelectedInstance(instance));
-			
+
 			points.add(box);
 		}
 
 		pointGroup.getChildren().addAll(points);
 		getChildren().addAll(pointGroup);
 		axisBox.setPlotContents(this);
-		
+
 		setManaged(true);
 		setPickOnBounds(false);
 	}
@@ -327,19 +328,19 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 	protected List<Shape3D> getPoints() {
 		return points;
 	}
-	
+
 	private class PointTransition extends Transition {
-		
+
 		private double[] startX = new double[points.size()];
-		
+
 		private double[] startY = new double[points.size()];
-		
+
 		public PointTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				startX[i] = points.get(i).getTranslateX();
 				startY[i] = points.get(i).getTranslateY();
@@ -350,64 +351,64 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 		protected void interpolate(double frac) {
 			Axis xAxis = getXAxis();
 			Axis yAxis = getYAxis();
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
 
 				double endX = getWidth() * ((xAxis == null ? 0.0 : map(xAxis, i)) /*- 0.5*/);
 				double endY = getHeight() * (1.0 - (yAxis == null ? 0.0 : map(yAxis, i)));
-				
+
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);
 				box.setTranslateY(startY[i] + (endY - startY[i]) * frac);
 			}
 		}
-		
+
 	}
-	
+
 	private double map(Axis axis, int row) {
 		return axis.map(table.getInstance(row));
 	}
-	
+
 	private int[] start;
-	
+
 	private int[] end;
-	
+
 	private class ColorTransition extends Transition {
-		
+
 		public ColorTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			Axis colorAxis = getColorAxis();
-		
+
 			if (start == null) {
 				start = new int[points.size()];
 				end = new int[points.size()];
-				
+
 				for (int i = 0; i < points.size(); i++) {
-					int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				
+					int startIndex = materials.indexOf((PhongMaterial) points.get(i).getMaterial());
+
 					if (startIndex < 0) {
 						startIndex = 0;
 					}
-					
+
 					start[i] = startIndex;
 					end[i] = startIndex;
 				}
 			}
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				int startIndex = end[i];
-				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, i)));
-				
+				int endIndex = (int) (255 * (colorAxis == null ? 0.0 : map(colorAxis, i)));
+
 				if (selectedInstance.get() != null) {
 					if (points.get(i).getUserData() != selectedInstance.get()) {
-						endIndex = -1; 
+						endIndex = -1;
 					}
 				}
-				
+
 				start[i] = startIndex;
 				end[i] = endIndex;
 			}
@@ -417,38 +418,37 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 		protected void interpolate(double frac) {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
-				
+
 				if (frac == 0.0) {
 					box.setMaterial(start[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(start[i]));
 				} else if (frac == 1.0) {
 					box.setMaterial(end[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(end[i]));
 				} else {
-					Color originalColor = start[i] == -1 ? Color.GRAY : materials.get(start[i]).getDiffuseColor(); 
-					Color newColor = originalColor.interpolate(
-							end[i] == -1 ? Color.GRAY : materials.get(end[i]).getDiffuseColor(),
-							frac);
-							
+					Color originalColor = start[i] == -1 ? Color.GRAY : materials.get(start[i]).getDiffuseColor();
+					Color newColor = originalColor
+							.interpolate(end[i] == -1 ? Color.GRAY : materials.get(end[i]).getDiffuseColor(), frac);
+
 					box.setMaterial(new PhongMaterial(newColor));
 				}
 			}
 		}
-		
+
 	}
-	
+
 	private class SizeTransition extends Transition {
-		
+
 		private double[] start = new double[points.size()];
-		
+
 		private double[] end = new double[points.size()];
-		
+
 		public SizeTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			Axis sizeAxis = getSizeAxis();
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
 				end[i] = (sizeAxis == null ? 0.8 : map(sizeAxis, i)) + 0.2;
@@ -464,19 +464,19 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 				box.setScaleZ(start[i] + (end[i] - start[i]) * frac);
 			}
 		}
-		
+
 	}
-	
+
 	public void onResize() {
 		Axis xAxis = getXAxis();
 		Axis yAxis = getYAxis();
-		
+
 		for (int i = 0; i < points.size(); i++) {
 			Shape3D box = points.get(i);
 
 			double endX = getWidth() * ((xAxis == null ? 0.0 : map(xAxis, i)) /*- 0.5*/);
 			double endY = getHeight() * (1.0 - (yAxis == null ? 0.0 : map(yAxis, i)));
-			
+
 			box.setTranslateX(endX);
 			box.setTranslateY(endY);
 		}
@@ -486,36 +486,36 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		PointTransition pt = new PointTransition();
 		pt.play();
 	}
-	
+
 	public void updateColorAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		ColorTransition ct = new ColorTransition();
 		ct.play();
 	}
-	
+
 	public void updateSizeAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		SizeTransition st = new SizeTransition();
 		st.play();
 	}
-	
+
 	public void updateVisibilityAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
 
 		Axis visibilityAxis = getVisibilityAxis();
-		
+
 		for (int i = 0; i < points.size(); i++) {
 			points.get(i).setVisible(visibilityAxis == null ? true : map(visibilityAxis, i) > 0.5);
 		}
@@ -523,13 +523,9 @@ public class ScatterPoints2D extends Pane implements Plot2D {
 
 	@Override
 	public List<ObjectProperty<Axis>> getAxisProperties() {
-		return Arrays.asList(
-				xAxis,
-				yAxis,
-				colorAxis,
-				sizeAxis);
+		return Arrays.asList(xAxis, yAxis, colorAxis, sizeAxis);
 	}
-	
+
 	public void update() {
 		updateVisibilityAxis();
 	}

@@ -14,13 +14,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.transform.Translate;
 
 public abstract class BoxWidget<T> extends Region implements Widget<BoxWidget<T>> {
-	
+
 	protected BorderPane pane;
-	
+
 	private double mousePosX, mousePosY, mouseStartX, mouseStartY;
-	
+
 	private double initX, initY, initWidth, initHeight;
-	
+
 	private Translate translate = new Translate();
 
 	public BoxWidget() {
@@ -30,7 +30,7 @@ public abstract class BoxWidget<T> extends Region implements Widget<BoxWidget<T>
 		pane.setPadding(new Insets(5, 5, 5, 5));
 
 		getChildren().add(pane);
-		
+
 		pane.setOnMousePressed(event -> {
 			mouseStartX = event.getScreenX();
 			mouseStartY = event.getScreenY();
@@ -38,62 +38,66 @@ public abstract class BoxWidget<T> extends Region implements Widget<BoxWidget<T>
 			initY = translate.getY();
 			initWidth = pane.getWidth();
 			initHeight = pane.getHeight();
-			
+
 			event.consume();
 		});
-		
+
 		pane.setOnMouseDragged(event -> {
 			mousePosX = event.getScreenX();
 			mousePosY = event.getScreenY();
-			
+
 			double diffX = 0.0, diffY = 0.0, diffWidth = 0.0, diffHeight = 0.0;
-			
+
 			if (pane.getCursor() == null || pane.getCursor() == Cursor.MOVE || pane.getCursor() == Cursor.DEFAULT) {
 				diffX = mousePosX - mouseStartX;
 				diffY = mousePosY - mouseStartY;
-				
+
 			}
-			
-			if (pane.getCursor() == Cursor.S_RESIZE || pane.getCursor() == Cursor.SW_RESIZE || pane.getCursor() == Cursor.SE_RESIZE) {
+
+			if (pane.getCursor() == Cursor.S_RESIZE || pane.getCursor() == Cursor.SW_RESIZE
+					|| pane.getCursor() == Cursor.SE_RESIZE) {
 				diffHeight = mousePosY - mouseStartY;
 			}
-			
-			if (pane.getCursor() == Cursor.N_RESIZE || pane.getCursor() == Cursor.NW_RESIZE || pane.getCursor() == Cursor.NE_RESIZE) {
+
+			if (pane.getCursor() == Cursor.N_RESIZE || pane.getCursor() == Cursor.NW_RESIZE
+					|| pane.getCursor() == Cursor.NE_RESIZE) {
 				diffY = mousePosY - mouseStartY;
 				diffHeight = -diffY;
 			}
-			
-			if (pane.getCursor() == Cursor.E_RESIZE || pane.getCursor() == Cursor.NE_RESIZE || pane.getCursor() == Cursor.SE_RESIZE) {
+
+			if (pane.getCursor() == Cursor.E_RESIZE || pane.getCursor() == Cursor.NE_RESIZE
+					|| pane.getCursor() == Cursor.SE_RESIZE) {
 				diffWidth = mousePosX - mouseStartX;
 			}
-			
-			if (pane.getCursor() == Cursor.W_RESIZE || pane.getCursor() == Cursor.NW_RESIZE || pane.getCursor() == Cursor.SW_RESIZE) {
+
+			if (pane.getCursor() == Cursor.W_RESIZE || pane.getCursor() == Cursor.NW_RESIZE
+					|| pane.getCursor() == Cursor.SW_RESIZE) {
 				diffX = mousePosX - mouseStartX;
 				diffWidth = -diffX;
 			}
-			
+
 			translate.setX(initX + diffX);
 			translate.setY(initY + diffY);
 			pane.setPrefWidth(initWidth + diffWidth);
 			pane.setPrefHeight(initHeight + diffHeight);
 			event.consume();
 		});
-		
+
 		pane.setOnMouseMoved(event -> {
 			mousePosX = event.getScreenX();
 			mousePosY = event.getScreenY();
-			
+
 			Point2D point = new Point2D(mousePosX, mousePosY);
 			point = pane.screenToLocal(point);
-			
+
 			boolean resizeLeft = false, resizeTop = false, resizeRight = false, resizeBottom = false;
-			
+
 			if (Math.abs(point.getX() - 0) < 2) {
 				resizeLeft = true;
 			} else if (Math.abs(point.getX() - pane.getWidth()) < 2) {
 				resizeRight = true;
 			}
-			
+
 			if (Math.abs(point.getY() - 0) < 2) {
 				resizeTop = true;
 			} else if (Math.abs(point.getY() - pane.getHeight()) < 2) {
@@ -120,7 +124,7 @@ public abstract class BoxWidget<T> extends Region implements Widget<BoxWidget<T>
 				pane.setCursor(null);
 			}
 		});
-		
+
 		getTransforms().add(translate);
 		setPickOnBounds(false);
 		setManaged(false);
@@ -135,32 +139,32 @@ public abstract class BoxWidget<T> extends Region implements Widget<BoxWidget<T>
 	public void onAdd(Canvas canvas) {
 
 	}
-	
+
 	public void setContent(Node node) {
 		pane.setCenter(node);
-		
+
 		node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 			pane.setCursor(null);
 		});
 	}
-	
+
 	protected void saveStateInternal(Element element) {
 		Element width = element.addElement("width");
 		width.setText(Double.toString(pane.getWidth()));
-		
+
 		Element height = element.addElement("height");
 		height.setText(Double.toString(pane.getHeight()));
-		
+
 		Bounds bounds = pane.getBoundsInLocal();
 		bounds = pane.getLocalToSceneTransform().transform(bounds);
-		
+
 		Element x = element.addElement("posX");
 		x.setText(Double.toString(bounds.getMinX()));
-		
+
 		Element y = element.addElement("posY");
 		y.setText(Double.toString(bounds.getMinY()));
 	}
-	
+
 	protected void restoreStateInternal(Element element) {
 		pane.setLayoutX(Double.parseDouble(element.elementText("posX")));
 		pane.setLayoutY(Double.parseDouble(element.elementText("posY")));

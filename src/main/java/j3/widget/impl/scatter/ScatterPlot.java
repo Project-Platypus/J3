@@ -53,21 +53,21 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, TargetableWidget {
-	
+
 	private Subscene3D plot;
-	
+
 	private ScatterPoints scatter;
-	
+
 	private SegmentedButton mouseControls;
-	
+
 	private SegmentedButton axisControls;
-	
+
 	private SegmentedButton animationControls;
-	
+
 	private Button plotOptions;
-	
+
 	private Button changeColor;
-	
+
 	private DoubleProperty rotationSpeed = new DoublePropertyBase(2.0) {
 
 		@Override
@@ -93,7 +93,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 	public DoubleProperty rotationSpeedProperty() {
 		return rotationSpeed;
 	}
-	
+
 	private BooleanProperty rotationAxis = new BooleanPropertyBase(false) {
 
 		@Override
@@ -119,9 +119,9 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 	public BooleanProperty rotationAxisProperty() {
 		return rotationAxis;
 	}
-	
+
 	private ObservableList<Widget<?>> dependencies = FXCollections.observableArrayList();
-	
+
 	public ScatterPlot() {
 		super();
 	}
@@ -133,11 +133,11 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 
 	@Override
 	public void initialize(Canvas canvas) {
-		DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
-		
+		DataFrame table = (DataFrame) canvas.getPropertyRegistry().get("data").getValue();
+
 		plot = new Subscene3D(400);
 		scatter = new ScatterPoints(plot.getAxis3D(), table);
-		
+
 		ObjectProperty<Axis> xAxis = canvas.getPropertyRegistry().get("xAxis");
 		ObjectProperty<Axis> yAxis = canvas.getPropertyRegistry().get("yAxis");
 		ObjectProperty<Axis> zAxis = canvas.getPropertyRegistry().get("zAxis");
@@ -146,7 +146,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 		ObjectProperty<Axis> visibilityAxis = canvas.getPropertyRegistry().get("visibilityAxis");
 		ObjectProperty<Colormap> colormap = canvas.getPropertyRegistry().get("colormap");
 		ObjectProperty<Instance> selectedInstance = canvas.getPropertyRegistry().get("selectedInstance");
-		
+
 		scatter.xAxisProperty().bind(xAxis);
 		scatter.yAxisProperty().bind(yAxis);
 		scatter.zAxisProperty().bind(zAxis);
@@ -161,9 +161,9 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 	public void onAdd(Canvas canvas) {
 		plot.widthProperty().bind(canvas.widthProperty());
 		plot.heightProperty().bind(canvas.heightProperty());
-		
+
 		plot.toBack();
-		
+
 		if (canvas.getToolBar() != null) {
 			Image rotateImage = new Image(GUI.class.getResourceAsStream("/j3/icons/rotate_1x.png"));
 			Image translateImage = new Image(GUI.class.getResourceAsStream("/j3/icons/translate_1x.png"));
@@ -174,7 +174,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 			Image rotateRightImage = new Image(GUI.class.getResourceAsStream("/j3/icons/rotate_right_1x.png"));
 			Image plotOptionsImage = new Image(GUI.class.getResourceAsStream("/j3/icons/settings_1x.png"));
 			Image colorImage = new Image(GUI.class.getResourceAsStream("/j3/icons/color_1x.png"));
-			
+
 			ToggleButton rotate = new ToggleButton();
 			rotate.setGraphic(new ImageView(rotateImage));
 			rotate.setSelected(true);
@@ -187,7 +187,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 			ToggleButton scale = new ToggleButton();
 			scale.setGraphic(new ImageView(scaleImage));
 			scale.setTooltip(new Tooltip("Scale the 3D axis using the mouse"));
-			
+
 			ToggleButton split = new ToggleButton();
 			split.setGraphic(new ImageView(splitImage));
 			split.setTooltip(new Tooltip("Increase / decreate gap between axes"));
@@ -195,7 +195,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 			ToggleButton project = new ToggleButton();
 			project.setGraphic(new ImageView(projectImage));
 			project.setTooltip(new Tooltip("Project the 3D view onto the 2D axes"));
-			
+
 			ToggleButton rotateLeft = new ToggleButton();
 			rotateLeft.setGraphic(new ImageView(rotateLeftImage));
 			rotateLeft.setTooltip(new Tooltip("Animate the 3D view by rotating to the left"));
@@ -203,31 +203,31 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 			ToggleButton rotateRight = new ToggleButton();
 			rotateRight.setGraphic(new ImageView(rotateRightImage));
 			rotateRight.setTooltip(new Tooltip("Animate the 3D view by rotating to the right"));
-			
+
 			plotOptions = new Button();
 			plotOptions.setGraphic(new ImageView(plotOptionsImage));
 			plotOptions.setTooltip(new Tooltip("Change plot options"));
-			
+
 			changeColor = new Button();
 			changeColor.setGraphic(new ImageView(colorImage));
 			changeColor.setTooltip(new Tooltip("Change the colormap"));
-			
+
 			rotate.setOnAction(event -> {
 				plot.setMouseMode(rotate.isSelected() ? MouseMode.ROTATE : MouseMode.NONE);
 			});
-	
+
 			translate.setOnAction(event -> {
 				plot.setMouseMode(translate.isSelected() ? MouseMode.TRANSLATE : MouseMode.NONE);
 			});
-	
+
 			scale.setOnAction(event -> {
 				plot.setMouseMode(scale.isSelected() ? MouseMode.SCALE : MouseMode.NONE);
 			});
-			
+
 			split.setOnAction(event -> {
 				plot.getAxis3D().setSideGap(split.isSelected() ? 0.2 : 0.0);
 			});
-			
+
 			List<ImageView> projectedImages = new ArrayList<ImageView>();
 
 			project.setOnAction(event -> {
@@ -245,7 +245,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 						params.setFill(Color.TRANSPARENT);
 
 						if (i == 0) {
-							//params.setTransform(new Affine());
+							// params.setTransform(new Affine());
 						} else if (i == 1) {
 							params.setTransform(new Rotate(-90, Rotate.X_AXIS));
 						} else if (i == 2) {
@@ -255,7 +255,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 						} else if (i == 4) {
 							params.setTransform(new Rotate(-90, Rotate.X_AXIS));
 						} else if (i == 5) {
-							//params.setTransform(new Affine());
+							// params.setTransform(new Affine());
 						}
 
 						WritableImage image = plot.getAxis3D().getPlotContents().snapshot(params, null);
@@ -298,7 +298,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 					pt.play();
 				}
 			});
-			
+
 			Transition rotateLeftTransition = new Transition() {
 
 				{
@@ -311,8 +311,8 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 				protected void interpolate(double frac) {
 					Rotate rotate = getRotationAxis() ? plot.rotateX : plot.rotateY;
 					double value = rotate.getAngle();
-					
-					value += getRotationSpeed()*360 / 2000;
+
+					value += getRotationSpeed() * 360 / 2000;
 
 					if (value > 360) {
 						value -= 360;
@@ -340,8 +340,8 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 				protected void interpolate(double frac) {
 					Rotate rotate = getRotationAxis() ? plot.rotateX : plot.rotateY;
 					double value = rotate.getAngle();
-					
-					value -= getRotationSpeed()*360 / 2000;
+
+					value -= getRotationSpeed() * 360 / 2000;
 
 					if (value < 0) {
 						value += 360;
@@ -356,7 +356,7 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 				}
 
 			};
-			
+
 			EventHandler<? super MouseEvent> rotateOptionsHandler = event -> {
 				if (event.getButton() == MouseButton.SECONDARY) {
 					PopOver popover = new PopOver();
@@ -364,16 +364,16 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 					popover.setAutoHide(true);
 					popover.setAutoFix(true);
 					popover.setArrowLocation(ArrowLocation.TOP_CENTER);
-					
+
 					RotationOptions rotationOptions = new RotationOptions(this);
 					popover.setContentNode(rotationOptions);
 
-					ToggleButton button = (ToggleButton)event.getSource();
+					ToggleButton button = (ToggleButton) event.getSource();
 					Bounds bounds = button.localToScreen(button.getBoundsInLocal());
-					popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+					popover.show(plot, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + bounds.getHeight());
 				}
 			};
-			
+
 			rotateLeft.setOnMouseClicked(rotateOptionsHandler);
 			rotateRight.setOnMouseClicked(rotateOptionsHandler);
 
@@ -394,26 +394,27 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 					rotateRightTransition.stop();
 				}
 			});
-			
+
 			changeColor.setOnAction(event -> {
 				PopOver popover = new PopOver();
 				popover.setTitle("Select the new colormap");
 				popover.setAutoHide(true);
 				popover.setAutoFix(true);
 				popover.setArrowLocation(ArrowLocation.TOP_CENTER);
-				
+
 				ColormapSelector colormapSelector = new ColormapSelector();
 				popover.setContentNode(colormapSelector);
-				
+
 				colormapSelector.colormapProperty().addListener((observable, oldValue, newValue) -> {
-					canvas.getPropertyRegistry().get("colormap").setValue(newValue);;
+					canvas.getPropertyRegistry().get("colormap").setValue(newValue);
+					;
 					popover.hide();
 				});
-				
+
 				Bounds bounds = changeColor.localToScreen(changeColor.getBoundsInLocal());
-				popover.show(canvas, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+				popover.show(canvas, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + bounds.getHeight());
 			});
-			
+
 			plotOptions.setOnAction(event -> {
 				PopOver popover = new PopOver();
 				popover.setTitle("Plot options");
@@ -425,20 +426,21 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 				popover.setContentNode(plottingOptions);
 
 				Bounds bounds = plotOptions.localToScreen(plotOptions.getBoundsInLocal());
-				popover.show(plot, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+				popover.show(plot, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + bounds.getHeight());
 			});
-			
-			mouseControls = new SegmentedButton(rotate, translate, scale);  
+
+			mouseControls = new SegmentedButton(rotate, translate, scale);
 			mouseControls.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
-			
+
 			axisControls = new SegmentedButton(split, project);
 			axisControls.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
 			axisControls.setToggleGroup(null);
-			
+
 			animationControls = new SegmentedButton(rotateLeft, rotateRight);
 			animationControls.getStyleClass().add(SegmentedButton.STYLE_CLASS_DARK);
-			
-			canvas.getToolBar().getItems().addAll(mouseControls, axisControls, animationControls, changeColor, plotOptions);
+
+			canvas.getToolBar().getItems().addAll(mouseControls, axisControls, animationControls, changeColor,
+					plotOptions);
 		}
 	}
 
@@ -446,11 +448,12 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 	public void onRemove(Canvas canvas) {
 		plot.widthProperty().unbind();
 		plot.heightProperty().unbind();
-		
+
 		if (canvas.getToolBar() != null) {
-			canvas.getToolBar().getItems().removeAll(mouseControls, axisControls, animationControls, changeColor, plotOptions);
+			canvas.getToolBar().getItems().removeAll(mouseControls, axisControls, animationControls, changeColor,
+					plotOptions);
 		}
-		
+
 		scatter.xAxisProperty().unbind();
 		scatter.yAxisProperty().unbind();
 		scatter.zAxisProperty().unbind();
@@ -460,41 +463,41 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 		scatter.colormapProperty().unbind();
 		scatter.selectedInstanceProperty().unbind();
 	}
-	
+
 	public void update() {
-		((ScatterPoints)plot.getAxis3D().getPlotContents()).update();
+		((ScatterPoints) plot.getAxis3D().getPlotContents()).update();
 	}
 
 	@Override
 	public Element saveState(Canvas canvas) {
 		Element element = DocumentHelper.createElement("scatter3d");
-		
+
 		Element scale = element.addElement("scale");
 		scale.addAttribute("x", Double.toString(plot.scale.getX()));
 		scale.addAttribute("y", Double.toString(plot.scale.getY()));
 		scale.addAttribute("z", Double.toString(plot.scale.getZ()));
-		
+
 		Element translate = element.addElement("translate");
 		translate.addAttribute("x", Double.toString(plot.translate.getX()));
 		translate.addAttribute("y", Double.toString(plot.translate.getY()));
 		translate.addAttribute("z", Double.toString(plot.translate.getZ()));
-		
+
 		Element rotate = element.addElement("rotate");
 		rotate.addAttribute("x", Double.toString(plot.rotateX.getAngle()));
 		rotate.addAttribute("y", Double.toString(plot.rotateY.getAngle()));
-		
+
 		// store the node ids
-		ScatterPoints points = (ScatterPoints)plot.getAxis3D().getPlotContents();
+		ScatterPoints points = (ScatterPoints) plot.getAxis3D().getPlotContents();
 		Element mapping = element.addElement("mapping");
-		
+
 		for (Node node : points.getPoints()) {
-			Instance instance = (Instance)node.getUserData();
-			
+			Instance instance = (Instance) node.getUserData();
+
 			Element map = mapping.addElement("map");
 			map.addAttribute("instanceId", instance.getId().toString());
 			map.addAttribute("nodeId", node.getId());
 		}
-		
+
 		return element;
 	}
 
@@ -504,30 +507,29 @@ public class ScatterPlot implements Widget<Subscene3D>, SerializableWidget, Targ
 		plot.scale.setX(Double.parseDouble(scale.attributeValue("x")));
 		plot.scale.setY(Double.parseDouble(scale.attributeValue("y")));
 		plot.scale.setZ(Double.parseDouble(scale.attributeValue("z")));
-		
+
 		Element translate = element.element("translate");
 		plot.translate.setX(Double.parseDouble(translate.attributeValue("x")));
 		plot.translate.setY(Double.parseDouble(translate.attributeValue("y")));
 		plot.translate.setZ(Double.parseDouble(translate.attributeValue("z")));
-		
+
 		Element rotate = element.element("rotate");
 		plot.rotateX.setAngle(Double.parseDouble(rotate.attributeValue("x")));
 		plot.rotateY.setAngle(Double.parseDouble(rotate.attributeValue("y")));
-		
+
 		// update the node ids
 		Map<UUID, UUID> cache = new HashMap<UUID, UUID>();
 		Element mapping = element.element("mapping");
-		
+
 		for (Object obj : mapping.elements("map")) {
-			Element map = (Element)obj;
-			cache.put(UUID.fromString(map.attributeValue("instanceId")),
-					UUID.fromString(map.attributeValue("nodeId")));
+			Element map = (Element) obj;
+			cache.put(UUID.fromString(map.attributeValue("instanceId")), UUID.fromString(map.attributeValue("nodeId")));
 		}
-		
-		ScatterPoints points = (ScatterPoints)plot.getAxis3D().getPlotContents();
+
+		ScatterPoints points = (ScatterPoints) plot.getAxis3D().getPlotContents();
 
 		for (Node node : points.getPoints()) {
-			Instance instance = (Instance)node.getUserData();
+			Instance instance = (Instance) node.getUserData();
 			node.setId(cache.get(instance.getId()).toString());
 		}
 	}

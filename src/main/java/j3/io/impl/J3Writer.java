@@ -24,68 +24,80 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 public class J3Writer {
-	
+
 	@SuppressWarnings("unchecked")
 	public void save(File file, Canvas canvas) throws IOException {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement("j3");
-		
+
 		// save the data frame contents
-		DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
+		DataFrame table = (DataFrame) canvas.getPropertyRegistry().get("data").getValue();
 		Element dataElement = root.addElement("data");
-		
+
 		Element attributesElement = dataElement.addElement("attributes");
-		
+
 		for (Attribute<?> attribute : table.getAttributes()) {
 			Element attributeElement = attributesElement.addElement("attribute");
 			attributeElement.addAttribute("name", attribute.getName());
 			attributeElement.addAttribute("class", attribute.getClass().getCanonicalName());
 		}
-		
+
 		Element instancesElement = dataElement.addElement("instances");
-		
+
 		for (Instance instance : table.getInstances()) {
 			Element instanceElement = instancesElement.addElement("instance");
 			instanceElement.addAttribute("id", instance.getId().toString());
-			
+
 			for (Attribute<?> attribute : table.getAttributes()) {
 				Element valueElement = instanceElement.addElement("value");
 				valueElement.setText(instance.get(attribute).toString());
 			}
 		}
-		
+
 		// save the colormap
-		Colormap colormap = (Colormap)canvas.getPropertyRegistry().get("colormap").getValue();
-		
+		Colormap colormap = (Colormap) canvas.getPropertyRegistry().get("colormap").getValue();
+
 		if (colormap != null) {
 			root.addElement("colormap").setText(colormap.getName());
 		}
-		
+
 		// save the selected axes
-		List<Axis> axes = (List<Axis>)canvas.getPropertyRegistry().get("axes").getValue();
-		
-		if (canvas.getPropertyRegistry().contains("xAxis") && canvas.getPropertyRegistry().get("xAxis").getValue() != null) {
-			root.addElement("xAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("xAxis").getValue())));
+		List<Axis> axes = (List<Axis>) canvas.getPropertyRegistry().get("axes").getValue();
+
+		if (canvas.getPropertyRegistry().contains("xAxis")
+				&& canvas.getPropertyRegistry().get("xAxis").getValue() != null) {
+			root.addElement("xAxis")
+					.setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("xAxis").getValue())));
 		}
-		
-		if (canvas.getPropertyRegistry().contains("yAxis") && canvas.getPropertyRegistry().get("yAxis").getValue() != null) {
-			root.addElement("yAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("yAxis").getValue())));
+
+		if (canvas.getPropertyRegistry().contains("yAxis")
+				&& canvas.getPropertyRegistry().get("yAxis").getValue() != null) {
+			root.addElement("yAxis")
+					.setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("yAxis").getValue())));
 		}
-		
-		if (canvas.getPropertyRegistry().contains("zAxis") && canvas.getPropertyRegistry().get("zAxis").getValue() != null) {
-			root.addElement("zAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("zAxis").getValue())));
+
+		if (canvas.getPropertyRegistry().contains("zAxis")
+				&& canvas.getPropertyRegistry().get("zAxis").getValue() != null) {
+			root.addElement("zAxis")
+					.setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("zAxis").getValue())));
 		}
-		
-		if (canvas.getPropertyRegistry().contains("colorAxis") && canvas.getPropertyRegistry().get("colorAxis").getValue() != null) {
-			root.addElement("colorAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("colorAxis").getValue())));
+
+		if (canvas.getPropertyRegistry().contains("colorAxis")
+				&& canvas.getPropertyRegistry().get("colorAxis").getValue() != null) {
+			root.addElement("colorAxis")
+					.setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("colorAxis").getValue())));
 		}
-		
-		if (canvas.getPropertyRegistry().contains("sizeAxis") && canvas.getPropertyRegistry().get("sizeAxis").getValue() != null) {
-			root.addElement("sizeAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("sizeAxis").getValue())));
+
+		if (canvas.getPropertyRegistry().contains("sizeAxis")
+				&& canvas.getPropertyRegistry().get("sizeAxis").getValue() != null) {
+			root.addElement("sizeAxis")
+					.setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("sizeAxis").getValue())));
 		}
-		
-		if (canvas.getPropertyRegistry().contains("visibilityAxis") && canvas.getPropertyRegistry().get("visibilityAxis").getValue() != null) {
-			root.addElement("visibilityAxis").setText(Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("visibilityAxis").getValue())));
+
+		if (canvas.getPropertyRegistry().contains("visibilityAxis")
+				&& canvas.getPropertyRegistry().get("visibilityAxis").getValue() != null) {
+			root.addElement("visibilityAxis").setText(
+					Integer.toString(axes.indexOf(canvas.getPropertyRegistry().get("visibilityAxis").getValue())));
 		}
 
 		// save the widgets
@@ -96,7 +108,7 @@ public class J3Writer {
 			if (widget instanceof SerializableWidget) {
 				Element widgetElement = widgets.addElement("widget");
 				widgetElement.addAttribute("class", widget.getClass().getCanonicalName());
-				widgetElement.add(((SerializableWidget)widget).saveState(canvas));
+				widgetElement.add(((SerializableWidget) widget).saveState(canvas));
 			} else {
 				unsupportedWidget = true;
 			}
@@ -113,7 +125,7 @@ public class J3Writer {
 				writer.close();
 			}
 		}
-		
+
 		if (unsupportedWidget) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Missing Widgets");

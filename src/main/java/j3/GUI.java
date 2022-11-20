@@ -46,7 +46,7 @@ public class GUI extends Application {
 	}
 
 	private ToolBar toolbar;
-	
+
 	private Canvas canvas;
 
 	@Override
@@ -55,9 +55,9 @@ public class GUI extends Application {
 		Scene scene = new Scene(root, 800, 600);
 
 		toolbar = new ToolBar();
-		
+
 		canvas = new Canvas(400, 400, toolbar);
-		
+
 		canvas.getPropertyRegistry().put("data", null);
 		canvas.getPropertyRegistry().put("axes", null);
 		canvas.getPropertyRegistry().put("colormap", new HSVColormap());
@@ -69,7 +69,7 @@ public class GUI extends Application {
 		canvas.getPropertyRegistry().put("visibilityAxis", null, "Visibility");
 		canvas.getPropertyRegistry().put("selectedInstance", null);
 		canvas.getPropertyRegistry().put("theme", null);
-		
+
 		Image cameraImage = new Image(GUI.class.getResourceAsStream("/j3/icons/camera_1x.png"));
 		Image openImage = new Image(GUI.class.getResourceAsStream("/j3/icons/open_1x.png"));
 		Image saveImage = new Image(GUI.class.getResourceAsStream("/j3/icons/save_1x.png"));
@@ -78,32 +78,32 @@ public class GUI extends Application {
 		Button fileOpen = new Button();
 		fileOpen.setGraphic(new ImageView(openImage));
 		fileOpen.setTooltip(new Tooltip("Open a file"));
-		
+
 		Button fileSave = new Button();
 		fileSave.setGraphic(new ImageView(saveImage));
 		fileSave.setTooltip(new Tooltip("Save this J3 visualization"));
-		
+
 		Button camera = new Button();
 		camera.setGraphic(new ImageView(cameraImage));
 		camera.setTooltip(new Tooltip("Save image of plot region"));
-		
+
 		Button widgets = new Button();
 		widgets.setGraphic(new ImageView(widgetImage));
 		widgets.setTooltip(new Tooltip("Add widgets to the plot"));
 
 		toolbar.getItems().addAll(fileOpen, fileSave, camera, widgets);
-		
+
 		fileOpen.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
-			
+
 			File initialFile = new File("data/");
-			
+
 			if (initialFile.exists() && initialFile.isDirectory()) {
 				fileChooser.setInitialDirectory(new File("data/"));
 			}
-			
+
 			List<CanvasReader> readers = CanvasReaderFactory.getInstance().getProviders();
-			
+
 			for (CanvasReader reader : readers) {
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
 						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
@@ -111,37 +111,35 @@ public class GUI extends Application {
 			}
 
 			File selectedFile = fileChooser.showOpenDialog(primaryStage);
-			
+
 			if (selectedFile != null) {
 				try {
 					canvas.removeAll();
-					
-					CanvasReader selectedReader = readers.get(fileChooser.getExtensionFilters().indexOf(
-							fileChooser.getSelectedExtensionFilter()));
-					
+
+					CanvasReader selectedReader = readers
+							.get(fileChooser.getExtensionFilters().indexOf(fileChooser.getSelectedExtensionFilter()));
+
 					selectedReader.load(selectedFile, canvas);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 		fileSave.setOnAction(event -> {
 			FileChooser fileChooser = new FileChooser();
-			
+
 			File initialFile = new File("data/");
-			
+
 			if (initialFile.exists() && initialFile.isDirectory()) {
 				fileChooser.setInitialDirectory(new File("data/"));
 			}
-			
-			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
-					"J3 Export",
-					Arrays.asList("*.j3"));
+
+			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("J3 Export", Arrays.asList("*.j3"));
 			fileChooser.getExtensionFilters().add(filter);
 
 			File selectedFile = fileChooser.showSaveDialog(primaryStage);
-			
+
 			if (selectedFile != null) {
 				try {
 					new J3Writer().save(selectedFile, canvas);
@@ -150,31 +148,33 @@ public class GUI extends Application {
 				}
 			}
 		});
-		
+
 		camera.setOnAction(event -> {
 			double scale = 2.0;
-			WritableImage image = new WritableImage((int)Math.rint(scale*canvas.getWidth()), (int)Math.rint(scale*canvas.getHeight()));
+			WritableImage image = new WritableImage((int) Math.rint(scale * canvas.getWidth()),
+					(int) Math.rint(scale * canvas.getHeight()));
 			SnapshotParameters params = new SnapshotParameters();
 			params.setCamera(new ParallelCamera());
 			params.setTransform(Transform.scale(2.0, 2.0));
-			
+
 			image = canvas.snapshot(params, image);
-			
+
 			FileChooser fileChooser = new FileChooser();
 
 			for (String suffix : ImageIO.getWriterFileSuffixes()) {
-				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(StringUtils.upperCase(suffix) + " image", "*." + suffix);
+				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
+						StringUtils.upperCase(suffix) + " image", "*." + suffix);
 				fileChooser.getExtensionFilters().add(filter);
-				
+
 				if (suffix.equalsIgnoreCase("png")) {
 					fileChooser.setSelectedExtensionFilter(filter);
 				}
 			}
-			
+
 			if (fileChooser.getSelectedExtensionFilter() == null) {
 				fileChooser.setSelectedExtensionFilter(fileChooser.getExtensionFilters().get(0));
 			}
-			
+
 			LocalDateTime now = LocalDateTime.now();
 			StringBuilder filename = new StringBuilder();
 			filename.append("snapshot_");
@@ -186,22 +186,21 @@ public class GUI extends Application {
 			filename.append(String.format("%02d", now.getMinute()));
 			filename.append(String.format("%02d", now.getSecond()));
 			filename.append(fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(1));
-			
+
 			fileChooser.setInitialFileName(filename.toString());
-			
+
 			File selectedFile = fileChooser.showSaveDialog(primaryStage);
-			
+
 			if (selectedFile != null) {
 				try {
 					ImageIO.write(SwingFXUtils.fromFXImage(image, null),
-							fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2),
-							selectedFile);
+							fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2), selectedFile);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 //		Pane editPane = new Pane();
 //		editPane.setPrefWidth(100);
 //		
@@ -227,21 +226,21 @@ public class GUI extends Application {
 //				root.setOnMouseClicked(null);
 //			}
 //		});
-		
+
 		widgets.setOnAction(event -> {
 			PopOver popover = new PopOver();
 			popover.setTitle("Widget options");
 			popover.setAutoHide(true);
 			popover.setAutoFix(true);
 			popover.setArrowLocation(ArrowLocation.TOP_CENTER);
-			
+
 			WidgetOptions widgetOptions = new WidgetOptions(canvas, popover);
 			popover.setContentNode(widgetOptions);
 
 			Bounds bounds = widgets.localToScreen(widgets.getBoundsInLocal());
-			popover.show(canvas, bounds.getMinX() + bounds.getWidth()/2, bounds.getMinY() + bounds.getHeight());
+			popover.show(canvas, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + bounds.getHeight());
 		});
-		
+
 		Pane pane = new Pane();
 		pane.getChildren().add(canvas);
 
@@ -253,20 +252,20 @@ public class GUI extends Application {
 		primaryStage.getIcons().add(new Image(GUI.class.getResourceAsStream("/j3/icons/appicon.png")));
 		primaryStage.setMaximized(true);
 		primaryStage.show();
-		
+
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());
-		
+
 		// setup a listener for switching themes and set the default theme
 		canvas.getPropertyRegistry().get("theme").addListener((observable, oldValue, newValue) -> {
-			scene.getStylesheets().setAll(ThemeFactory.getInstance().getStylesheets((String)newValue));
+			scene.getStylesheets().setAll(ThemeFactory.getInstance().getStylesheets((String) newValue));
 		});
-		
+
 		canvas.getPropertyRegistry().get("theme").set(ThemeFactory.DEFAULT.getName());
-		
+
 		// initialize the canvas
 		Parameters parameters = getParameters();
-		
+
 		if (!parameters.getRaw().isEmpty()) {
 			File file = new File(parameters.getRaw().get(0));
 			new SmartReader().load(file, canvas);

@@ -6,5 +6,5 @@ import javafx.scene.Node;
 public interface TargetableWidget {
 
 	public ObservableList<Widget<? extends Node>> getDependencies();
-	
+
 }

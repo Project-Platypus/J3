@@ -23,16 +23,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 public class PlottingOptions extends Pane {
-	
+
 	@SuppressWarnings("unchecked")
 	public PlottingOptions(Canvas canvas) {
 		super();
-		
-		List<Axis> options = new ArrayList<Axis>((List<Axis>)canvas.getPropertyRegistry().get("axes").getValue());
-		
+
+		List<Axis> options = new ArrayList<Axis>((List<Axis>) canvas.getPropertyRegistry().get("axes").getValue());
+
 		EmptyAxis empty = new EmptyAxis();
 		options.add(0, empty);
-		
+
 		GridPane root = new GridPane();
 
 		root.setHgap(5);
@@ -50,13 +50,10 @@ public class PlottingOptions extends Pane {
 
 		// use reflection to identify all axis properties
 		int count = 0;
-		
-		List<ObjectProperty<Axis>> axisProperties = Arrays.asList(
-				canvas.getPropertyRegistry().get("xAxis"),
-				canvas.getPropertyRegistry().get("yAxis"),
-				canvas.getPropertyRegistry().get("zAxis"),
-				canvas.getPropertyRegistry().get("colorAxis"),
-				canvas.getPropertyRegistry().get("sizeAxis"));
+
+		List<ObjectProperty<Axis>> axisProperties = Arrays.asList(canvas.getPropertyRegistry().get("xAxis"),
+				canvas.getPropertyRegistry().get("yAxis"), canvas.getPropertyRegistry().get("zAxis"),
+				canvas.getPropertyRegistry().get("colorAxis"), canvas.getPropertyRegistry().get("sizeAxis"));
 
 		for (ObjectProperty<Axis> axisProperty : axisProperties) {
 			Label label = new Label(StringUtils.capitalize(axisProperty.getName()) + ":");
@@ -65,15 +62,15 @@ public class PlottingOptions extends Pane {
 			combobox.getItems().addAll(options);
 			combobox.setMaxWidth(Double.POSITIVE_INFINITY);
 			label.setLabelFor(combobox);
-			
+
 			Axis axis = axisProperty.get();
-			
+
 			if (axis == null) {
 				combobox.getSelectionModel().select(empty);
 			} else {
 				combobox.getSelectionModel().select(axis);
 			}
-			
+
 			combobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue == empty) {
 					axisProperty.set(null);
@@ -84,19 +81,19 @@ public class PlottingOptions extends Pane {
 
 			root.add(label, 0, count);
 			root.add(combobox, 1, count);
-			
+
 			count++;
 		}
-		
+
 		root.add(new Separator(), 0, count++, 2, 1);
-		
+
 		ComboBox<String> themeSelection = new ComboBox<>();
 		themeSelection.getItems().addAll(ThemeFactory.getInstance().getNames());
-		themeSelection.getSelectionModel().select((String)canvas.getPropertyRegistry().get("theme").getValue());
+		themeSelection.getSelectionModel().select((String) canvas.getPropertyRegistry().get("theme").getValue());
 		themeSelection.setOnAction(event -> {
 			canvas.getPropertyRegistry().get("theme").set(themeSelection.getSelectionModel().getSelectedItem());
 		});
-		
+
 		root.add(new Label("Theme:"), 0, count);
 		root.add(themeSelection, 1, count++);
 

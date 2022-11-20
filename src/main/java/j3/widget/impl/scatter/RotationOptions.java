@@ -12,10 +12,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 public class RotationOptions extends Pane {
-	
+
 	public RotationOptions(ScatterPlot plot) {
 		super();
-		
+
 		GridPane root = new GridPane();
 
 		root.setHgap(5);
@@ -33,26 +33,26 @@ public class RotationOptions extends Pane {
 
 		Label labelSpeed = new Label();
 		labelSpeed.setText("Speed:");
-		
+
 		Slider slider = new Slider();
 		slider.setMin(0.0);
 		slider.setMax(10.0);
 		slider.setValue(plot.getRotationSpeed());
-		
+
 		Label labelAxis = new Label();
 		labelAxis.setText("Axis:");
-		
+
 		ToggleSwitch axisSwitch = new ToggleSwitch();
 		axisSwitch.setSelected(plot.getRotationAxis());
-		
+
 		plot.rotationSpeedProperty().bind(slider.valueProperty());
 		plot.rotationAxisProperty().bind(axisSwitch.selectedProperty());
-		
+
 		root.add(labelSpeed, 0, 0);
 		root.add(slider, 1, 0);
 		root.add(labelAxis, 0, 1);
 		root.add(axisSwitch, 1, 1);
-		
+
 		TitledPane pane = new TitledPane();
 		pane.setText("Rotation Options");
 		pane.setContent(root);

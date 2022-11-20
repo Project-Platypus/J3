@@ -35,7 +35,7 @@ public class SmartReader extends AbstractCanvasReader {
 		CanvasReader selectedReader = null;
 		List<CanvasReader> readers = new ArrayList<>();
 		String extension = FilenameUtils.getExtension(file.getName());
-		
+
 		for (CanvasReader reader : CanvasReaderFactory.getInstance().getProviders()) {
 			for (String ext : reader.getFileExtensions()) {
 				if (StringUtils.equalsIgnoreCase(ext, extension)) {
@@ -43,17 +43,18 @@ public class SmartReader extends AbstractCanvasReader {
 				}
 			}
 		}
-		
+
 		if (readers.isEmpty()) {
 			List<CanvasReader> choices = CanvasReaderFactory.getInstance().getProviders();
 
 			ChoiceDialog<CanvasReader> dialog = new ChoiceDialog<>(choices.get(0), choices);
 			dialog.setTitle("Select File Type");
-			dialog.setHeaderText("The file type is not recognized.  Please select the appropriate reader from the list below.");
+			dialog.setHeaderText(
+					"The file type is not recognized.  Please select the appropriate reader from the list below.");
 			dialog.setContentText("Reader:");
 
 			Optional<CanvasReader> result = dialog.showAndWait();
-			
+
 			if (result.isPresent()) {
 				selectedReader = result.get();
 			}
@@ -62,18 +63,19 @@ public class SmartReader extends AbstractCanvasReader {
 
 			ChoiceDialog<CanvasReader> dialog = new ChoiceDialog<>(choices.get(0), choices);
 			dialog.setTitle("Select File Type");
-			dialog.setHeaderText("More than one reader is available for the given file type.  Please select the appropriate reader from the list below.");
+			dialog.setHeaderText(
+					"More than one reader is available for the given file type.  Please select the appropriate reader from the list below.");
 			dialog.setContentText("Reader:");
 
 			Optional<CanvasReader> result = dialog.showAndWait();
-			
+
 			if (result.isPresent()) {
 				selectedReader = result.get();
 			}
 		} else if (readers.size() == 1) {
 			selectedReader = readers.get(0);
 		}
-		
+
 		if (selectedReader != null) {
 			selectedReader.load(file, canvas);
 		}

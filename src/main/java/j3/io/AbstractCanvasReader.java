@@ -15,7 +15,7 @@ public abstract class AbstractCanvasReader implements CanvasReader {
 			load(is, canvas);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return getDescription();

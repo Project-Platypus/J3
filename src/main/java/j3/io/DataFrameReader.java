@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface DataFrameReader {
-	
+
 	public List<String> getFileExtensions();
-	
+
 	public String getDescription();
-	
+
 	public DataFrame load(File file) throws IOException;
-	
+
 	public DataFrame load(InputStream is) throws IOException;
 
 }

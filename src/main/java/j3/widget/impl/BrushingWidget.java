@@ -30,16 +30,16 @@ import javafx.scene.text.Text;
 import org.controlsfx.control.RangeSlider;
 
 public class BrushingWidget extends TitledWidget<BrushingWidget> {
-	
+
 	public static final BooleanAttribute BRUSHING_ATTRIBUTE = new BooleanAttribute("J3_BRUSHING");
-	
+
 	private final Map<RangeSlider, Axis> sliderMap;
-	
+
 	private final Map<CheckBox, Axis> checkBoxMap;
 
 	public BrushingWidget() {
 		super();
-		
+
 		sliderMap = new HashMap<>();
 		checkBoxMap = new HashMap<>();
 	}
@@ -55,21 +55,21 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 		canvas.setSingleClickHandler(event -> {
 			VBox container = new VBox();
 			container.setPadding(new Insets(5, 5, 5, 5));
-			
-			DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
-			List<Axis> options = (List<Axis>)canvas.getPropertyRegistry().get("axes").getValue();
-			
+
+			DataFrame table = (DataFrame) canvas.getPropertyRegistry().get("data").getValue();
+			List<Axis> options = (List<Axis>) canvas.getPropertyRegistry().get("axes").getValue();
+
 			CategoryAxis brushingAxis = new CategoryAxis(BRUSHING_ATTRIBUTE);
 			brushingAxis.scale(Arrays.asList(false, true));
-			
+
 			ChangeListener<? super Object> changeListener = (observable, oldValue, newValue) -> {
 				table.getInstances().forEach(instance -> {
 					boolean isWithinBounds = true;
-					
+
 					for (RangeSlider slider : sliderMap.keySet()) {
 						Axis axis = sliderMap.get(slider);
-						Double value = (Double)instance.get(axis.getAttribute());
-						
+						Double value = (Double) instance.get(axis.getAttribute());
+
 						if (value < slider.getLowValue() || value > slider.getHighValue()) {
 							isWithinBounds = false;
 							break;
@@ -87,22 +87,23 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 							}
 						}
 					}
-					
+
 					instance.set(BRUSHING_ATTRIBUTE, isWithinBounds);
 				});
-				
+
 				Selector.on(canvas).get(ScatterPoints.class).forEach(node -> node.update());
 				Selector.on(canvas).get(ParallelCoordinates.class).forEach(node -> node.update());
 				Selector.on(canvas).get(ScatterPoints2D.class).forEach(node -> node.update());
 			};
-			
-			// call change listener to initialize the attribute values before setting the visibility axis
+
+			// call change listener to initialize the attribute values before setting the
+			// visibility axis
 			changeListener.changed(null, null, null);
 			canvas.getPropertyRegistry().get("visibilityAxis").set(brushingAxis);
-			
+
 			for (Axis axis : options) {
 				if (axis instanceof RealAxis) {
-					RealAxis realAxis = (RealAxis)axis;
+					RealAxis realAxis = (RealAxis) axis;
 					RangeSlider slider = new RangeSlider(realAxis.getMinValue(), realAxis.getMaxValue(),
 							realAxis.getMinValue(), realAxis.getMaxValue());
 					slider.setShowTickLabels(true);
@@ -111,16 +112,16 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 					slider.lowValueProperty().addListener(changeListener);
 					slider.highValueProperty().addListener(changeListener);
 					sliderMap.put(slider, axis);
-					
+
 					Text label = new Text(axis.getLabel());
 					VBox.setMargin(label, new Insets(5, 0, 0, 0));
-					
+
 					container.getChildren().addAll(label, slider);
 				} else if (axis instanceof CategoryAxis) {
-					CategoryAxis categoryAxis = (CategoryAxis)axis;
+					CategoryAxis categoryAxis = (CategoryAxis) axis;
 					VBox buttonContainer = new VBox();
 					buttonContainer.setPadding(new Insets(0, 0, 0, 25));
-					
+
 					for (Object category : categoryAxis.getCategories()) {
 						CheckBox checkbox = new CheckBox();
 						checkbox.setText(category.toString());
@@ -130,43 +131,43 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 						buttonContainer.getChildren().add(checkbox);
 						checkBoxMap.put(checkbox, categoryAxis);
 					}
-					
+
 					Text label = new Text(axis.getLabel());
 					VBox.setMargin(label, new Insets(5, 0, 0, 0));
-					
+
 					container.getChildren().addAll(label, buttonContainer);
 				}
 			}
-			
+
 			FlowPane buttonPane = new FlowPane();
 			buttonPane.setAlignment(Pos.CENTER);
-			
+
 			Button resetButton = new Button("Reset");
 			resetButton.setOnAction(e -> {
 				for (RangeSlider slider : sliderMap.keySet()) {
 					slider.setLowValue(slider.getMin());
 					slider.setHighValue(slider.getMax());
 				}
-				
+
 				for (CheckBox checkbox : checkBoxMap.keySet()) {
 					checkbox.setSelected(true);
 				}
 			});
-			
+
 			buttonPane.getChildren().add(resetButton);
 			container.getChildren().add(buttonPane);
-			
+
 			setContent(container);
 			setTitle("Brushing");
-			
+
 			Point2D point = new Point2D(event.getScreenX(), event.getScreenY());
 			point = canvas.screenToLocal(point);
-			
+
 			setLayoutX(point.getX());
 			setLayoutY(point.getY());
-			
+
 			canvas.add(this);
-			
+
 			event.consume();
 		});
 	}
@@ -177,10 +178,10 @@ public class BrushingWidget extends TitledWidget<BrushingWidget> {
 			slider.setLowValue(slider.getMin());
 			slider.setHighValue(slider.getMax());
 		}
-		
+
 		for (CheckBox checkbox : checkBoxMap.keySet()) {
 			checkbox.setSelected(true);
 		}
 	}
-	
+
 }

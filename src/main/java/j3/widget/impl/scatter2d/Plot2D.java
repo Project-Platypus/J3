@@ -9,5 +9,5 @@ import javafx.beans.property.ObjectProperty;
 public interface Plot2D {
 
 	public List<ObjectProperty<Axis>> getAxisProperties();
-	
+
 }

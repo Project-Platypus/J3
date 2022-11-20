@@ -30,12 +30,12 @@ public class ARFFReader extends AbstractDataFrameReader {
 	@Override
 	public DataFrame load(InputStream is) throws IOException {
 		DataFrame dataFrame = new DataFrame();
-		
+
 		try (Reader reader = new InputStreamReader(is)) {
 			StreamTokenizer tokenizer = new StreamTokenizer(reader);
-			
+
 			tokenizer.resetSyntax();
-			tokenizer.wordChars(' ' + 1,  '\u00FF');
+			tokenizer.wordChars(' ' + 1, '\u00FF');
 			tokenizer.commentChar('%');
 			tokenizer.whitespaceChars(0, ' ');
 			tokenizer.whitespaceChars(',', ',');
@@ -44,44 +44,45 @@ public class ARFFReader extends AbstractDataFrameReader {
 			tokenizer.ordinaryChar('{');
 			tokenizer.ordinaryChar('}');
 			tokenizer.eolIsSignificant(true);
-			
+
 			// read the @RELATION declaration
 			readUntilNextToken(tokenizer);
-			
+
 			if (tokenizer.nextToken() != StreamTokenizer.TT_WORD || !tokenizer.sval.equalsIgnoreCase("@RELATION")) {
 				handleError(tokenizer, "expected @RELATION keyword");
 			}
-			
+
 			if (tokenizer.nextToken() == StreamTokenizer.TT_WORD) {
 				// do nothing, we don't use the relation name here
 			} else {
 				handleError(tokenizer, "expected @RELATION value");
 			}
-			
+
 			// read the @ATTRIBUTE declarations
 			while (true) {
 				readUntilNextToken(tokenizer);
-				
-				if (tokenizer.nextToken() != StreamTokenizer.TT_WORD || !tokenizer.sval.equalsIgnoreCase("@ATTRIBUTE")) {
+
+				if (tokenizer.nextToken() != StreamTokenizer.TT_WORD
+						|| !tokenizer.sval.equalsIgnoreCase("@ATTRIBUTE")) {
 					break;
 				}
-				
+
 				String attributeName = null;
 				String datatype = null;
 				List<String> categories = new ArrayList<String>();
-				
+
 				if (tokenizer.nextToken() == StreamTokenizer.TT_WORD) {
 					attributeName = tokenizer.sval;
 				} else {
 					handleError(tokenizer, "expected @ATTRIBUTE name");
 				}
-				
-				if (tokenizer.nextToken() == StreamTokenizer.TT_WORD) { 
+
+				if (tokenizer.nextToken() == StreamTokenizer.TT_WORD) {
 					datatype = tokenizer.sval;
 				} else if (tokenizer.ttype == '{') {
 					datatype = "CATEGORY";
 					categories.clear();
-					
+
 					// read in the categories
 					while (tokenizer.nextToken() != '}') {
 						if (tokenizer.ttype == StreamTokenizer.TT_WORD) {
@@ -95,8 +96,9 @@ public class ARFFReader extends AbstractDataFrameReader {
 				} else {
 					handleError(tokenizer, "expected @ATTRIBUTE datatype");
 				}
-				
-				if (datatype.equalsIgnoreCase("INTEGER") || datatype.equalsIgnoreCase("REAL") || datatype.equalsIgnoreCase("NUMERIC")) {
+
+				if (datatype.equalsIgnoreCase("INTEGER") || datatype.equalsIgnoreCase("REAL")
+						|| datatype.equalsIgnoreCase("NUMERIC")) {
 					dataFrame.addAttribute(new DoubleAttribute(attributeName));
 				} else if (datatype.equalsIgnoreCase("STRING") || datatype.equalsIgnoreCase("CATEGORY")) {
 					dataFrame.addAttribute(new StringAttribute(attributeName));
@@ -106,18 +108,18 @@ public class ARFFReader extends AbstractDataFrameReader {
 					handleError(tokenizer, "unknown datatype %s", datatype);
 				}
 			}
-			
+
 			// read the @DATA declaration
 			while (true) {
 				readUntilNextToken(tokenizer);
-				
+
 				if (tokenizer.nextToken() == StreamTokenizer.TT_EOF) {
 					break;
 				}
-				
+
 				Instance instance = new Instance();
 				int index = 0;
-				
+
 				while (tokenizer.ttype == StreamTokenizer.TT_WORD) {
 					instance.set(dataFrame.getAttribute(index++), tokenizer.sval);
 					tokenizer.nextToken();
@@ -126,25 +128,25 @@ public class ARFFReader extends AbstractDataFrameReader {
 				dataFrame.addInstance(instance);
 			}
 		}
-		
+
 		return dataFrame;
 	}
-	
+
 	protected void readUntilNextToken(StreamTokenizer tokenizer) throws IOException {
 		while (tokenizer.nextToken() == StreamTokenizer.TT_EOL) {
 			// do nothing
 		}
-		
+
 		tokenizer.pushBack();
 	}
-	
+
 	protected void handleError(StreamTokenizer tokenizer, String format, Object... values) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("line ");
 		sb.append(tokenizer.lineno());
 		sb.append(": ");
 		sb.append(String.format(format, values));
-		
+
 		throw new IOException(sb.toString());
 	}
 

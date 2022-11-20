@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface CanvasReader {
-	
+
 	public List<String> getFileExtensions();
-	
+
 	public String getDescription();
-	
+
 	public void load(File file, Canvas canvas) throws IOException;
-	
+
 	public void load(InputStream is, Canvas canvas) throws IOException;
 
 }

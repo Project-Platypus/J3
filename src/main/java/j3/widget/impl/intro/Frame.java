@@ -5,11 +5,11 @@ import javafx.scene.image.Image;
 public class Frame {
 
 	private String title;
-	
+
 	private String body;
-	
+
 	private Image image;
-	
+
 	public Frame() {
 		super();
 	}
@@ -37,5 +37,5 @@ public class Frame {
 	public void setImage(Image image) {
 		this.image = image;
 	}
-	
+
 }

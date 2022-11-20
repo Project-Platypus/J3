@@ -23,7 +23,7 @@ import javafx.scene.shape.Shape3D;
 import javafx.util.Duration;
 
 public class ScatterPoints extends Region implements Plot3D {
-	
+
 	private Axis3D axisBox;
 
 	private DataFrame table;
@@ -61,7 +61,7 @@ public class ScatterPoints extends Region implements Plot3D {
 	}
 
 	private ObjectProperty<Axis> yAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateXYZAxes();
@@ -93,7 +93,7 @@ public class ScatterPoints extends Region implements Plot3D {
 	}
 
 	private ObjectProperty<Axis> zAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateXYZAxes();
@@ -123,9 +123,9 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Axis> zAxisProperty() {
 		return zAxis;
 	}
-	
+
 	private ObjectProperty<Axis> colorAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateColorAxis();
@@ -155,9 +155,9 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Axis> colorAxisProperty() {
 		return colorAxis;
 	}
-	
+
 	private ObjectProperty<Axis> sizeAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateSizeAxis();
@@ -187,9 +187,9 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Axis> sizeAxisProperty() {
 		return sizeAxis;
 	}
-	
+
 	private ObjectProperty<Axis> visibilityAxis = new ObjectPropertyBase<Axis>() {
-		
+
 		{
 			addListener((observable, oldValue, newValue) -> {
 				updateVisibilityAxis();
@@ -225,8 +225,9 @@ public class ScatterPoints extends Region implements Plot3D {
 		@Override
 		protected void invalidated() {
 			for (int i = 0; i < materials.size(); i++) {
-				Color newColor = colormap.get().map(i / (double)(materials.size()-1));
-				DiffuseColorTransition transition = new DiffuseColorTransition(new Duration(1000), materials.get(i), newColor);
+				Color newColor = colormap.get().map(i / (double) (materials.size() - 1));
+				DiffuseColorTransition transition = new DiffuseColorTransition(new Duration(1000), materials.get(i),
+						newColor);
 				transition.play();
 			}
 		}
@@ -254,9 +255,9 @@ public class ScatterPoints extends Region implements Plot3D {
 	public ObjectProperty<Colormap> colormapProperty() {
 		return colormap;
 	}
-	
+
 	private ObjectProperty<Instance> selectedInstance = new ObjectPropertyBase<Instance>() {
-		
+
 //		private Instance oldInstance = null;
 //		
 //		private Material oldMaterial = null;
@@ -279,7 +280,7 @@ public class ScatterPoints extends Region implements Plot3D {
 //			}
 //			
 //			oldInstance = selectedInstance.get();
-			
+
 			updateColorAxis();
 		}
 
@@ -335,19 +336,19 @@ public class ScatterPoints extends Region implements Plot3D {
 
 		for (int i = 0; i < table.instanceCount(); i++) {
 			Instance instance = table.getInstance(i);
-			
+
 			Shape3D box = new Box(10, 10, 10);
 			box.setId(UUID.randomUUID().toString());
 			box.setUserData(instance);
 			box.setOnMouseClicked(event -> setSelectedInstance(instance));
-			
+
 			points.add(box);
 		}
 
 		pointGroup.getChildren().addAll(points);
 		getChildren().addAll(pointGroup);
 		axisBox.setPlotContents(this);
-		
+
 		setManaged(false);
 		setPickOnBounds(false);
 	}
@@ -355,21 +356,21 @@ public class ScatterPoints extends Region implements Plot3D {
 	protected List<Shape3D> getPoints() {
 		return points;
 	}
-	
+
 	private class PointTransition extends Transition {
-		
+
 		private double[] startX = new double[points.size()];
-		
+
 		private double[] startY = new double[points.size()];
-		
+
 		private double[] startZ = new double[points.size()];
-		
+
 		public PointTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				startX[i] = points.get(i).getTranslateX();
 				startY[i] = points.get(i).getTranslateY();
@@ -382,66 +383,66 @@ public class ScatterPoints extends Region implements Plot3D {
 			Axis xAxis = getXAxis();
 			Axis yAxis = getYAxis();
 			Axis zAxis = getZAxis();
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
 
 				double endX = axisBox.getSide(0).getSize() * ((xAxis == null ? 0.0 : map(xAxis, i)) - 0.5);
 				double endY = axisBox.getSide(1).getSize() * (0.5 - (yAxis == null ? 0.0 : map(yAxis, i)));
 				double endZ = axisBox.getSide(2).getSize() * ((zAxis == null ? 0.0 : map(zAxis, i)) - 0.5);
-				
+
 				box.setTranslateX(startX[i] + (endX - startX[i]) * frac);
 				box.setTranslateY(startY[i] + (endY - startY[i]) * frac);
 				box.setTranslateZ(startZ[i] + (endZ - startZ[i]) * frac);
 			}
 		}
-		
+
 	}
-	
+
 	private double map(Axis axis, int row) {
 		return axis.map(table.getInstance(row));
 	}
-	
+
 	private int[] start;
-	
+
 	private int[] end;
-	
+
 	private class ColorTransition extends Transition {
-		
+
 		public ColorTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			Axis colorAxis = getColorAxis();
-		
+
 			if (start == null) {
 				start = new int[points.size()];
 				end = new int[points.size()];
-				
+
 				for (int i = 0; i < points.size(); i++) {
-					int startIndex = materials.indexOf((PhongMaterial)points.get(i).getMaterial());
-				
+					int startIndex = materials.indexOf((PhongMaterial) points.get(i).getMaterial());
+
 					if (startIndex < 0) {
 						startIndex = 0;
 					}
-					
+
 					start[i] = startIndex;
 					end[i] = startIndex;
 				}
 			}
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				int startIndex = end[i];
-				int endIndex = (int)(255*(colorAxis == null ? 0.0 : map(colorAxis, i)));
-				
+				int endIndex = (int) (255 * (colorAxis == null ? 0.0 : map(colorAxis, i)));
+
 				if (selectedInstance.get() != null) {
 					if (points.get(i).getUserData() != selectedInstance.get()) {
-						endIndex = -1; 
+						endIndex = -1;
 					}
 				}
-				
+
 				start[i] = startIndex;
 				end[i] = endIndex;
 			}
@@ -451,38 +452,37 @@ public class ScatterPoints extends Region implements Plot3D {
 		protected void interpolate(double frac) {
 			for (int i = 0; i < points.size(); i++) {
 				Shape3D box = points.get(i);
-				
+
 				if (frac == 0.0) {
 					box.setMaterial(start[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(start[i]));
 				} else if (frac == 1.0) {
 					box.setMaterial(end[i] == -1 ? new PhongMaterial(Color.GRAY) : materials.get(end[i]));
 				} else {
-					Color originalColor = start[i] == -1 ? Color.GRAY : materials.get(start[i]).getDiffuseColor(); 
-					Color newColor = originalColor.interpolate(
-							end[i] == -1 ? Color.GRAY : materials.get(end[i]).getDiffuseColor(),
-							frac);
-							
+					Color originalColor = start[i] == -1 ? Color.GRAY : materials.get(start[i]).getDiffuseColor();
+					Color newColor = originalColor
+							.interpolate(end[i] == -1 ? Color.GRAY : materials.get(end[i]).getDiffuseColor(), frac);
+
 					box.setMaterial(new PhongMaterial(newColor));
 				}
 			}
 		}
-		
+
 	}
-	
+
 	private class SizeTransition extends Transition {
-		
+
 		private double[] start = new double[points.size()];
-		
+
 		private double[] end = new double[points.size()];
-		
+
 		public SizeTransition() {
 			super();
-			
+
 			setCycleDuration(new Duration(1000));
 			setCycleCount(1);
-			
+
 			Axis sizeAxis = getSizeAxis();
-			
+
 			for (int i = 0; i < points.size(); i++) {
 				start[i] = points.get(i).getScaleX();
 				end[i] = (sizeAxis == null ? 0.8 : map(sizeAxis, i)) + 0.2;
@@ -498,43 +498,43 @@ public class ScatterPoints extends Region implements Plot3D {
 				box.setScaleZ(start[i] + (end[i] - start[i]) * frac);
 			}
 		}
-		
+
 	}
 
 	public void updateXYZAxes() {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		PointTransition pt = new PointTransition();
 		pt.play();
 	}
-	
+
 	public void updateColorAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		ColorTransition ct = new ColorTransition();
 		ct.play();
 	}
-	
+
 	public void updateSizeAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
-		
+
 		SizeTransition st = new SizeTransition();
 		st.play();
 	}
-	
+
 	public void updateVisibilityAxis() {
 		if (points.isEmpty()) {
 			return;
 		}
 
 		Axis visibilityAxis = getVisibilityAxis();
-		
+
 		for (int i = 0; i < points.size(); i++) {
 			points.get(i).setVisible(visibilityAxis == null ? true : map(visibilityAxis, i) > 0.5);
 		}
@@ -542,14 +542,9 @@ public class ScatterPoints extends Region implements Plot3D {
 
 	@Override
 	public List<ObjectProperty<Axis>> getAxisProperties() {
-		return Arrays.asList(
-				xAxis,
-				yAxis,
-				zAxis,
-				colorAxis,
-				sizeAxis);
+		return Arrays.asList(xAxis, yAxis, zAxis, colorAxis, sizeAxis);
 	}
-	
+
 	public void update() {
 		updateVisibilityAxis();
 	}

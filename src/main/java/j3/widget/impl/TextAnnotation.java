@@ -30,92 +30,94 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 public class TextAnnotation extends BoxWidget<TextAnnotation> implements SerializableWidget {
-	
+
 	private Node target;
 
 	private Line arrow;
-	
+
 	private Label text;
-	
+
 	private TextArea editor;
 
 	private ChangeListener<? super Transform> changeListener;
-	
+
 	private ListChangeListener<? super Widget<?>> widgetChangeListener;
 
 	public TextAnnotation() {
 		super();
-		
+
 		text = new Label();
 		text.setWrapText(true);
 		setContent(text);
 	}
-	
+
 	public void setText(String value) {
 		text.setText(value);
 	}
-	
+
 	public void target(Node node, Canvas canvas) {
 		if (target != null) {
 			getChildren().remove(arrow);
 			target.localToSceneTransformProperty().removeListener(changeListener);
 			pane.localToSceneTransformProperty().removeListener(changeListener);
-			
+
 			// remove this annotation as a dependency of the old target widget
 			Widget<?> widget = canvas.findWidgetContaining(target);
-						
+
 			if (widget != null && widget instanceof TargetableWidget) {
-				((TargetableWidget)widget).getDependencies().remove(this);
+				((TargetableWidget) widget).getDependencies().remove(this);
 			}
 		}
-		
+
 		target = node;
-		
+
 		arrow = new Line(0, 0, 0, 0);
 		arrow.getStyleClass().add("j3-annotation-arrow");
 		getChildren().add(arrow);
 		arrow.toBack();
-		
+
 		changeListener = (observable, oldValue, newValue) -> {
 			Bounds startBounds = pane.localToScreen(pane.getBoundsInLocal());
-			
+
 			if (startBounds != null) {
-				Point2D startPoint = new Point2D((startBounds.getMinX()+startBounds.getMaxX())/2.0, (startBounds.getMinY()+startBounds.getMaxY())/2.0);
-				
+				Point2D startPoint = new Point2D((startBounds.getMinX() + startBounds.getMaxX()) / 2.0,
+						(startBounds.getMinY() + startBounds.getMaxY()) / 2.0);
+
 				startPoint = screenToLocal(startPoint);
-				
+
 				if (startPoint != null) {
 					arrow.setStartX(startPoint.getX());
 					arrow.setStartY(startPoint.getY());
 				}
 			}
-			
+
 			Bounds endBounds = node.localToScreen(node.getBoundsInLocal());
-			
+
 			if (endBounds != null) {
-				Point2D endPoint = new Point2D((endBounds.getMinX()+endBounds.getMaxX())/2.0, (endBounds.getMinY()+endBounds.getMaxY())/2.0);
-				
+				Point2D endPoint = new Point2D((endBounds.getMinX() + endBounds.getMaxX()) / 2.0,
+						(endBounds.getMinY() + endBounds.getMaxY()) / 2.0);
+
 				endPoint = screenToLocal(endPoint);
-				
+
 				if (endPoint != null) {
 					arrow.setEndX(endPoint.getX());
 					arrow.setEndY(endPoint.getY());
 				}
 			}
 		};
-		
+
 		pane.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
 			changeListener.changed(null, null, null);
 		});
-		
+
 		node.localToSceneTransformProperty().addListener(changeListener);
 		pane.localToSceneTransformProperty().addListener(changeListener);
-		
+
 		// add this annotation as a dependency of the target widget
 		Widget<?> widget = canvas.findWidgetContaining(target);
-				
+
 		if (widget != null && widget instanceof TargetableWidget) {
-			((TargetableWidget)widget).getDependencies().add(this);
+			((TargetableWidget) widget).getDependencies().add(this);
 		}
 	}
 
@@ -123,7 +125,7 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 	public TextAnnotation getNode() {
 		return this;
 	}
-	
+
 	@Override
 	public void initialize(Canvas canvas) {
 
@@ -132,17 +134,18 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 	@Override
 	public void onActivate(Canvas canvas) {
 		canvas.setSingleClickHandler(event -> {
-			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D) &&
-					(event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
-				Instance instance = (Instance)event.getPickResult().getIntersectedNode().getUserData();
-				DataFrame table = (DataFrame)canvas.getPropertyRegistry().get("data").getValue();
+			if ((event.getPickResult().getIntersectedNode() instanceof Shape3D)
+					&& (event.getPickResult().getIntersectedNode().getUserData() instanceof Instance)) {
+				Instance instance = (Instance) event.getPickResult().getIntersectedNode().getUserData();
+				DataFrame table = (DataFrame) canvas.getPropertyRegistry().get("data").getValue();
 
-				text.setText("You selected data point " + table.getInstances().indexOf(instance) + ".  Double-click here to edit this text.");
+				text.setText("You selected data point " + table.getInstances().indexOf(instance)
+						+ ".  Double-click here to edit this text.");
 
 				target(event.getPickResult().getIntersectedNode(), canvas);
 				canvas.add(this);
 			}
-			
+
 			event.consume();
 		});
 	}
@@ -150,42 +153,42 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 	@Override
 	public void onAdd(Canvas canvas) {
 		super.onAdd(canvas);
-		
+
 		text.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() % 2 == 0) {
 				editor = new TextArea();
 				editor.setText(text.getText());
 				editor.setWrapText(true);
-				
+
 				editor.layoutBoundsProperty().addListener(l -> {
 					if (getScene() != null) {
 						Bounds bounds = pane.localToScene(pane.getBoundsInLocal());
-						
+
 						editor.setLayoutX(0);
 						editor.setLayoutY(0);
 						editor.setPrefSize(bounds.getWidth(), bounds.getHeight());
 					}
 				});
-				
+
 				editor.setOnKeyPressed(e -> {
 					KeyCodeCombination shiftEnter = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN);
-					
+
 					if (shiftEnter.match(e)) {
 						IndexRange range = editor.getSelection();
 						String text = editor.getText();
 
 						editor.setText(text.substring(0, range.getStart()) + "\n" + text.substring(range.getEnd()));
-						editor.selectRange(range.getStart()+1, range.getStart()+1);
+						editor.selectRange(range.getStart() + 1, range.getStart() + 1);
 					} else if (e.getCode() == KeyCode.ENTER) {
 						apply();
 					}
 				});
-				
+
 				getChildren().addAll(editor);
-				
+
 				editor.requestFocus();
 				editor.selectAll();
-				
+
 				editor.focusedProperty().addListener((observable, oldValue, newValue) -> {
 					if (editor != null && !newValue) {
 						apply();
@@ -193,21 +196,21 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 				});
 			} else if (event.getButton() == MouseButton.SECONDARY) {
 				ContextMenu menu = new ContextMenu();
-				
+
 				MenuItem delete = new MenuItem("Delete");
 				delete.setOnAction(e -> {
 					canvas.remove(this);
 				});
-				
+
 				menu.getItems().add(delete);
 				menu.show(this, event.getScreenX(), event.getScreenY());
 			}
 		});
 	}
-	
+
 	protected void apply() {
 		text.setText(editor.getText());
-		
+
 		getChildren().remove(editor);
 		setContent(text);
 		editor = null;
@@ -219,27 +222,27 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 			target.localToSceneTransformProperty().removeListener(changeListener);
 			pane.localToSceneTransformProperty().removeListener(changeListener);
 		}
-		
+
 		if (widgetChangeListener != null) {
 			canvas.getWidgets().removeListener(widgetChangeListener);
 		}
 	}
-	
+
 	@Override
 	public Element saveState(Canvas canvas) {
 		Element element = DocumentHelper.createElement("textAnnotation");
-		
+
 		// save the pane size
 		saveStateInternal(element);
 
 		// save the targeted node
 		Element targetElement = element.addElement("target");
 		targetElement.setText(target.getId());
-		
+
 		// save the text
 		Element textElement = element.addElement("text");
 		textElement.setText(text.getText());
-		
+
 		return element;
 	}
 
@@ -247,11 +250,11 @@ public class TextAnnotation extends BoxWidget<TextAnnotation> implements Seriali
 	public void restoreState(Element element, Canvas canvas) {
 		// restore the pane size
 		restoreStateInternal(element);
-		
+
 		// retarget the node
 		String id = element.elementText("target");
 		target(Selector.on(canvas).select("#" + id).getFirst(), canvas);
-		
+
 		// update the text
 		text.setText(element.elementText("text"));
 	}

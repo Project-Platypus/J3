@@ -15,7 +15,7 @@ public abstract class AbstractDataFrameReader implements DataFrameReader {
 			return load(is);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return getDescription();

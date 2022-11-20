@@ -35,174 +35,167 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
-* Simple slide show with transition effects.
-*/
+ * Simple slide show with transition effects.
+ */
 public class SlideZ extends Application {
 
- StackPane root;
- ImageView current;
- ImageView next;
- int width = 720;
- int height = 580;
+	StackPane root;
+	ImageView current;
+	ImageView next;
+	int width = 720;
+	int height = 580;
 
- @Override
- public void start(Stage primaryStage) {
-     root = new StackPane();
+	@Override
+	public void start(Stage primaryStage) {
+		root = new StackPane();
 
-     root.setStyle("-fx-background-color: #000000;");
+		root.setStyle("-fx-background-color: #000000;");
 
-     Scene scene = new Scene(root, width, height);
+		Scene scene = new Scene(root, width, height);
 
-     primaryStage.setTitle("Photos");
-     primaryStage.setScene(scene);
-     primaryStage.show();
+		primaryStage.setTitle("Photos");
+		primaryStage.setScene(scene);
+		primaryStage.show();
 
-     // Start worker thread, and kick off first fade in.
-     loader = new ScannerLoader();
-     loader.start();
-     Image image = getNextImage();
+		// Start worker thread, and kick off first fade in.
+		loader = new ScannerLoader();
+		loader.start();
+		Image image = getNextImage();
 
-     if (image != null)
-         startImage(image);
- }
- ScannerLoader loader;
+		if (image != null)
+			startImage(image);
+	}
 
- public void startImage(Image image) {
-     ObservableList<Node> c = root.getChildren();
+	ScannerLoader loader;
 
-     if (current != null)
-         c.remove(current);
+	public void startImage(Image image) {
+		ObservableList<Node> c = root.getChildren();
 
-     current = next;
-     next = null;
+		if (current != null)
+			c.remove(current);
 
-     // Create fade-in for new image.
-     next = new ImageView(image);
+		current = next;
+		next = null;
 
-     next.setFitHeight(height);
-     next.setFitHeight(width);
-     next.setPreserveRatio(true);
-     next.setOpacity(0);
+		// Create fade-in for new image.
+		next = new ImageView(image);
 
-     c.add(next);
+		next.setFitHeight(height);
+		next.setFitHeight(width);
+		next.setPreserveRatio(true);
+		next.setOpacity(0);
 
-     FadeTransition fadein = new FadeTransition(Duration.seconds(1), next);
+		c.add(next);
 
-     fadein.setFromValue(0);
-     fadein.setToValue(1);
+		FadeTransition fadein = new FadeTransition(Duration.seconds(1), next);
 
-     PauseTransition delay = new PauseTransition(Duration.seconds(1));
-     SequentialTransition st;
-     if (current != null) {
-         ScaleTransition dropout;
+		fadein.setFromValue(0);
+		fadein.setToValue(1);
 
-         dropout = new ScaleTransition(Duration.seconds(1), current);
-         dropout.setInterpolator(Interpolator.EASE_OUT);
-         dropout.setFromX(1);
-         dropout.setFromY(1);
-         dropout.setToX(0.75);
-         dropout.setToY(0.75);
-         st = new SequentialTransition(
-             new ParallelTransition(fadein, dropout), delay);
-     } else {
-         st = new SequentialTransition(
-             fadein, delay);
-     }
+		PauseTransition delay = new PauseTransition(Duration.seconds(1));
+		SequentialTransition st;
+		if (current != null) {
+			ScaleTransition dropout;
 
-     st.setOnFinished(new EventHandler<ActionEvent>() {
-         @Override
-         public void handle(ActionEvent t) {
-             Image image = getNextImage();
+			dropout = new ScaleTransition(Duration.seconds(1), current);
+			dropout.setInterpolator(Interpolator.EASE_OUT);
+			dropout.setFromX(1);
+			dropout.setFromY(1);
+			dropout.setToX(0.75);
+			dropout.setToY(0.75);
+			st = new SequentialTransition(new ParallelTransition(fadein, dropout), delay);
+		} else {
+			st = new SequentialTransition(fadein, delay);
+		}
 
-             if (image != null)
-                 startImage(image);
-         }
-     });
+		st.setOnFinished(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent t) {
+				Image image = getNextImage();
 
-     st.playFromStart();
- }
+				if (image != null)
+					startImage(image);
+			}
+		});
 
- @Override
- public void stop() throws Exception {
-     loader.interrupt();
-     loader.join();
-     super.stop();
- }
+		st.playFromStart();
+	}
 
- public static void main(String[] args) {
-     launch(args);
- }
- BlockingQueue<Image> images = new ArrayBlockingQueue(5);
+	@Override
+	public void stop() throws Exception {
+		loader.interrupt();
+		loader.join();
+		super.stop();
+	}
 
- Image getNextImage() {
-     if (loader.complete) {
-         return images.poll();
-     }
-     try {
-         return images.take();
-     } catch (InterruptedException ex) {
-         Logger.getLogger(SlideZ.class.getName()).log(Level.SEVERE, null, ex);
-     }
-     return null;
- }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
- /**
-  * Scans directories and loads images one at a time.
-  */
- class ScannerLoader extends Thread implements FileVisitor<Path> {
+	BlockingQueue<Image> images = new ArrayBlockingQueue<Image>(5);
 
-     // Directory to start scanning for pics
-     String root = "C:\\Users\\David\\Downloads";
-     boolean complete;
+	Image getNextImage() {
+		if (loader.complete) {
+			return images.poll();
+		}
+		try {
+			return images.take();
+		} catch (InterruptedException ex) {
+			Logger.getLogger(SlideZ.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
+	}
 
-     @Override
-     public void run() {
-         System.out.println("scanning");
-         try {
-             Files.walkFileTree(Paths.get(root), this);
-             System.out.println("complete");
-         } catch (IOException ex) {
-             Logger.getLogger(SlideZ.class.getName())
-                 .log(Level.SEVERE, null, ex);
-         } finally {
-             complete = true;
-         }
-     }
+	/**
+	 * Scans directories and loads images one at a time.
+	 */
+	class ScannerLoader extends Thread implements FileVisitor<Path> {
 
-     @Override
-     public FileVisitResult preVisitDirectory(Path t, BasicFileAttributes bfa)
-         throws IOException {
-         return FileVisitResult.CONTINUE;
-     }
+		// Directory to start scanning for pics
+		String root = "C:\\Users\\David\\Downloads";
+		boolean complete;
 
-     @Override
-     public FileVisitResult visitFile(Path t, BasicFileAttributes bfa)
-         throws IOException {
-         try {
-             Image image = new Image(t.toUri().toString(),
-                 width, height, true, true, false);
+		@Override
+		public void run() {
+			System.out.println("scanning");
+			try {
+				Files.walkFileTree(Paths.get(root), this);
+				System.out.println("complete");
+			} catch (IOException ex) {
+				Logger.getLogger(SlideZ.class.getName()).log(Level.SEVERE, null, ex);
+			} finally {
+				complete = true;
+			}
+		}
 
-             if (!image.isError()) {
-                 images.put(image);
-             }
-         } catch (InterruptedException ex) {
-             Logger.getLogger(SlideZ.class.getName())
-                 .log(Level.SEVERE, null, ex);
-             return FileVisitResult.TERMINATE;
-         }
-         return FileVisitResult.CONTINUE;
-     }
+		@Override
+		public FileVisitResult preVisitDirectory(Path t, BasicFileAttributes bfa) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
 
-     @Override
-     public FileVisitResult visitFileFailed(Path t, IOException ioe)
-         throws IOException {
-         return FileVisitResult.CONTINUE;
-     }
+		@Override
+		public FileVisitResult visitFile(Path t, BasicFileAttributes bfa) throws IOException {
+			try {
+				Image image = new Image(t.toUri().toString(), width, height, true, true, false);
 
-     @Override
-     public FileVisitResult postVisitDirectory(Path t, IOException ioe)
-         throws IOException {
-         return FileVisitResult.CONTINUE;
-     }
- }
+				if (!image.isError()) {
+					images.put(image);
+				}
+			} catch (InterruptedException ex) {
+				Logger.getLogger(SlideZ.class.getName()).log(Level.SEVERE, null, ex);
+				return FileVisitResult.TERMINATE;
+			}
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path t, IOException ioe) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path t, IOException ioe) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+	}
 }

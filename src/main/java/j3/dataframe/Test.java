@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Test {
-	
+
 	public static void main(String[] args) throws IOException {
 //		DataFrame dataFrame = new DataFrame();
 //		
@@ -25,17 +25,15 @@ public class Test {
 //		Object stringValue = instance.get(stringAttr);
 //		
 //		System.out.println(doubleValue + " " + integerValue + " " + stringValue);
-		
+
 		CSVReader reader = new CSVReader();
 		DataFrame frame = reader.load(new File("cdice.csv"));
-		
+
 		for (Attribute<?> attr : frame.getAttributes()) {
 			System.out.println(attr.getName() + " " + attr.getType());
 		}
-		
-		
-		
-		//instance.set(doubleAttr, 15);
+
+		// instance.set(doubleAttr, 15);
 	}
 
 }

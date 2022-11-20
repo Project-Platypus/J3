@@ -23,45 +23,37 @@ public class PerceptuallyUniformSequentialColormaps implements ColormapProvider 
 
 	@Override
 	public List<String> getNames() {
-		return Arrays.asList(new String[] {
-				"viridis",
-				"inferno",
-				"plasma",
-				"magma"
-		});
+		return Arrays.asList(new String[] { "viridis", "inferno", "plasma", "magma" });
 	}
 
 	@Override
 	public Colormap getColormap(String name) {
 		Colormap colormap = null;
-		
+
 		try {
 			switch (name) {
 			case "viridis":
-				colormap = new ListColormap(
-						name,
+				colormap = new ListColormap(name,
 						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("viridis.cmap"));
 				break;
 			case "inferno":
-				colormap = new ListColormap(
-						name,
+				colormap = new ListColormap(name,
 						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("inferno.cmap"));
 				break;
 			case "plasma":
-				colormap = new ListColormap(
-						name,
+				colormap = new ListColormap(name,
 						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("plasma.cmap"));
 				break;
 			case "magma":
-				colormap = new ListColormap(
-						name,
+				colormap = new ListColormap(name,
 						PerceptuallyUniformSequentialColormaps.class.getResourceAsStream("magma.cmap"));
 				break;
 			default:
 				throw new IllegalArgumentException(getClass().getName() + " does not support colormap '" + name + "'");
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException(getClass().getName() + " was unable to instantiate colormap '" + name + "'", e);
+			throw new IllegalArgumentException(
+					getClass().getName() + " was unable to instantiate colormap '" + name + "'", e);
 		}
 
 		return colormap;

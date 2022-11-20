@@ -9,9 +9,9 @@ public class BooleanAttribute extends Attribute<Boolean> {
 	@Override
 	public Boolean convert(Object object) {
 		if (object instanceof Boolean) {
-			return (Boolean)object;
+			return (Boolean) object;
 		} else if (object instanceof String) {
-			return Boolean.parseBoolean((String)object);
+			return Boolean.parseBoolean((String) object);
 		} else {
 			throw new ClassConversionException(object, type);
 		}
