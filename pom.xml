@@ -82,7 +82,6 @@
                 <configuration>
                     <target>${gluonfx.target}</target>
                     <mainClass>${main.class}</mainClass>
-                    <nativeImageArgs>--report-unsupported-elements-at-runtime</nativeImageArgs>
                 </configuration>
             </plugin>
         </plugins>
