@@ -6,5 +6,4 @@ j3.widget.impl.BrushingWidgetProvider
 j3.widget.impl.DataTableWidgetProvider
 j3.widget.impl.scatter2d.Scatter2DProvider
 j3.widget.impl.parallel.ParallelCoordinatesProvider
-j3.widget.impl.animate.AnimateWidgetProvider
 j3.widget.impl.TextAnnotationProvider

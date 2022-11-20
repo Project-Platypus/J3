@@ -93,15 +93,30 @@ which is bundled with the Java 8 runtime environment.  After extracting, run `J3
 
 ## Building ##
 
-J3 uses Maven to manage dependencies.  Use `mvn package` to compile the J3 JAR file.  To create platform-specific
-bundles, call the appropriate Ant task.  For example:
+J3 now uses Gluon to generate native packages.  See https://docs.gluonhq.com/#_platforms for all pre-requisite software
+for each targeted platform.
+
+### Windows
+
+I haven't been successful getting builds to work within Eclipse.  Instead, the commands must be run from the "Developer Command
+Prompt for VS20XX":
 
 ```
-    mvn package
-    ant build-win
-    ant build-mac
-
-    # Requires running on Linux (Debian, Ubuntu, etc.) with openjdk-8-jdk installed
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-i386/
-    ant build-deb
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+set PATH=%PATH%;C:\apache-maven-3.8.6\bin
+set GRAALVM_HOME=C:\graalvm-svm-java17-windows-gluon-22.1.0.1-Final
+mvn clean
+mvn gluonfx:run
+mvn gluonfx:build
+mvn gluonfx:package
 ```
+
+One note: While Eclipse provides an embedded version of Maven, it appears the Maven plugin for Gluon does not like this version.
+Instead, install Maven separately and update Eclipse's Maven installations with this copy.
+
+```bash
+mvn gluonfx:run                       # run the program
+mvn gluonfx:build glouonfx:package    # build and package the native packages
+```
+
+See https://github.com/gluonhq/hello-gluon-ci for an example using GitHub Actions to build native packages for major platforms.
