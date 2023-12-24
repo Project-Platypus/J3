@@ -1,4 +1,4 @@
-name: Windows
+name: Linux
 
 on:
   push:
@@ -9,20 +9,19 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
-
-      - name: Visual Studio shell
-        uses: egor-tensin/vs-shell@v1
 
       - name: Setup Gluon's GraalVM
         uses: gluonhq/setup-graalvm@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install libraries
+        run: |
+          sudo apt update
+          sudo apt install libasound2-dev libavcodec-dev libavformat-dev libavutil-dev libgl-dev libgtk-3-dev libpango1.0-dev libxtst-dev
 
       - name: Make staging directory
         run: mkdir staging
@@ -32,14 +31,12 @@ jobs:
       #  with:
       #    gluon-license: ${{ secrets.GLUON_LICENSE }}
 
-      - name: Gluon Build and Package
+      - name: Gluon Build
         run: mvn gluonfx:build gluonfx:package
 
-      - name: Copy native bundles to staging
-        run: |
-          cp target/gluonfx/x86_64-windows/${EXECUTABLE}.exe staging
-          cp target/gluonfx/x86_64-windows/${EXECUTABLE}-*.msi staging
-          
+      - name: Copy native image to staging
+        run: cp -r target/gluonfx/x86_64-linux/${EXECUTABLE}* staging
+
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
