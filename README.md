@@ -1,18 +1,10 @@
-# J3 #
+# J3
 
 **A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.**
 
 ![Screenshot](http://i.imgur.com/W2zqCTT.jpg)
 
-## What is J3 ##
-
-J3 is an open source, cross-platform application for producing and sharing high-dimensional, interactive scientific
-visualizations.  While there are high-quality JavaScript libraries for producing visualization on the web, they are
-often plagued by performance issues when dealing with large data sets.  J3, on the other hand, can fluidly support
-thousands of data points by leveraging hardware accelerated graphics while simultaneously supporting animations and
-interactivity.
-
-## Key Features ##
+## Key Features
 
 1. Interactive 2D and 3D plots (scatter, parallel axis, etc.)
 2. Various annotations and data callouts
@@ -20,43 +12,73 @@ interactivity.
 4. Create scripted animations (experimental)
 5. Extensible design allows adding new widgets
 
-## Get It ##
+## Compatibility
 
-Pre-packaged distributions are available for Windows, Linux, and Mac.  All distributions include sample data files you can test.
+The latest version of J3, `2.x`, supports Java 17 and newer.  It requires installing the JavaFX runtime separately
+and Gluon / GraalVM for native compilation.
 
-#### Windows ####
+The older versions of J3, `1.x`, require Java 8.  The `1.x` versions are no longer supported.
 
-Download and extract [J3-Win.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3-Win.zip) if you
-already have Java 8 installed.  Otherwise, download [J3-Win-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3-Win-JRE.zip),
-which is bundled with the Java 8 runtime environment.  After extracting, run `J3.exe`.  You can also load a data set
-from the command line by running `J3.exe <file>`.
+## Compiling
 
-You can also download and run [J3.exe](https://github.com/MOEAFramework/J3/releases/download/1.0.1/J3.exe) by
-itself, although you will need to provide your own data files.
+There are a few options for running J3 that have different requirements.  These build steps are tested on Windows but
+should be similar on other platforms.
 
-#### Linux (Debian, Ubuntu, etc.) ####
+### Prerequisites
 
-A deb file is provided to assist installing J3 on Linux.  This installation requires `openjdk-8-jre`.  On
-Ubuntu, we needed to add the following repository to satisfy this dependency:
+1. Download and install [Maven](https://maven.apache.org/).  Set the `MAVEN_HOME` environment variable to the
+   installation path.
+2. Download and install the [JavaFX runtime](https://gluonhq.com/products/javafx/).  Set the `JAVAFX_HOME`
+   environment variable to the installation path.
+   
+If building native executables, the following dependencies are also required:
+
+1. Ensure all prerequisites for your target platform(s) are satisfied: https://docs.gluonhq.com/#_platforms
+2. Download and install [GraalVM](https://www.graalvm.org/).  Set the `GRAALVM_HOME`
+   environment variable to the installation path.
+
+### Option 1 - Eclipse
+
+J3 can be launched directly from Eclipse.  First, create a new Eclipse project from the J3 source code.
+Then, right-click on `src/main/java/j3/GUI.java` and run as a Java Application.
+
+Under VM arguments, add:
 
 ```
-    sudo apt-add-repository ppa:openjdk-r/ppa
-    sudo apt-get update
+--module-path ${JAVAFX_HOME}\lib --add-modules javafx.controls
 ```
 
-On some versions of Linux, [JavaFX may not be bundled with OpenJDK](http://stackoverflow.com/questions/34243982/why-is-javafx-is-not-included-in-openjdk-8-on-ubuntu-wily-15-10).  If this is the case, run `sudo apt-get install openjfx` to install JavaFX.
+Apply the changes and run the application.
 
-Finally, download and install [J3-1.0-1.deb](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3_1.0-1.deb).
-After installation, J3 will appear as a desktop application.  You can also launch the program by running the command
-`J3`.
+### Option 2 - Maven
 
-#### Mac ####
+On Windows, we use the Visual Studio Developer Command Prompt to build J3 as it requires a compiler/linker:
 
-Download and extract [J3-Mac.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac.zip) if you
-already have Java 8 installed.  Otherwise, download [J3-Mac-JRE.zip](https://github.com/MOEAFramework/J3/releases/download/1.0.0/J3-Mac-JRE.zip),
-which is bundled with the Java 8 runtime environment.  After extracting, run `J3.app`.
+```
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
-## FAQ ##
+set MAVEN_HOME=C:\apache-maven-3.8.6
+set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-18.0.2.101-hotspot
+set GRAALVM_HOME=C:\graalvm-svm-java17-windows-gluon-22.1.0.1-Final
+set PATH=%MAVEN_HOME%\bin;%JAVA_HOME%\bin;%PATH%
+
+mvn clean
+mvn gluonfx:build         # Compile J3
+mvn gluonfx:run           # Launch J3
+```
+
+### Option 3 - Native Executable
+
+Following the same steps above to build J3 using Maven, run:
+
+```
+mvn gluonfx:nativerun     # Run the native version of J3
+mvn gluonfx:package       # Package J3 into an installer
+```
+
+Note: Some functionality is not supported for native executables, including the Camera and Animation widgets.
+
+## FAQ
 
 1. **What does J3 stand for?**  The name J3 is derived from the use of Java technologies and its design being influenced
    by the popular D3.js JavaScript library for "data driven documents."  J3 shares many similarities with D3, such as
@@ -70,7 +92,7 @@ which is bundled with the Java 8 runtime environment.  After extracting, run `J3
    
 3. **How can I contribute to J3?**  J3 is designed to be extensible.  Everything from themes, color maps, widgets, and
    supported file types is extensible.  Clone this repository and give it a shot.  If you have questions, please create
-   an issue on Github.
+   an issue on GitHub.
    
 4. **How can I use J3 in my application?**  J3 can be used by any program to view high-dimensional data sets.  There are
    several options.  If using Java, you can launch the GUI directly:
@@ -90,18 +112,3 @@ which is bundled with the Java 8 runtime environment.  After extracting, run `J3
         os.system("J3.exe input.csv")
    ```
    
-
-## Building ##
-
-J3 uses Maven to manage dependencies.  Use `mvn package` to compile the J3 JAR file.  To create platform-specific
-bundles, call the appropriate Ant task.  For example:
-
-```
-    mvn package
-    ant build-win
-    ant build-mac
-
-    # Requires running on Linux (Debian, Ubuntu, etc.) with openjdk-8-jdk installed
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-i386/
-    ant build-deb
-```

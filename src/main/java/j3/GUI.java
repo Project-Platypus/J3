@@ -120,8 +120,8 @@ public class GUI extends Application {
 							.get(fileChooser.getExtensionFilters().indexOf(fileChooser.getSelectedExtensionFilter()));
 
 					selectedReader.load(selectedFile, canvas);
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (Exception e) {
+					ErrorUtils.showError("Failed to open file", e);
 				}
 			}
 		});
@@ -144,60 +144,64 @@ public class GUI extends Application {
 				try {
 					new J3Writer().save(selectedFile, canvas);
 				} catch (IOException e) {
-					e.printStackTrace();
+					ErrorUtils.showError("Failed to save file", e);
 				}
 			}
 		});
 
 		camera.setOnAction(event -> {
-			double scale = 2.0;
-			WritableImage image = new WritableImage((int) Math.rint(scale * canvas.getWidth()),
-					(int) Math.rint(scale * canvas.getHeight()));
-			SnapshotParameters params = new SnapshotParameters();
-			params.setCamera(new ParallelCamera());
-			params.setTransform(Transform.scale(2.0, 2.0));
-
-			image = canvas.snapshot(params, image);
-
-			FileChooser fileChooser = new FileChooser();
-
-			for (String suffix : ImageIO.getWriterFileSuffixes()) {
-				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
-						StringUtils.upperCase(suffix) + " image", "*." + suffix);
-				fileChooser.getExtensionFilters().add(filter);
-
-				if (suffix.equalsIgnoreCase("png")) {
-					fileChooser.setSelectedExtensionFilter(filter);
+			try {
+				double scale = 2.0;
+				WritableImage image = new WritableImage((int) Math.rint(scale * canvas.getWidth()),
+						(int) Math.rint(scale * canvas.getHeight()));
+				SnapshotParameters params = new SnapshotParameters();
+				params.setCamera(new ParallelCamera());
+				params.setTransform(Transform.scale(2.0, 2.0));
+	
+				image = canvas.snapshot(params, image);
+	
+				FileChooser fileChooser = new FileChooser();
+	
+				for (String suffix : ImageIO.getWriterFileSuffixes()) {
+					FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
+							StringUtils.upperCase(suffix) + " image", "*." + suffix);
+					fileChooser.getExtensionFilters().add(filter);
+	
+					if (suffix.equalsIgnoreCase("png")) {
+						fileChooser.setSelectedExtensionFilter(filter);
+					}
 				}
-			}
-
-			if (fileChooser.getSelectedExtensionFilter() == null) {
-				fileChooser.setSelectedExtensionFilter(fileChooser.getExtensionFilters().get(0));
-			}
-
-			LocalDateTime now = LocalDateTime.now();
-			StringBuilder filename = new StringBuilder();
-			filename.append("snapshot_");
-			filename.append(String.format("%02d", now.getDayOfMonth()));
-			filename.append(String.format("%02d", now.getMonthValue()));
-			filename.append(String.format("%02d", now.getYear()));
-			filename.append("_");
-			filename.append(String.format("%02d", now.getHour()));
-			filename.append(String.format("%02d", now.getMinute()));
-			filename.append(String.format("%02d", now.getSecond()));
-			filename.append(fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(1));
-
-			fileChooser.setInitialFileName(filename.toString());
-
-			File selectedFile = fileChooser.showSaveDialog(primaryStage);
-
-			if (selectedFile != null) {
-				try {
-					ImageIO.write(SwingFXUtils.fromFXImage(image, null),
-							fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2), selectedFile);
-				} catch (IOException e) {
-					e.printStackTrace();
+	
+				if (fileChooser.getSelectedExtensionFilter() == null) {
+					fileChooser.setSelectedExtensionFilter(fileChooser.getExtensionFilters().get(0));
 				}
+	
+				LocalDateTime now = LocalDateTime.now();
+				StringBuilder filename = new StringBuilder();
+				filename.append("snapshot_");
+				filename.append(String.format("%02d", now.getDayOfMonth()));
+				filename.append(String.format("%02d", now.getMonthValue()));
+				filename.append(String.format("%02d", now.getYear()));
+				filename.append("_");
+				filename.append(String.format("%02d", now.getHour()));
+				filename.append(String.format("%02d", now.getMinute()));
+				filename.append(String.format("%02d", now.getSecond()));
+				filename.append(fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(1));
+	
+				fileChooser.setInitialFileName(filename.toString());
+	
+				File selectedFile = fileChooser.showSaveDialog(primaryStage);
+	
+				if (selectedFile != null) {
+					try {
+						ImageIO.write(SwingFXUtils.fromFXImage(image, null),
+								fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2), selectedFile);
+					} catch (IOException e) {
+						ErrorUtils.showError("Failed to save image", e);
+					}
+				}
+			} catch (UnsatisfiedLinkError e) {
+				ErrorUtils.showError("Camera functionality disabled, missing AWT dependency", e);
 			}
 		});
 

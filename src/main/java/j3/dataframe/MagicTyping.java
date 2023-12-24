@@ -1,22 +1,28 @@
 package j3.dataframe;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.Region;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MagicTyping {
 
-	private List<Pair<Predicate<? super Object>, Class<? extends Attribute<?>>>> conversions;
+	private List<Pair<Predicate<? super Object>, Function<String, Attribute<?>>>> conversions;
 
 	public MagicTyping() {
 		super();
 
 		conversions = new ArrayList<>();
-		conversions.add(new ImmutablePair<>(isInteger, IntegerAttribute.class));
-		conversions.add(new ImmutablePair<>(isDouble, DoubleAttribute.class));
+		conversions.add(new ImmutablePair<>(isInteger, (name) -> new IntegerAttribute(name)));
+		conversions.add(new ImmutablePair<>(isDouble, (name) -> new DoubleAttribute(name)));
 	}
 
 	public void convert(DataFrame frame) {
@@ -36,13 +42,9 @@ public class MagicTyping {
 	}
 
 	private Attribute<?> determineType(DataFrame frame, Attribute<?> attribute) {
-		for (Pair<Predicate<? super Object>, Class<? extends Attribute<?>>> conversion : conversions) {
+		for (Pair<Predicate<? super Object>, Function<String, Attribute<?>>> conversion : conversions) {
 			if (frame.getInstances().stream().map(i -> (Object) i.get(attribute)).allMatch(conversion.getKey())) {
-				try {
-					return conversion.getValue().getDeclaredConstructor(String.class).newInstance(attribute.getName());
-				} catch (Exception e) {
-					throw new RuntimeException("Unable to call constructor for " + conversion.getValue());
-				}
+				return conversion.getValue().apply(attribute.getName());
 			}
 		}
 

@@ -3,6 +3,7 @@ package j3.widget.impl.animate;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import j3.Canvas;
+import j3.ErrorUtils;
 import j3.widget.SerializableWidget;
 import j3.widget.TitledWidget;
 
@@ -86,8 +87,8 @@ public class AnimateWidget extends TitledWidget<AnimateWidget> implements Serial
 
 					GroovyShell shell = new GroovyShell(bindings);
 					shell.evaluate(script);
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				} catch (Throwable ex) {
+					ErrorUtils.showError("Failed to run animation script", ex);
 				}
 			}
 		});

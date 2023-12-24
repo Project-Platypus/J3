@@ -31,7 +31,7 @@ public class CSVReader extends AbstractDataFrameReader {
 		DataFrame frame = new DataFrame();
 
 		// load CSV file into a data frame containing strings
-		try (CSVParser parser = new CSVParser(new InputStreamReader(is), CSVFormat.DEFAULT.withHeader())) {
+		try (CSVParser parser = new CSVParser(new InputStreamReader(is), CSVFormat.Builder.create().setHeader().build())) {
 			int size = parser.getHeaderMap().size();
 
 			for (String column : parser.getHeaderMap().keySet()) {

@@ -4,29 +4,34 @@
 
 	<groupId>org.j3</groupId>
 	<artifactId>j3</artifactId>
-	<version>1.1.0</version>
-	
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
-        <javafx.version>19</javafx.version>
-        <javafx.plugin.version>0.0.8</javafx.plugin.version>
-        <gluonfx.plugin.version>1.0.16</gluonfx.plugin.version>
-        <charm.version>6.2.2</charm.version>
-        <attach.version>4.0.16</attach.version>
-        <main.class>j3.GUI</main.class>
-    </properties>
+	<version>2.0.0</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.release>17</maven.compiler.release>
+		<javafx.version>21</javafx.version>
+		<javafx.plugin.version>0.0.8</javafx.plugin.version>
+		<gluonfx.plugin.version>1.0.22</gluonfx.plugin.version>
+		<charm.version>6.2.2</charm.version>
+		<attach.version>4.0.16</attach.version>
+		<main.class>j3.GUI</main.class>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>19</version>
+			<version>${javafx.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-swing</artifactId>
-			<version>19</version>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>${javafx.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -46,7 +51,7 @@
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>11.1.2</version>
+			<version>11.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dom4j</groupId>
@@ -56,42 +61,83 @@
 		<dependency>
 			<groupId>org.apache.groovy</groupId>
 			<artifactId>groovy</artifactId>
-			<version>4.0.6</version>
+			<version>4.0.17</version>
 		</dependency>
 	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>${javafx.plugin.version}</version>
-                <configuration>
-                    <mainClass>${main.class}</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.gluonhq</groupId>
-                <artifactId>gluonfx-maven-plugin</artifactId>
-                <version>${gluonfx.plugin.version}</version>
-                <configuration>
-                    <target>${gluonfx.target}</target>
-                    <mainClass>${main.class}</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>${javafx.plugin.version}</version>
+				<configuration>
+					<mainClass>${main.class}</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.gluonhq</groupId>
+				<artifactId>gluonfx-maven-plugin</artifactId>
+				<version>${gluonfx.plugin.version}</version>
+				<configuration>
+					<target>${gluonfx.target}</target>
+					<mainClass>${main.class}</mainClass>
+					<nativeImageArgs>--report-unsupported-elements-at-runtime</nativeImageArgs>
+					<reflectionList>
+						<list>com.sun.prism.shader.Solid_TextureRGB_AlphaTest_Loader</list>
+					</reflectionList>
+					<resourcesList>
+						<list>.*\\.properties$</list>
+						<list>.*\\.cmap$</list>
+					</resourcesList>
+					<releaseConfiguration>
+						<vendor>Project-Platypus</vendor>
+					</releaseConfiguration>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-    <repositories>
-        <repository>
-            <id>gluon-releases</id>
-            <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
+	<profiles>
+		<profile>
+			<id>desktop</id>
+			<properties>
+				<gluonfx.target>host</gluonfx.target>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>android</id>
+			<properties>
+				<gluonfx.target>android</gluonfx.target>
+			</properties>
+		</profile>
+		<profile>
+			<id>ios</id>
+			<properties>
+				<gluonfx.target>ios</gluonfx.target>
+			</properties>
+		</profile>
+		<profile>
+			<id>web</id>
+			<properties>
+				<gluonfx.target>web</gluonfx.target>
+			</properties>
+		</profile>
+	</profiles>
+
+	<repositories>
+		<repository>
+			<id>gluon-releases</id>
+			<url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
 
 </project>
