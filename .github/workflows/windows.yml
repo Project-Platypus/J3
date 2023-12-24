@@ -4,9 +4,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  EXECUTABLE: j3
-
 jobs:
   build:
     runs-on: windows-latest
@@ -37,8 +34,8 @@ jobs:
 
       - name: Copy native bundles to staging
         run: |
-          cp target/gluonfx/x86_64-windows/${EXECUTABLE}.exe staging
-          cp target/gluonfx/x86_64-windows/${EXECUTABLE}-*.msi staging
+          cp target/gluonfx/x86_64-windows/j3.exe staging
+          cp target/gluonfx/x86_64-windows/j3-*.msi staging
           
       - name: Upload
         uses: actions/upload-artifact@v2

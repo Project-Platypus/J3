@@ -4,9 +4,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  EXECUTABLE: j3
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,7 +32,7 @@ jobs:
         run: mvn gluonfx:build gluonfx:package
 
       - name: Copy native image to staging
-        run: cp -r target/gluonfx/x86_64-linux/${EXECUTABLE}* staging
+        run: cp -r target/gluonfx/x86_64-linux/* staging
 
       - name: Upload
         uses: actions/upload-artifact@v2
