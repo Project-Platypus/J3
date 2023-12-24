@@ -1,14 +1,14 @@
 # J3 - 3D Interactive Visualization in Java
 
-## Usage
-
-### Prerequisites
+## Prerequisites
 
 1. Download and install Java 17+
 2. Download and install JavaFX SDK - https://gluonhq.com/products/javafx/
 3. Set the environment variables `JAVA_HOME` and `JAVAFX_HOME`
 
-### Launch App
+## Usage
+
+Either use the provided `j3` command to run the application or launch from the terminals with:
 
 ```bash
 

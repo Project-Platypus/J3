@@ -26,8 +26,7 @@ jobs:
           cp target/j3-*.jar staging/J3/lib
           cp -r data/ staging/J3/data
           cp -r animations staging/J3/animations
-          cp package/README.md staging/J3
-          cp package/win/j3.bat staging/J3
+          cp package/* staging/J3
           
       - name: Upload
         uses: actions/upload-artifact@v4

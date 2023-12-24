@@ -1,8 +1,0 @@
-[Desktop Entry]
-Version=1.0-1
-Name=J3
-Exec=/usr/local/src/J3/bin/J3.sh
-Icon=/usr/local/src/J3/appicon.png
-Terminal=false
-Type=Application
-Categories=Application;Science;Graphics
