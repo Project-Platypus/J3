@@ -5,7 +5,32 @@ on:
     branches: [ master ]
 
 jobs:
-  package:
+  java:
+  	runs-on: ubuntu-latest
+  	steps:
+      - uses: actions/checkout@v4
+
+      - name: Maven Package
+        run: mvn -P${{ matrix.profile }} package
+
+      - name: Create distribution
+        run: |
+          mkdir staging
+          mkdir staging/J3
+          cp -r target/lib/ staging/J3/lib
+          cp target/j3-*.jar staging/J3/lib
+          cp -r data/ staging/J3/data
+          cp -r animations staging/J3/animations
+          cp package/README.md staging/J3
+          cp package/win/j3.bat staging/J3
+          
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: J3
+          path: staging
+  
+  native:
     strategy:
       matrix:
         include:
@@ -21,15 +46,15 @@ jobs:
             exe: j3
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH (Windows)
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.1
 
       - name: Visual Studio shell (Windows)
         if: runner.os == 'Windows'
-        uses: egor-tensin/vs-shell@v1
+        uses: egor-tensin/vs-shell@v2
         
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
@@ -46,6 +71,9 @@ jobs:
       #  uses: gluonhq/gluon-build-license@v1
       #  with:
       #    gluon-license: ${{ secrets.GLUON_LICENSE }}
+      
+      - name: Maven Package
+        run: mvn -P${{ matrix.profile }} package
 
       - name: Gluon Build and Package
         run: mvn -P${{ matrix.profile }} gluonfx:build gluonfx:package

@@ -108,6 +108,10 @@ public class GUI extends Application {
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(reader.getDescription(),
 						reader.getFileExtensions().stream().map(s -> "*." + s).collect(Collectors.toList()));
 				fileChooser.getExtensionFilters().add(filter);
+				
+				if (reader instanceof SmartReader) {
+					fileChooser.setSelectedExtensionFilter(filter);
+				}
 			}
 
 			File selectedFile = fileChooser.showOpenDialog(primaryStage);
