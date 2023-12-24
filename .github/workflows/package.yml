@@ -1,0 +1,65 @@
+name: Package
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  package:
+    strategy:
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            profile: desktop
+            path: x86_64-windows
+            exe: j3.exe
+          - name: Linux
+            os: ubuntu-latest
+            profile: desktop
+            path: x86_64-linux
+            exe: j3
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH (Windows)
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Visual Studio shell (Windows)
+        if: runner.os == 'Windows'
+        uses: egor-tensin/vs-shell@v1
+        
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install libasound2-dev libavcodec-dev libavformat-dev libavutil-dev libgl-dev libgtk-3-dev libpango1.0-dev libxtst-dev
+
+      - name: Setup Gluon's GraalVM
+        uses: gluonhq/setup-graalvm@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      #- name: Gluon License
+      #  uses: gluonhq/gluon-build-license@v1
+      #  with:
+      #    gluon-license: ${{ secrets.GLUON_LICENSE }}
+
+      - name: Gluon Build and Package
+        run: mvn -P${{ matrix.profile }} gluonfx:build gluonfx:package
+        
+      - name: Create distribution
+        run: |
+          mkdir staging
+          mkdir staging/J3
+          cp target/gluonfx/${{ matrix.path }}/${{ matrix.exe }} staging/J3
+          cp -r data/ staging/J3/data
+          cp -r animations staging/J3/animations
+          
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: J3-${{ matrix.name }}
+          path: staging
