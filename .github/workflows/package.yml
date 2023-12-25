@@ -3,6 +3,10 @@ name: Package
 on:
   push:
   workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Set to create a new release'
+        type: boolean
 
 jobs:
   package:
@@ -37,14 +41,17 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           pushd target
-          mkdir J3
-          cp -r lib/ J3
-          cp -r runtime/ J3
-          cp -r ../data J3
-          cp -r ../animations J3
-          cp ../src/packaging/j3.bat J3
-          cp ../src/packaging/j3 J3
-          chmod +x J3/j3
+          mkdir bundle
+          mkdir bundle/J3
+          cp -r lib/ bundle/J3
+          cp -r runtime/ bundle/J3
+          cp -r ../data bundle/J3
+          cp -r ../animations bundle/J3
+          cp ../COPYING bundle/J3
+          cp ../README.md bundle/J3
+          cp ../src/packaging/j3.bat bundle/J3
+          cp ../src/packaging/j3 bundle/J3
+          chmod +x bundle/J3/j3
           
       - name: Upload platform-independent bundle
         if: runner.os == 'Linux'
@@ -52,4 +59,15 @@ jobs:
         with:
           name: J3
           path: |
-            ./target/J3
+            ./target/bundle
+
+  release:
+    if: inputs.create_release
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - uses: actions/download-artifact@v4
+      
+      - name: Extract release contents
+        run: |
+          ls .

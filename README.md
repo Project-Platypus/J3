@@ -1,4 +1,4 @@
-# J3
+# J3 - Java 3D Visualization Tool
 
 **A free desktop application for producing and sharing high-dimensional, interactive scientific visualizations.**
 
