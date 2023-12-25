@@ -15,7 +15,7 @@
 ## Usage
 
 J3 is a Java application built using JavaFX.  We recommend installing a version of Java with JavaFX built-in,
-such as [Zulu](https://www.azul.com/downloads).  Pick `JDK FX" under the Java Package filter.  Java 17 or newer
+such as [Zulu](https://www.azul.com/downloads).  Pick `JDK FX` under the Java Package filter.  Java 17 or newer
 is required.
 
 ### Running from Source
