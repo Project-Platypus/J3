@@ -30,11 +30,8 @@ If using Maven, run `mvn javafx:run` from the terminal.
 To build a native application for your operating system, run `mvn clean install`.  This will generate an installer
 appropriate for your system, such as an MSI on Windows, inside the `target/` folder.
 
-### Official Releases
-
-We also provide periodic releases that include the native programs for popular operating systems.  See the 
-Releases page for more details.  These official releases also include Java + JavaFX, so you do not need to install
-any other dependencies.
+Alternatively, we provide official releases for Windows, Linux, and MacOS under the Releases page.  These releases
+include the Java runtime, so there is no need to install Java or JavaFX separately.
 
 ## FAQ
 
