@@ -1,11 +1,16 @@
 name: Package
 
 on:
-  push:
+  #push:
   workflow_dispatch:
     inputs:
-      create_release:
-        description: 'Set to create a new release'
+      version:
+        type: string
+        description: The version to publish
+        required: true
+      publish_github:
+        description: 'Create draft GitHub release'
+        default: true
         type: boolean
 
 jobs:
@@ -61,13 +66,35 @@ jobs:
           path: |
             ./target/bundle
 
-  release:
-    if: inputs.create_release
+  publish:
+    if: inputs.publish_github
     runs-on: ubuntu-latest
     needs: package
     steps:
       - uses: actions/download-artifact@v4
       
-      - name: Extract release contents
+      - name: Install required software
         run: |
-          ls .
+          sudo apt install xmlstarlet
+          
+      - name: Get project settings
+        run: |
+          shortname=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:artifactId/text()" pom.xml)
+          version=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:version/text()" pom.xml)
+          echo "BUILD_NAME=${shortname}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${version}" >> $GITHUB_ENV
+          
+      - name: Validate version number
+        run: |
+          [ "${{ inputs.version }}" == "${BUILD_VERSION}" ] || (>&2 echo "Version does not match value in pom.xml"; exit -1)      
+      
+      - name: Show content
+        run: ls -R .
+        
+      - name: Stage GitHub release
+        run: |
+          gh release create "v${{ inputs.version }}" --draft --title "Version ${{ inputs.version }}" \
+              J3-Windows/j3-${{ inputs.version }}.msi \
+              J3-Linux/j3-${{ inputs.version }}.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
