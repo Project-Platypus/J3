@@ -23,17 +23,18 @@ is required.
 If using Eclipse, run the class `j3.GUI` directly or create a new Maven run configuration with
 the goal `javafx:run`.
 
-If using Maven, run `mvn javafx:run`.
+If using Maven, run `mvn javafx:run` from the terminal.
 
 ### Building Native Programs
 
 To build a native application for your operating system, run `mvn clean install`.  This will generate an installer
-appropriate for your system, such as an MSI on Windows.
+appropriate for your system, such as an MSI on Windows, inside the `target/` folder.
 
 ### Official Releases
 
-We also provide periodic releases that include the native programs for the major operating systems.  See the 
-Releases page for more details.
+We also provide periodic releases that include the native programs for popular operating systems.  See the 
+Releases page for more details.  These official releases also include Java + JavaFX, so you do not need to install
+any other dependencies.
 
 ## FAQ
 
