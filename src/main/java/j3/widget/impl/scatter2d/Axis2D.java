@@ -137,7 +137,7 @@ public class Axis2D extends Pane {
 	}
 
 	protected Axis getAxis(int index) {
-		return new Axis[] { getXAxis(), getYAxis(), }[index];
+		return new Axis[] { getXAxis(), getYAxis() }[index];
 	}
 
 	protected ObjectProperty<Axis> getAxisProperty(int index) {
@@ -260,10 +260,10 @@ public class Axis2D extends Pane {
 
 				yTickLabels.get(i).getTransforms()
 						.setAll(new Translate(yHeight,
-								yTickPositions[i] * (getHeight() - yOffset) - labelBounds.getWidth() / 2.0),
+								(1.0 - yTickPositions[i]) * (getHeight() - yOffset) - labelBounds.getWidth() / 2.0),
 								new Rotate(90));
 				yTickLines.get(i).getTransforms()
-						.setAll(new Translate(xOffset, yTickPositions[i] * (getHeight() - yOffset)));
+						.setAll(new Translate(xOffset, (1.0 - yTickPositions[i]) * (getHeight() - yOffset)));
 			}
 		}
 
