@@ -2,6 +2,8 @@
 --name ${app.name}
 --win-menu
 --win-menu-group ${windows.vendor}
+--win-dir-chooser
+--win-shortcut-prompt
 --vendor ${windows.vendor}
 --icon "${project.basedir}/src/packaging/appicon.ico"
 --dest "${project.build.directory}"

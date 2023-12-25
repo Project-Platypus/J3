@@ -138,7 +138,7 @@ public class Annotation extends TitledWidget<Annotation> implements Serializable
 		tableView.setEditable(false);
 		tableView.setFocusTraversable(false);
 		tableView.setPrefHeight(100);
-		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
 		TableColumn keyColumn = new TableColumn("Key");
 		TableColumn valueColumn = new TableColumn("Value");

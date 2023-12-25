@@ -6,6 +6,8 @@
 	<artifactId>j3</artifactId>
 	<version>2.0.0</version>
 	<description>J3 - Java 3D Visualization Tool</description>
+	
+	<!-- This file is based on https://github.com/wiverson/maven-jpackage-template -->
 
 	<properties>
 		<maven.compiler.release>17</maven.compiler.release>
@@ -14,6 +16,9 @@
 		<app.name>J3</app.name>
 		<app.version>${project.version}</app.version>
 		<main.class>j3.GUI</main.class>
+		
+		<!-- Leave blank if JavaFX is included in the JDK -->
+		<javafx.home></javafx.home>
 		<jvm.modules>javafx.controls,java.logging,java.prefs</jvm.modules>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -149,6 +154,7 @@
 						<configuration>
 							<toolName>jlink</toolName>
 							<removeDirectories>${project.build.directory}/jvm-image/</removeDirectories>
+							<modulePath>${javafx.home}</modulePath>
 							<addModules>${jvm.modules}</addModules>
 							<output>${project.build.directory}/jvm-image</output>
 							<args>
