@@ -57,6 +57,7 @@ jobs:
           cp ../src/packaging/j3.bat bundle/J3
           cp ../src/packaging/j3 bundle/J3
           chmod +x bundle/J3/j3
+          popd
           
       - name: Upload platform-independent bundle
         if: runner.os == 'Linux'
@@ -98,7 +99,11 @@ jobs:
           cp temp/J3-Windows/* release
           cp temp/J3-Linux/* release
           cp temp/J3-macOS/* release
-          zip -r release/J3.zip temp/J3/*
+          
+          # Run zip from the base directory to avoid including "junk" folders
+          pushd temp/J3
+          zip -r ../../release/J3.zip .
+          popd
         
       - name: Stage GitHub release
         run: |
