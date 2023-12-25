@@ -32,38 +32,3 @@ appropriate for your system, such as an MSI on Windows, inside the `target/` fol
 
 Alternatively, we provide official releases for Windows, Linux, and MacOS under the Releases page.  These releases
 include the Java runtime, so there is no need to install Java or JavaFX separately.
-
-## FAQ
-
-1. **What does J3 stand for?**  The name J3 is derived from the use of Java technologies and its design being influenced
-   by the popular D3.js JavaScript library for "data driven documents."  J3 shares many similarities with D3, such as
-   the ability to use selectors and transitions to manipulate data on the canvas, a DOM-like scene graph, and
-   stylesheets for controlling the appearance of widgets.
-   
-2. **Why create J3 instead of using JavaScript libraries?**  J3 started as a way to learn JavaFX, but gradually evolved
-   into the application you see today.  It was immediately apparent that a native application could provide similar
-   flexibility with substantially improved performance.  J3 can easily render data sets with thousands of points,
-   whereas JavaScript libraries must resort to clever tricks to remain interactive (e.g., sequential rendering).
-   
-3. **How can I contribute to J3?**  J3 is designed to be extensible.  Everything from themes, color maps, widgets, and
-   supported file types is extensible.  Clone this repository and give it a shot.  If you have questions, please create
-   an issue on GitHub.
-   
-4. **How can I use J3 in my application?**  J3 can be used by any program to view high-dimensional data sets.  There are
-   several options.  If using Java, you can launch the GUI directly:
-   
-   ```java
-   
-       GUI.main(new String[] { "input.csv" });
-   ```
-   
-   From other programming languages, run the `J3` program as a separate process.  For example, with Python we can run:
-   
-   ```python
-   
-        import os
-
-        os.environ['PATH'] += os.pathsep + r"C:\Users\J3Dev\Desktop\J3"
-        os.system("J3.exe input.csv")
-   ```
-   
