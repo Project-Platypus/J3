@@ -1,0 +1,9 @@
+#!/bin/bash
+
+pushd runtime
+JAVA_HOME=$(pwd)
+popd
+
+PATH=${JAVA_HOME}/bin:${PATH}
+
+java --class-path "lib/*" j3.GUI

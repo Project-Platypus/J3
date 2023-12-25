@@ -21,10 +21,10 @@ jobs:
           java-package: 'jdk+fx'
           cache: 'maven'
 
-      - name: Maven build
+      - name: Build native installer
         run: mvn clean install
           
-      - name: Upload release
+      - name: Upload native installer
         uses: actions/upload-artifact@v4
         with:
           name: J3-${{ runner.os }}
@@ -32,3 +32,24 @@ jobs:
             ./target/*.msi
             ./target/*.dmg
             ./target/*.deb
+            
+      - name: Create platform-independent bundle
+        if: runner.os == 'Linux'
+        run: |
+          pushd target
+          mkdir J3
+          cp -r lib/ J3
+          cp -r runtime/ J3
+          cp -r ../data J3
+          cp -r ../animations J3
+          cp ../src/packaging/j3.bat J3
+          cp ../src/packaging/j3 J3
+          chmod +x J3/j3
+          
+      - name: Upload platform-independent bundle
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: J3
+          path: |
+            ./target/J3

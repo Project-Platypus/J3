@@ -6,7 +6,7 @@
 	<artifactId>j3</artifactId>
 	<version>2.0.0</version>
 	<description>J3 - Java 3D Visualization Tool</description>
-	
+
 	<!-- This file is based on https://github.com/wiverson/maven-jpackage-template -->
 
 	<properties>
@@ -15,8 +15,10 @@
 
 		<app.name>J3</app.name>
 		<app.version>${project.version}</app.version>
+		<app.copyright>Copyright 2009-2023</app.copyright>
+		<app.vendor>Project-Platypus</app.vendor>
 		<main.class>j3.GUI</main.class>
-		
+
 		<!-- Leave blank if JavaFX is included in the JDK -->
 		<javafx.home></javafx.home>
 		<jvm.modules>javafx.controls,java.logging,java.prefs</jvm.modules>
@@ -24,7 +26,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<windows.upgrade.uuid>e110edba-dbba-4f28-9c9b-ec09ad39522c</windows.upgrade.uuid>
-		<windows.vendor>Project-Platypus</windows.vendor>
 
 		<!-- Empty properties to skip signing by default. Set with the macos-sign Maven profile -->
 		<macos.sign></macos.sign>
@@ -84,7 +85,7 @@
 			<extension>
 				<groupId>kr.motd.maven</groupId>
 				<artifactId>os-maven-plugin</artifactId>
-				<version>1.7.0</version>
+				<version>1.7.1</version>
 			</extension>
 		</extensions>
 		<resources>
@@ -102,7 +103,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
-				<version>3.0.0-M1</version>
+				<version>3.1.1</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -110,7 +111,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<phase>prepare-package</phase>
@@ -127,7 +128,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.3.0</version>
 				<configuration>
 					<outputDirectory>${project.build.directory}/lib</outputDirectory>
 				</configuration>
@@ -153,10 +154,10 @@
 						</goals>
 						<configuration>
 							<toolName>jlink</toolName>
-							<removeDirectories>${project.build.directory}/jvm-image/</removeDirectories>
+							<removeDirectories>${project.build.directory}/runtime/</removeDirectories>
 							<modulePath>${javafx.home}</modulePath>
 							<addModules>${jvm.modules}</addModules>
-							<output>${project.build.directory}/jvm-image</output>
+							<output>${project.build.directory}/runtime</output>
 							<args>
 								<arg>--strip-native-commands</arg>
 								<arg>--no-header-files</arg>
@@ -186,46 +187,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.12.1</version>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>desktop</id>
-			<properties>
-				<gluonfx.target>host</gluonfx.target>
-			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-		</profile>
-		<profile>
-			<id>android</id>
-			<properties>
-				<gluonfx.target>android</gluonfx.target>
-			</properties>
-		</profile>
-		<profile>
-			<id>ios</id>
-			<properties>
-				<gluonfx.target>ios</gluonfx.target>
-			</properties>
-		</profile>
-		<profile>
-			<id>web</id>
-			<properties>
-				<gluonfx.target>web</gluonfx.target>
-			</properties>
-		</profile>
-	</profiles>
-
-	<repositories>
-		<repository>
-			<id>gluon-releases</id>
-			<url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-		</repository>
-	</repositories>
-
 </project>

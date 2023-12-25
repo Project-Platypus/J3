@@ -1,21 +1,22 @@
 --type msi
 --name ${app.name}
---win-menu
---win-menu-group ${windows.vendor}
---win-dir-chooser
---win-shortcut
---license-file ${project.basedir}/COPYING
---vendor ${windows.vendor}
 --icon "${project.basedir}/src/packaging/appicon.ico"
+--description "${project.description}"
+--copyright "${app.copyright} ${app.vendor}"
+--license-file ${project.basedir}/COPYING
+--vendor ${app.vendor}
 --dest "${project.build.directory}"
 --main-jar ${project.build.finalName}.jar
 --main-class ${main.class}
 --input "${project.build.directory}/lib"
 --app-version ${app.version}
---runtime-image "${project.build.directory}/jvm-image"
+--runtime-image "${project.build.directory}/runtime"
 --temp "${project.build.directory}/installer-work"
---win-upgrade-uuid ${windows.upgrade.uuid}
---description "${project.description}"
---copyright "Copyright ${windows.vendor}"
 --app-content "${project.basedir}/data"
 --app-content "${project.basedir}/animations"
+--win-menu
+--win-menu-group ${vendor}
+--win-dir-chooser
+--win-shortcut
+--win-shortcut-prompt
+--win-upgrade-uuid ${windows.upgrade.uuid}

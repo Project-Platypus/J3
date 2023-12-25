@@ -1,11 +1,16 @@
+--type deb
 --name ${app.name}
 --icon "${project.basedir}/src/packaging/appicon.png"
+--description "${project.description}"
+--copyright "${app.copyright} ${app.vendor}"
+--license-file ${project.basedir}/COPYING
+--vendor ${app.vendor}
 --dest "${project.build.directory}"
 --main-jar ${project.build.finalName}.jar
 --main-class ${main-class}
 --input "${project.build.directory}/lib"
 --app-version ${app.version}
---runtime-image "${project.build.directory}/jvm-image"
+--runtime-image "${project.build.directory}/runtime"
 --temp "${project.build.directory}/installer-work"
 --app-content "${project.basedir}/data"
 --app-content "${project.basedir}/animations"
