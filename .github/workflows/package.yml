@@ -17,7 +17,7 @@ jobs:
   package:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +97,7 @@ jobs:
           mkdir release
           cp temp/J3-Windows/* release
           cp temp/J3-Linux/* release
+          cp temp/J3-macOS/* release
           zip -r release/J3.zip temp/J3
         
       - name: Stage GitHub release
