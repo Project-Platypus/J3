@@ -90,9 +90,9 @@
 		</extensions>
 		<resources>
 			<resource>
-				<directory>${project.basedir}/src/packaging</directory>
+				<directory>${project.basedir}/src/packaging/config</directory>
 				<filtering>true</filtering>
-				<targetPath>${project.build.directory}/packaging</targetPath>
+				<targetPath>${project.build.directory}/packaging/config</targetPath>
 			</resource>
 			<resource>
 				<directory>${project.basedir}/src/main/resources</directory>
@@ -179,7 +179,7 @@
 							<writeErrorsToLog>true</writeErrorsToLog>
 							<failOnError>true</failOnError>
 							<removeDirectories>${project.build.directory}/installer-work</removeDirectories>
-							<args>@${project.build.directory}/packaging/${os.detected.name}-jpackage.txt</args>
+							<args>@${project.build.directory}/packaging/config/${os.detected.name}-jpackage.txt</args>
 						</configuration>
 					</execution>
 				</executions>
