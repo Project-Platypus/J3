@@ -3,7 +3,8 @@
 --win-menu
 --win-menu-group ${windows.vendor}
 --win-dir-chooser
---win-shortcut-prompt
+--win-shortcut
+--license-file ${project.basedir}/COPYING
 --vendor ${windows.vendor}
 --icon "${project.basedir}/src/packaging/appicon.ico"
 --dest "${project.build.directory}"
