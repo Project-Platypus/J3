@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if [ -z "${JAVAFX_HOME}" ]; then
-    echo "JAVAFX_HOME environment variable must be set!"
-    exit -1
-fi
-
-java --module-path ${JAVAFX_HOME}\lib --add-modules javafx.controls --class-path "lib/*" j3.GUI
