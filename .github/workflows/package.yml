@@ -74,6 +74,8 @@ jobs:
       - uses: actions/checkout@v4
       
       - uses: actions/download-artifact@v4
+        with:
+          path: temp
       
       - name: Install required software
         run: |
@@ -90,13 +92,15 @@ jobs:
         run: |
           [ "${{ inputs.version }}" == "${BUILD_VERSION}" ] || (>&2 echo "Version does not match value in pom.xml"; exit -1)      
       
-      - name: Show content
-        run: ls -R .
+      - name: Stage content
+        run: |
+          mkdir release
+          cp temp/J3-Windows/* release
+          cp temp/J3-Linux/* release
+          zip release/J3.zip temp/J3
         
       - name: Stage GitHub release
         run: |
-          gh release create "v${{ inputs.version }}" --draft --title "Version ${{ inputs.version }}" \
-              J3-Windows/j3-${{ inputs.version }}.msi \
-              J3-Linux/j3-${{ inputs.version }}.deb
+          gh release create "v${{ inputs.version }}" --draft --title "Version ${{ inputs.version }}" release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
