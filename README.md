@@ -32,11 +32,15 @@ appropriate for your system, such as an MSI on Windows, inside the `target/` fol
 
 We also provide pre-compiled releases for Windows (`.msi`), Linux (`.deb`), and MacOS (`.dmg`), available under the Releases page.
 
-## Quarantine
+## Troubleshooting
 
-Our releases are currently not signed, which may result in Windows or MacOS blocking the application.  On Windows, you will see
-a prompt which can be overridden.  On MacOS, it displays an error stating the application is "damaged".  This can be fixed by
-removing the quarantine attribute:
+As our releases are currently not signed, you might see an error when attempting to run or install the application.
+
+On Windows, you will see a dialog indicating Windows Defender blocked an unrecognized app.  Click "More Info" and "Run Anyways"
+to continue the installation.
+
+On MacOS, it will display an error indicating the J3 application is "damaged".  Run the following to remove the quarantine
+attribute:
 
 ```bash
 
