@@ -32,7 +32,13 @@ appropriate for your system, such as an MSI on Windows, inside the `target/` fol
 
 We also provide pre-compiled releases for Windows and Linux, available under the Releases page.
 
-### Platform-Independent Version
+## Quarantine
 
-For other systems, you may use the platform-independent release `J3.zip`.  You will need to install Java with
-JavaFX support separately (see instructions above).
+This tool is currently not signed for MacOS and might be quarantined after installation.  The error will state the
+J3 application is damaged, but this can be fixed by running:
+
+```bash
+
+cd /Applications
+sudo xattr -r -d com.apple.quarantine J3.app
+```

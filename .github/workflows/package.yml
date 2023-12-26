@@ -42,30 +42,30 @@ jobs:
             ./target/*.dmg
             ./target/*.deb
             
-      - name: Create platform-independent bundle
-        if: runner.os == 'Windows'
-        run: |
-          pushd target
-          mkdir bundle
-          mkdir bundle/J3
-          cp -r lib/ bundle/J3
-          cp -r runtime/ bundle/J3
-          cp -r ../data bundle/J3
-          cp -r ../animations bundle/J3
-          cp ../COPYING bundle/J3
-          cp ../README.md bundle/J3
-          cp ../src/packaging/j3.bat bundle/J3
-          cp ../src/packaging/j3 bundle/J3
-          chmod +x bundle/J3/j3
-          popd
+      #- name: Create platform-independent bundle
+      #  if: runner.os == 'Windows'
+      #  run: |
+      #    pushd target
+      #    mkdir bundle
+      #    mkdir bundle/J3
+      #    cp -r lib/ bundle/J3
+      #    cp -r runtime/ bundle/J3
+      #    cp -r ../data bundle/J3
+      #    cp -r ../animations bundle/J3
+      #    cp ../COPYING bundle/J3
+      #    cp ../README.md bundle/J3
+      #    cp ../src/packaging/j3.bat bundle/J3
+      #    cp ../src/packaging/j3 bundle/J3
+      #    chmod +x bundle/J3/j3
+      #    popd
           
-      - name: Upload platform-independent bundle
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
-        with:
-          name: J3
-          path: |
-            ./target/bundle
+      #- name: Upload platform-independent bundle
+      #  if: runner.os == 'Windows'
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: J3
+      #    path: |
+      #      ./target/bundle
 
   publish:
     if: inputs.publish_github
@@ -101,9 +101,9 @@ jobs:
           cp temp/J3-macOS/* release || true
           
           # Run zip from the base directory to avoid including "junk" folders
-          pushd temp/J3
-          zip -r ../../release/J3.zip .
-          popd
+          #pushd temp/J3
+          #zip -r ../../release/J3.zip .
+          #popd
         
       - name: Stage GitHub release
         run: |
