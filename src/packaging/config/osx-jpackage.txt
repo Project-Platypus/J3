@@ -7,7 +7,7 @@
 --vendor ${app.vendor}
 --dest "${project.build.directory}"
 --main-jar ${project.build.finalName}.jar
---main-class ${main-class}
+--main-class ${main.class}
 --input "${project.build.directory}/lib"
 --app-version ${app.version}
 --runtime-image "${project.build.directory}/runtime"
