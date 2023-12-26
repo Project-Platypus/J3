@@ -30,12 +30,13 @@ If using Maven, run `mvn javafx:run` from the terminal.
 To build a native application for your operating system, run `mvn clean install`.  This will generate an installer
 appropriate for your system, such as an MSI on Windows, inside the `target/` folder.
 
-We also provide pre-compiled releases for Windows and Linux, available under the Releases page.
+We also provide pre-compiled releases for Windows (`.msi`), Linux (`.deb`), and MacOS (`.dmg`), available under the Releases page.
 
 ## Quarantine
 
-This tool is currently not signed for MacOS and might be quarantined after installation.  The error will state the
-J3 application is damaged, but this can be fixed by running:
+Our releases are currently not signed, which may result in Windows or MacOS blocking the application.  On Windows, you will see
+a prompt which can be overridden.  On MacOS, it displays an error stating the application is "damaged".  This can be fixed by
+removing the quarantine attribute:
 
 ```bash
 
